@@ -1,0 +1,58 @@
+# Environment
+.env
+.env.*
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Database
+db/*.db
+db/*.db-journal
+db/checkpoints/
+
+# Build
+dist/
+build/
+*.egg-info/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Claude Code — keep shared settings.json, ignore personal overrides
+.claude/settings.local.json
+.claude/.credentials.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs & artifacts
+logs/
+*.log
+checkpoints/
+
+# Ephemeris binaries (regenerable from JPL — see realm/astro/)
+*.bsp
+
+# External datasets (do not commit — see data/external/MANIFEST.md for provenance)
+data/external/*.csv
+data/external/*.json.gz
+data/external/*.tsv
+data/external/*.dat
+data/external/*.por
+data/external/*.por.zip
+data/external/*.sav
+data/external/*.xls
+data/external/*.xlsx
+data/external/*.doc
+data/external/*.docx
+data/external/*.zip

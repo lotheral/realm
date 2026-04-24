@@ -1,0 +1,6 @@
+{
+  "country": "MY",
+  "first_names_m": ["Muhammad", "Ahmad", "Ismail", "Hafiz", "Zul", "Rizal", "Azman", "Shafiq", "Faizal", "Amirul", "Aiman", "Danial", "Hakim", "Imran", "Zaki"],
+  "first_names_f": ["Siti", "Nur", "Nurul", "Aina", "Farah", "Aisyah", "Maisarah", "Hidayah", "Zahra", "Amira", "Hanan", "Nabila", "Sofea", "Yasmin", "Rania"],
+  "last_names": ["Abdullah", "Rahman", "Ibrahim", "Bakar", "Yusof", "Othman", "Hassan", "Ahmad", "Hussein", "Lim", "Tan", "Wong", "Lee", "Raj", "Kumar"]
+}

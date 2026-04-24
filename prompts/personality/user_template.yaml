@@ -1,0 +1,12 @@
+name: personality_user_template_v1
+version: 1
+description: |
+  User message template for the LLM-based personality embedder. `$chart_json`
+  is filled with a serialized NatalChart (planet positions, aspects, balance
+  dicts). Keep the template lean — the system prompt already has the schema.
+content: |
+  Natal chart (JSON):
+
+  $chart_json
+
+  Produce the 24-field TraitVector JSON object for this chart.

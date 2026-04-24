@@ -1,0 +1,3205 @@
+{
+  "_comment": "Top 5 cities per country (by population, 2024 approx). Used for city-level natal geography. Field: pop in thousands. Timezone = IANA canonical (country simplification; not always correct for multi-zone countries).",
+  "cities": [
+    {
+      "name": "Shanghai",
+      "country": "CN",
+      "lat": 31.23,
+      "lon": 121.47,
+      "pop": 24870,
+      "timezone": "Asia/Shanghai"
+    },
+    {
+      "name": "Beijing",
+      "country": "CN",
+      "lat": 39.9,
+      "lon": 116.4,
+      "pop": 21540,
+      "timezone": "Asia/Shanghai"
+    },
+    {
+      "name": "Chongqing",
+      "country": "CN",
+      "lat": 29.57,
+      "lon": 106.55,
+      "pop": 17470,
+      "timezone": "Asia/Shanghai"
+    },
+    {
+      "name": "Guangzhou",
+      "country": "CN",
+      "lat": 23.13,
+      "lon": 113.27,
+      "pop": 18810,
+      "timezone": "Asia/Shanghai"
+    },
+    {
+      "name": "Shenzhen",
+      "country": "CN",
+      "lat": 22.54,
+      "lon": 114.06,
+      "pop": 17560,
+      "timezone": "Asia/Shanghai"
+    },
+    {
+      "name": "Delhi",
+      "country": "IN",
+      "lat": 28.68,
+      "lon": 77.22,
+      "pop": 32940,
+      "timezone": "Asia/Kolkata"
+    },
+    {
+      "name": "Mumbai",
+      "country": "IN",
+      "lat": 19.07,
+      "lon": 72.88,
+      "pop": 20960,
+      "timezone": "Asia/Kolkata"
+    },
+    {
+      "name": "Bangalore",
+      "country": "IN",
+      "lat": 12.97,
+      "lon": 77.59,
+      "pop": 13610,
+      "timezone": "Asia/Kolkata"
+    },
+    {
+      "name": "Chennai",
+      "country": "IN",
+      "lat": 13.08,
+      "lon": 80.27,
+      "pop": 11500,
+      "timezone": "Asia/Kolkata"
+    },
+    {
+      "name": "Hyderabad",
+      "country": "IN",
+      "lat": 17.39,
+      "lon": 78.49,
+      "pop": 10270,
+      "timezone": "Asia/Kolkata"
+    },
+    {
+      "name": "New York",
+      "country": "US",
+      "lat": 40.71,
+      "lon": -74.01,
+      "pop": 8260,
+      "timezone": "America/New_York"
+    },
+    {
+      "name": "Los Angeles",
+      "country": "US",
+      "lat": 34.05,
+      "lon": -118.24,
+      "pop": 3820,
+      "timezone": "America/Los_Angeles"
+    },
+    {
+      "name": "Chicago",
+      "country": "US",
+      "lat": 41.88,
+      "lon": -87.63,
+      "pop": 2660,
+      "timezone": "America/Chicago"
+    },
+    {
+      "name": "Houston",
+      "country": "US",
+      "lat": 29.76,
+      "lon": -95.37,
+      "pop": 2320,
+      "timezone": "America/Chicago"
+    },
+    {
+      "name": "Phoenix",
+      "country": "US",
+      "lat": 33.45,
+      "lon": -112.07,
+      "pop": 1650,
+      "timezone": "America/Phoenix"
+    },
+    {
+      "name": "Jakarta",
+      "country": "ID",
+      "lat": -6.21,
+      "lon": 106.85,
+      "pop": 10770,
+      "timezone": "Asia/Jakarta"
+    },
+    {
+      "name": "Surabaya",
+      "country": "ID",
+      "lat": -7.25,
+      "lon": 112.75,
+      "pop": 2900,
+      "timezone": "Asia/Jakarta"
+    },
+    {
+      "name": "Bandung",
+      "country": "ID",
+      "lat": -6.92,
+      "lon": 107.61,
+      "pop": 2450,
+      "timezone": "Asia/Jakarta"
+    },
+    {
+      "name": "Medan",
+      "country": "ID",
+      "lat": 3.59,
+      "lon": 98.67,
+      "pop": 2400,
+      "timezone": "Asia/Jakarta"
+    },
+    {
+      "name": "Semarang",
+      "country": "ID",
+      "lat": -6.97,
+      "lon": 110.42,
+      "pop": 1650,
+      "timezone": "Asia/Jakarta"
+    },
+    {
+      "name": "Karachi",
+      "country": "PK",
+      "lat": 24.86,
+      "lon": 67.0,
+      "pop": 16460,
+      "timezone": "Asia/Karachi"
+    },
+    {
+      "name": "Lahore",
+      "country": "PK",
+      "lat": 31.55,
+      "lon": 74.34,
+      "pop": 14000,
+      "timezone": "Asia/Karachi"
+    },
+    {
+      "name": "Faisalabad",
+      "country": "PK",
+      "lat": 31.42,
+      "lon": 73.09,
+      "pop": 3560,
+      "timezone": "Asia/Karachi"
+    },
+    {
+      "name": "Rawalpindi",
+      "country": "PK",
+      "lat": 33.6,
+      "lon": 73.04,
+      "pop": 2770,
+      "timezone": "Asia/Karachi"
+    },
+    {
+      "name": "Gujranwala",
+      "country": "PK",
+      "lat": 32.16,
+      "lon": 74.19,
+      "pop": 2150,
+      "timezone": "Asia/Karachi"
+    },
+    {
+      "name": "Lagos",
+      "country": "NG",
+      "lat": 6.46,
+      "lon": 3.38,
+      "pop": 15390,
+      "timezone": "Africa/Lagos"
+    },
+    {
+      "name": "Kano",
+      "country": "NG",
+      "lat": 12.0,
+      "lon": 8.52,
+      "pop": 4130,
+      "timezone": "Africa/Lagos"
+    },
+    {
+      "name": "Ibadan",
+      "country": "NG",
+      "lat": 7.38,
+      "lon": 3.93,
+      "pop": 3920,
+      "timezone": "Africa/Lagos"
+    },
+    {
+      "name": "Abuja",
+      "country": "NG",
+      "lat": 9.06,
+      "lon": 7.48,
+      "pop": 3770,
+      "timezone": "Africa/Lagos"
+    },
+    {
+      "name": "Port Harcourt",
+      "country": "NG",
+      "lat": 4.81,
+      "lon": 7.03,
+      "pop": 3170,
+      "timezone": "Africa/Lagos"
+    },
+    {
+      "name": "São Paulo",
+      "country": "BR",
+      "lat": -23.55,
+      "lon": -46.63,
+      "pop": 22620,
+      "timezone": "America/Sao_Paulo"
+    },
+    {
+      "name": "Rio de Janeiro",
+      "country": "BR",
+      "lat": -22.91,
+      "lon": -43.17,
+      "pop": 13630,
+      "timezone": "America/Sao_Paulo"
+    },
+    {
+      "name": "Brasília",
+      "country": "BR",
+      "lat": -15.79,
+      "lon": -47.88,
+      "pop": 4800,
+      "timezone": "America/Sao_Paulo"
+    },
+    {
+      "name": "Fortaleza",
+      "country": "BR",
+      "lat": -3.73,
+      "lon": -38.53,
+      "pop": 4080,
+      "timezone": "America/Fortaleza"
+    },
+    {
+      "name": "Salvador",
+      "country": "BR",
+      "lat": -12.97,
+      "lon": -38.5,
+      "pop": 3860,
+      "timezone": "America/Bahia"
+    },
+    {
+      "name": "Dhaka",
+      "country": "BD",
+      "lat": 23.81,
+      "lon": 90.41,
+      "pop": 23210,
+      "timezone": "Asia/Dhaka"
+    },
+    {
+      "name": "Chittagong",
+      "country": "BD",
+      "lat": 22.33,
+      "lon": 91.83,
+      "pop": 5280,
+      "timezone": "Asia/Dhaka"
+    },
+    {
+      "name": "Khulna",
+      "country": "BD",
+      "lat": 22.81,
+      "lon": 89.55,
+      "pop": 1560,
+      "timezone": "Asia/Dhaka"
+    },
+    {
+      "name": "Rajshahi",
+      "country": "BD",
+      "lat": 24.37,
+      "lon": 88.6,
+      "pop": 923,
+      "timezone": "Asia/Dhaka"
+    },
+    {
+      "name": "Sylhet",
+      "country": "BD",
+      "lat": 24.89,
+      "lon": 91.87,
+      "pop": 813,
+      "timezone": "Asia/Dhaka"
+    },
+    {
+      "name": "Moscow",
+      "country": "RU",
+      "lat": 55.75,
+      "lon": 37.62,
+      "pop": 12640,
+      "timezone": "Europe/Moscow"
+    },
+    {
+      "name": "Saint Petersburg",
+      "country": "RU",
+      "lat": 59.93,
+      "lon": 30.32,
+      "pop": 5600,
+      "timezone": "Europe/Moscow"
+    },
+    {
+      "name": "Novosibirsk",
+      "country": "RU",
+      "lat": 55.02,
+      "lon": 82.92,
+      "pop": 1620,
+      "timezone": "Asia/Novosibirsk"
+    },
+    {
+      "name": "Yekaterinburg",
+      "country": "RU",
+      "lat": 56.84,
+      "lon": 60.61,
+      "pop": 1500,
+      "timezone": "Asia/Yekaterinburg"
+    },
+    {
+      "name": "Kazan",
+      "country": "RU",
+      "lat": 55.79,
+      "lon": 49.12,
+      "pop": 1330,
+      "timezone": "Europe/Moscow"
+    },
+    {
+      "name": "Mexico City",
+      "country": "MX",
+      "lat": 19.43,
+      "lon": -99.13,
+      "pop": 22080,
+      "timezone": "America/Mexico_City"
+    },
+    {
+      "name": "Monterrey",
+      "country": "MX",
+      "lat": 25.69,
+      "lon": -100.32,
+      "pop": 5370,
+      "timezone": "America/Monterrey"
+    },
+    {
+      "name": "Guadalajara",
+      "country": "MX",
+      "lat": 20.67,
+      "lon": -103.35,
+      "pop": 5260,
+      "timezone": "America/Mexico_City"
+    },
+    {
+      "name": "Puebla",
+      "country": "MX",
+      "lat": 19.04,
+      "lon": -98.2,
+      "pop": 3240,
+      "timezone": "America/Mexico_City"
+    },
+    {
+      "name": "Toluca",
+      "country": "MX",
+      "lat": 19.29,
+      "lon": -99.66,
+      "pop": 2350,
+      "timezone": "America/Mexico_City"
+    },
+    {
+      "name": "Tokyo",
+      "country": "JP",
+      "lat": 35.68,
+      "lon": 139.69,
+      "pop": 37340,
+      "timezone": "Asia/Tokyo"
+    },
+    {
+      "name": "Osaka",
+      "country": "JP",
+      "lat": 34.69,
+      "lon": 135.5,
+      "pop": 19110,
+      "timezone": "Asia/Tokyo"
+    },
+    {
+      "name": "Nagoya",
+      "country": "JP",
+      "lat": 35.18,
+      "lon": 136.91,
+      "pop": 9560,
+      "timezone": "Asia/Tokyo"
+    },
+    {
+      "name": "Sapporo",
+      "country": "JP",
+      "lat": 43.06,
+      "lon": 141.35,
+      "pop": 2680,
+      "timezone": "Asia/Tokyo"
+    },
+    {
+      "name": "Fukuoka",
+      "country": "JP",
+      "lat": 33.59,
+      "lon": 130.4,
+      "pop": 2540,
+      "timezone": "Asia/Tokyo"
+    },
+    {
+      "name": "Addis Ababa",
+      "country": "ET",
+      "lat": 9.03,
+      "lon": 38.74,
+      "pop": 5230,
+      "timezone": "Africa/Addis_Ababa"
+    },
+    {
+      "name": "Dire Dawa",
+      "country": "ET",
+      "lat": 9.59,
+      "lon": 41.86,
+      "pop": 493,
+      "timezone": "Africa/Addis_Ababa"
+    },
+    {
+      "name": "Mek'ele",
+      "country": "ET",
+      "lat": 13.48,
+      "lon": 39.47,
+      "pop": 401,
+      "timezone": "Africa/Addis_Ababa"
+    },
+    {
+      "name": "Gondar",
+      "country": "ET",
+      "lat": 12.6,
+      "lon": 37.45,
+      "pop": 390,
+      "timezone": "Africa/Addis_Ababa"
+    },
+    {
+      "name": "Bahir Dar",
+      "country": "ET",
+      "lat": 11.59,
+      "lon": 37.39,
+      "pop": 348,
+      "timezone": "Africa/Addis_Ababa"
+    },
+    {
+      "name": "Manila",
+      "country": "PH",
+      "lat": 14.6,
+      "lon": 120.98,
+      "pop": 14160,
+      "timezone": "Asia/Manila"
+    },
+    {
+      "name": "Quezon City",
+      "country": "PH",
+      "lat": 14.68,
+      "lon": 121.04,
+      "pop": 2960,
+      "timezone": "Asia/Manila"
+    },
+    {
+      "name": "Davao",
+      "country": "PH",
+      "lat": 7.07,
+      "lon": 125.61,
+      "pop": 1780,
+      "timezone": "Asia/Manila"
+    },
+    {
+      "name": "Caloocan",
+      "country": "PH",
+      "lat": 14.66,
+      "lon": 120.97,
+      "pop": 1660,
+      "timezone": "Asia/Manila"
+    },
+    {
+      "name": "Cebu",
+      "country": "PH",
+      "lat": 10.32,
+      "lon": 123.89,
+      "pop": 980,
+      "timezone": "Asia/Manila"
+    },
+    {
+      "name": "Cairo",
+      "country": "EG",
+      "lat": 30.04,
+      "lon": 31.24,
+      "pop": 22180,
+      "timezone": "Africa/Cairo"
+    },
+    {
+      "name": "Alexandria",
+      "country": "EG",
+      "lat": 31.2,
+      "lon": 29.92,
+      "pop": 5480,
+      "timezone": "Africa/Cairo"
+    },
+    {
+      "name": "Giza",
+      "country": "EG",
+      "lat": 30.01,
+      "lon": 31.21,
+      "pop": 4800,
+      "timezone": "Africa/Cairo"
+    },
+    {
+      "name": "Shubra",
+      "country": "EG",
+      "lat": 30.13,
+      "lon": 31.24,
+      "pop": 1100,
+      "timezone": "Africa/Cairo"
+    },
+    {
+      "name": "Port Said",
+      "country": "EG",
+      "lat": 31.26,
+      "lon": 32.28,
+      "pop": 750,
+      "timezone": "Africa/Cairo"
+    },
+    {
+      "name": "Ho Chi Minh City",
+      "country": "VN",
+      "lat": 10.82,
+      "lon": 106.63,
+      "pop": 9080,
+      "timezone": "Asia/Ho_Chi_Minh"
+    },
+    {
+      "name": "Hanoi",
+      "country": "VN",
+      "lat": 21.03,
+      "lon": 105.85,
+      "pop": 5250,
+      "timezone": "Asia/Ho_Chi_Minh"
+    },
+    {
+      "name": "Haiphong",
+      "country": "VN",
+      "lat": 20.86,
+      "lon": 106.68,
+      "pop": 2050,
+      "timezone": "Asia/Ho_Chi_Minh"
+    },
+    {
+      "name": "Can Tho",
+      "country": "VN",
+      "lat": 10.03,
+      "lon": 105.78,
+      "pop": 1500,
+      "timezone": "Asia/Ho_Chi_Minh"
+    },
+    {
+      "name": "Da Nang",
+      "country": "VN",
+      "lat": 16.05,
+      "lon": 108.2,
+      "pop": 1300,
+      "timezone": "Asia/Ho_Chi_Minh"
+    },
+    {
+      "name": "Kinshasa",
+      "country": "CD",
+      "lat": -4.33,
+      "lon": 15.32,
+      "pop": 15620,
+      "timezone": "Africa/Kinshasa"
+    },
+    {
+      "name": "Lubumbashi",
+      "country": "CD",
+      "lat": -11.67,
+      "lon": 27.47,
+      "pop": 2580,
+      "timezone": "Africa/Lubumbashi"
+    },
+    {
+      "name": "Mbuji-Mayi",
+      "country": "CD",
+      "lat": -6.15,
+      "lon": 23.58,
+      "pop": 2260,
+      "timezone": "Africa/Lubumbashi"
+    },
+    {
+      "name": "Kananga",
+      "country": "CD",
+      "lat": -5.9,
+      "lon": 22.43,
+      "pop": 1630,
+      "timezone": "Africa/Lubumbashi"
+    },
+    {
+      "name": "Kisangani",
+      "country": "CD",
+      "lat": 0.52,
+      "lon": 25.2,
+      "pop": 1260,
+      "timezone": "Africa/Kinshasa"
+    },
+    {
+      "name": "Tehran",
+      "country": "IR",
+      "lat": 35.69,
+      "lon": 51.39,
+      "pop": 9530,
+      "timezone": "Asia/Tehran"
+    },
+    {
+      "name": "Mashhad",
+      "country": "IR",
+      "lat": 36.3,
+      "lon": 59.6,
+      "pop": 3370,
+      "timezone": "Asia/Tehran"
+    },
+    {
+      "name": "Isfahan",
+      "country": "IR",
+      "lat": 32.65,
+      "lon": 51.68,
+      "pop": 2220,
+      "timezone": "Asia/Tehran"
+    },
+    {
+      "name": "Karaj",
+      "country": "IR",
+      "lat": 35.82,
+      "lon": 50.98,
+      "pop": 1970,
+      "timezone": "Asia/Tehran"
+    },
+    {
+      "name": "Shiraz",
+      "country": "IR",
+      "lat": 29.6,
+      "lon": 52.53,
+      "pop": 1870,
+      "timezone": "Asia/Tehran"
+    },
+    {
+      "name": "Istanbul",
+      "country": "TR",
+      "lat": 41.01,
+      "lon": 28.97,
+      "pop": 15840,
+      "timezone": "Europe/Istanbul"
+    },
+    {
+      "name": "Ankara",
+      "country": "TR",
+      "lat": 39.93,
+      "lon": 32.86,
+      "pop": 5750,
+      "timezone": "Europe/Istanbul"
+    },
+    {
+      "name": "Izmir",
+      "country": "TR",
+      "lat": 38.42,
+      "lon": 27.14,
+      "pop": 4430,
+      "timezone": "Europe/Istanbul"
+    },
+    {
+      "name": "Bursa",
+      "country": "TR",
+      "lat": 40.19,
+      "lon": 29.06,
+      "pop": 3140,
+      "timezone": "Europe/Istanbul"
+    },
+    {
+      "name": "Antalya",
+      "country": "TR",
+      "lat": 36.88,
+      "lon": 30.7,
+      "pop": 2620,
+      "timezone": "Europe/Istanbul"
+    },
+    {
+      "name": "Berlin",
+      "country": "DE",
+      "lat": 52.52,
+      "lon": 13.4,
+      "pop": 3850,
+      "timezone": "Europe/Berlin"
+    },
+    {
+      "name": "Hamburg",
+      "country": "DE",
+      "lat": 53.55,
+      "lon": 10.0,
+      "pop": 1910,
+      "timezone": "Europe/Berlin"
+    },
+    {
+      "name": "Munich",
+      "country": "DE",
+      "lat": 48.14,
+      "lon": 11.58,
+      "pop": 1510,
+      "timezone": "Europe/Berlin"
+    },
+    {
+      "name": "Cologne",
+      "country": "DE",
+      "lat": 50.94,
+      "lon": 6.96,
+      "pop": 1090,
+      "timezone": "Europe/Berlin"
+    },
+    {
+      "name": "Frankfurt",
+      "country": "DE",
+      "lat": 50.12,
+      "lon": 8.68,
+      "pop": 790,
+      "timezone": "Europe/Berlin"
+    },
+    {
+      "name": "Bangkok",
+      "country": "TH",
+      "lat": 13.75,
+      "lon": 100.5,
+      "pop": 10700,
+      "timezone": "Asia/Bangkok"
+    },
+    {
+      "name": "Nonthaburi",
+      "country": "TH",
+      "lat": 13.86,
+      "lon": 100.51,
+      "pop": 260,
+      "timezone": "Asia/Bangkok"
+    },
+    {
+      "name": "Hat Yai",
+      "country": "TH",
+      "lat": 7.01,
+      "lon": 100.47,
+      "pop": 160,
+      "timezone": "Asia/Bangkok"
+    },
+    {
+      "name": "Chiang Mai",
+      "country": "TH",
+      "lat": 18.79,
+      "lon": 98.98,
+      "pop": 130,
+      "timezone": "Asia/Bangkok"
+    },
+    {
+      "name": "Pattaya",
+      "country": "TH",
+      "lat": 12.93,
+      "lon": 100.88,
+      "pop": 120,
+      "timezone": "Asia/Bangkok"
+    },
+    {
+      "name": "London",
+      "country": "GB",
+      "lat": 51.51,
+      "lon": -0.13,
+      "pop": 9540,
+      "timezone": "Europe/London"
+    },
+    {
+      "name": "Birmingham",
+      "country": "GB",
+      "lat": 52.48,
+      "lon": -1.9,
+      "pop": 1150,
+      "timezone": "Europe/London"
+    },
+    {
+      "name": "Leeds",
+      "country": "GB",
+      "lat": 53.8,
+      "lon": -1.55,
+      "pop": 800,
+      "timezone": "Europe/London"
+    },
+    {
+      "name": "Glasgow",
+      "country": "GB",
+      "lat": 55.86,
+      "lon": -4.25,
+      "pop": 636,
+      "timezone": "Europe/London"
+    },
+    {
+      "name": "Manchester",
+      "country": "GB",
+      "lat": 53.48,
+      "lon": -2.24,
+      "pop": 555,
+      "timezone": "Europe/London"
+    },
+    {
+      "name": "Paris",
+      "country": "FR",
+      "lat": 48.86,
+      "lon": 2.35,
+      "pop": 11020,
+      "timezone": "Europe/Paris"
+    },
+    {
+      "name": "Lyon",
+      "country": "FR",
+      "lat": 45.76,
+      "lon": 4.84,
+      "pop": 1720,
+      "timezone": "Europe/Paris"
+    },
+    {
+      "name": "Marseille",
+      "country": "FR",
+      "lat": 43.3,
+      "lon": 5.37,
+      "pop": 1610,
+      "timezone": "Europe/Paris"
+    },
+    {
+      "name": "Toulouse",
+      "country": "FR",
+      "lat": 43.6,
+      "lon": 1.44,
+      "pop": 1040,
+      "timezone": "Europe/Paris"
+    },
+    {
+      "name": "Nice",
+      "country": "FR",
+      "lat": 43.7,
+      "lon": 7.27,
+      "pop": 940,
+      "timezone": "Europe/Paris"
+    },
+    {
+      "name": "Rome",
+      "country": "IT",
+      "lat": 41.9,
+      "lon": 12.5,
+      "pop": 4290,
+      "timezone": "Europe/Rome"
+    },
+    {
+      "name": "Milan",
+      "country": "IT",
+      "lat": 45.46,
+      "lon": 9.19,
+      "pop": 3150,
+      "timezone": "Europe/Rome"
+    },
+    {
+      "name": "Naples",
+      "country": "IT",
+      "lat": 40.85,
+      "lon": 14.27,
+      "pop": 2180,
+      "timezone": "Europe/Rome"
+    },
+    {
+      "name": "Turin",
+      "country": "IT",
+      "lat": 45.07,
+      "lon": 7.69,
+      "pop": 1800,
+      "timezone": "Europe/Rome"
+    },
+    {
+      "name": "Palermo",
+      "country": "IT",
+      "lat": 38.12,
+      "lon": 13.36,
+      "pop": 880,
+      "timezone": "Europe/Rome"
+    },
+    {
+      "name": "Johannesburg",
+      "country": "ZA",
+      "lat": -26.2,
+      "lon": 28.04,
+      "pop": 6200,
+      "timezone": "Africa/Johannesburg"
+    },
+    {
+      "name": "Cape Town",
+      "country": "ZA",
+      "lat": -33.92,
+      "lon": 18.42,
+      "pop": 4800,
+      "timezone": "Africa/Johannesburg"
+    },
+    {
+      "name": "Durban",
+      "country": "ZA",
+      "lat": -29.85,
+      "lon": 31.02,
+      "pop": 3500,
+      "timezone": "Africa/Johannesburg"
+    },
+    {
+      "name": "Pretoria",
+      "country": "ZA",
+      "lat": -25.74,
+      "lon": 28.18,
+      "pop": 2470,
+      "timezone": "Africa/Johannesburg"
+    },
+    {
+      "name": "Port Elizabeth",
+      "country": "ZA",
+      "lat": -33.96,
+      "lon": 25.61,
+      "pop": 1250,
+      "timezone": "Africa/Johannesburg"
+    },
+    {
+      "name": "Dar es Salaam",
+      "country": "TZ",
+      "lat": -6.8,
+      "lon": 39.28,
+      "pop": 7780,
+      "timezone": "Africa/Dar_es_Salaam"
+    },
+    {
+      "name": "Mwanza",
+      "country": "TZ",
+      "lat": -2.52,
+      "lon": 32.9,
+      "pop": 1180,
+      "timezone": "Africa/Dar_es_Salaam"
+    },
+    {
+      "name": "Mbeya",
+      "country": "TZ",
+      "lat": -8.91,
+      "lon": 33.46,
+      "pop": 540,
+      "timezone": "Africa/Dar_es_Salaam"
+    },
+    {
+      "name": "Zanzibar",
+      "country": "TZ",
+      "lat": -6.17,
+      "lon": 39.2,
+      "pop": 500,
+      "timezone": "Africa/Dar_es_Salaam"
+    },
+    {
+      "name": "Arusha",
+      "country": "TZ",
+      "lat": -3.37,
+      "lon": 36.68,
+      "pop": 417,
+      "timezone": "Africa/Dar_es_Salaam"
+    },
+    {
+      "name": "Yangon",
+      "country": "MM",
+      "lat": 16.87,
+      "lon": 96.2,
+      "pop": 5740,
+      "timezone": "Asia/Yangon"
+    },
+    {
+      "name": "Mandalay",
+      "country": "MM",
+      "lat": 21.98,
+      "lon": 96.08,
+      "pop": 1500,
+      "timezone": "Asia/Yangon"
+    },
+    {
+      "name": "Naypyidaw",
+      "country": "MM",
+      "lat": 19.75,
+      "lon": 96.12,
+      "pop": 1160,
+      "timezone": "Asia/Yangon"
+    },
+    {
+      "name": "Mawlamyine",
+      "country": "MM",
+      "lat": 16.49,
+      "lon": 97.62,
+      "pop": 290,
+      "timezone": "Asia/Yangon"
+    },
+    {
+      "name": "Bago",
+      "country": "MM",
+      "lat": 17.34,
+      "lon": 96.48,
+      "pop": 253,
+      "timezone": "Asia/Yangon"
+    },
+    {
+      "name": "Seoul",
+      "country": "KR",
+      "lat": 37.57,
+      "lon": 126.98,
+      "pop": 9780,
+      "timezone": "Asia/Seoul"
+    },
+    {
+      "name": "Busan",
+      "country": "KR",
+      "lat": 35.17,
+      "lon": 129.07,
+      "pop": 3320,
+      "timezone": "Asia/Seoul"
+    },
+    {
+      "name": "Incheon",
+      "country": "KR",
+      "lat": 37.47,
+      "lon": 126.63,
+      "pop": 2950,
+      "timezone": "Asia/Seoul"
+    },
+    {
+      "name": "Daegu",
+      "country": "KR",
+      "lat": 35.87,
+      "lon": 128.6,
+      "pop": 2400,
+      "timezone": "Asia/Seoul"
+    },
+    {
+      "name": "Daejeon",
+      "country": "KR",
+      "lat": 36.35,
+      "lon": 127.38,
+      "pop": 1450,
+      "timezone": "Asia/Seoul"
+    },
+    {
+      "name": "Bogotá",
+      "country": "CO",
+      "lat": 4.6,
+      "lon": -74.08,
+      "pop": 8100,
+      "timezone": "America/Bogota"
+    },
+    {
+      "name": "Medellín",
+      "country": "CO",
+      "lat": 6.25,
+      "lon": -75.57,
+      "pop": 2530,
+      "timezone": "America/Bogota"
+    },
+    {
+      "name": "Cali",
+      "country": "CO",
+      "lat": 3.44,
+      "lon": -76.52,
+      "pop": 2250,
+      "timezone": "America/Bogota"
+    },
+    {
+      "name": "Barranquilla",
+      "country": "CO",
+      "lat": 10.96,
+      "lon": -74.8,
+      "pop": 1330,
+      "timezone": "America/Bogota"
+    },
+    {
+      "name": "Cartagena",
+      "country": "CO",
+      "lat": 10.42,
+      "lon": -75.55,
+      "pop": 1030,
+      "timezone": "America/Bogota"
+    },
+    {
+      "name": "Nairobi",
+      "country": "KE",
+      "lat": -1.29,
+      "lon": 36.82,
+      "pop": 4920,
+      "timezone": "Africa/Nairobi"
+    },
+    {
+      "name": "Mombasa",
+      "country": "KE",
+      "lat": -4.05,
+      "lon": 39.67,
+      "pop": 1290,
+      "timezone": "Africa/Nairobi"
+    },
+    {
+      "name": "Kisumu",
+      "country": "KE",
+      "lat": -0.1,
+      "lon": 34.75,
+      "pop": 550,
+      "timezone": "Africa/Nairobi"
+    },
+    {
+      "name": "Nakuru",
+      "country": "KE",
+      "lat": -0.29,
+      "lon": 36.07,
+      "pop": 425,
+      "timezone": "Africa/Nairobi"
+    },
+    {
+      "name": "Eldoret",
+      "country": "KE",
+      "lat": 0.52,
+      "lon": 35.27,
+      "pop": 412,
+      "timezone": "Africa/Nairobi"
+    },
+    {
+      "name": "Madrid",
+      "country": "ES",
+      "lat": 40.42,
+      "lon": -3.7,
+      "pop": 3270,
+      "timezone": "Europe/Madrid"
+    },
+    {
+      "name": "Barcelona",
+      "country": "ES",
+      "lat": 41.39,
+      "lon": 2.17,
+      "pop": 1620,
+      "timezone": "Europe/Madrid"
+    },
+    {
+      "name": "Valencia",
+      "country": "ES",
+      "lat": 39.47,
+      "lon": -0.37,
+      "pop": 790,
+      "timezone": "Europe/Madrid"
+    },
+    {
+      "name": "Seville",
+      "country": "ES",
+      "lat": 37.39,
+      "lon": -5.98,
+      "pop": 690,
+      "timezone": "Europe/Madrid"
+    },
+    {
+      "name": "Zaragoza",
+      "country": "ES",
+      "lat": 41.65,
+      "lon": -0.88,
+      "pop": 680,
+      "timezone": "Europe/Madrid"
+    },
+    {
+      "name": "Lisbon",
+      "country": "PT",
+      "lat": 38.72,
+      "lon": -9.14,
+      "pop": 548,
+      "timezone": "Europe/Lisbon"
+    },
+    {
+      "name": "Porto",
+      "country": "PT",
+      "lat": 41.15,
+      "lon": -8.61,
+      "pop": 231,
+      "timezone": "Europe/Lisbon"
+    },
+    {
+      "name": "Vila Nova de Gaia",
+      "country": "PT",
+      "lat": 41.12,
+      "lon": -8.61,
+      "pop": 302,
+      "timezone": "Europe/Lisbon"
+    },
+    {
+      "name": "Amadora",
+      "country": "PT",
+      "lat": 38.75,
+      "lon": -9.23,
+      "pop": 179,
+      "timezone": "Europe/Lisbon"
+    },
+    {
+      "name": "Braga",
+      "country": "PT",
+      "lat": 41.55,
+      "lon": -8.43,
+      "pop": 193,
+      "timezone": "Europe/Lisbon"
+    },
+    {
+      "name": "Coimbra",
+      "country": "PT",
+      "lat": 40.2,
+      "lon": -8.41,
+      "pop": 140,
+      "timezone": "Europe/Lisbon"
+    },
+    {
+      "name": "Faro",
+      "country": "PT",
+      "lat": 37.02,
+      "lon": -7.93,
+      "pop": 67,
+      "timezone": "Europe/Lisbon"
+    },
+    {
+      "name": "Dublin",
+      "country": "IE",
+      "lat": 53.35,
+      "lon": -6.26,
+      "pop": 1270,
+      "timezone": "Europe/Dublin"
+    },
+    {
+      "name": "Cork",
+      "country": "IE",
+      "lat": 51.9,
+      "lon": -8.47,
+      "pop": 210,
+      "timezone": "Europe/Dublin"
+    },
+    {
+      "name": "Limerick",
+      "country": "IE",
+      "lat": 52.67,
+      "lon": -8.63,
+      "pop": 94,
+      "timezone": "Europe/Dublin"
+    },
+    {
+      "name": "Galway",
+      "country": "IE",
+      "lat": 53.27,
+      "lon": -9.05,
+      "pop": 80,
+      "timezone": "Europe/Dublin"
+    },
+    {
+      "name": "Waterford",
+      "country": "IE",
+      "lat": 52.26,
+      "lon": -7.11,
+      "pop": 54,
+      "timezone": "Europe/Dublin"
+    },
+    {
+      "name": "Amsterdam",
+      "country": "NL",
+      "lat": 52.37,
+      "lon": 4.9,
+      "pop": 920,
+      "timezone": "Europe/Amsterdam"
+    },
+    {
+      "name": "Rotterdam",
+      "country": "NL",
+      "lat": 51.92,
+      "lon": 4.47,
+      "pop": 664,
+      "timezone": "Europe/Amsterdam"
+    },
+    {
+      "name": "The Hague",
+      "country": "NL",
+      "lat": 52.08,
+      "lon": 4.31,
+      "pop": 560,
+      "timezone": "Europe/Amsterdam"
+    },
+    {
+      "name": "Utrecht",
+      "country": "NL",
+      "lat": 52.09,
+      "lon": 5.12,
+      "pop": 366,
+      "timezone": "Europe/Amsterdam"
+    },
+    {
+      "name": "Eindhoven",
+      "country": "NL",
+      "lat": 51.44,
+      "lon": 5.48,
+      "pop": 238,
+      "timezone": "Europe/Amsterdam"
+    },
+    {
+      "name": "Groningen",
+      "country": "NL",
+      "lat": 53.22,
+      "lon": 6.57,
+      "pop": 234,
+      "timezone": "Europe/Amsterdam"
+    },
+    {
+      "name": "Tilburg",
+      "country": "NL",
+      "lat": 51.56,
+      "lon": 5.09,
+      "pop": 223,
+      "timezone": "Europe/Amsterdam"
+    },
+    {
+      "name": "Brussels",
+      "country": "BE",
+      "lat": 50.85,
+      "lon": 4.35,
+      "pop": 1223,
+      "timezone": "Europe/Brussels"
+    },
+    {
+      "name": "Antwerp",
+      "country": "BE",
+      "lat": 51.22,
+      "lon": 4.4,
+      "pop": 531,
+      "timezone": "Europe/Brussels"
+    },
+    {
+      "name": "Ghent",
+      "country": "BE",
+      "lat": 51.05,
+      "lon": 3.73,
+      "pop": 265,
+      "timezone": "Europe/Brussels"
+    },
+    {
+      "name": "Charleroi",
+      "country": "BE",
+      "lat": 50.41,
+      "lon": 4.44,
+      "pop": 201,
+      "timezone": "Europe/Brussels"
+    },
+    {
+      "name": "Liège",
+      "country": "BE",
+      "lat": 50.63,
+      "lon": 5.58,
+      "pop": 197,
+      "timezone": "Europe/Brussels"
+    },
+    {
+      "name": "Bruges",
+      "country": "BE",
+      "lat": 51.21,
+      "lon": 3.22,
+      "pop": 118,
+      "timezone": "Europe/Brussels"
+    },
+    {
+      "name": "Luxembourg City",
+      "country": "LU",
+      "lat": 49.61,
+      "lon": 6.13,
+      "pop": 132,
+      "timezone": "Europe/Luxembourg"
+    },
+    {
+      "name": "Esch-sur-Alzette",
+      "country": "LU",
+      "lat": 49.5,
+      "lon": 5.98,
+      "pop": 36,
+      "timezone": "Europe/Luxembourg"
+    },
+    {
+      "name": "Differdange",
+      "country": "LU",
+      "lat": 49.52,
+      "lon": 5.89,
+      "pop": 28,
+      "timezone": "Europe/Luxembourg"
+    },
+    {
+      "name": "Dudelange",
+      "country": "LU",
+      "lat": 49.48,
+      "lon": 6.09,
+      "pop": 22,
+      "timezone": "Europe/Luxembourg"
+    },
+    {
+      "name": "Ettelbruck",
+      "country": "LU",
+      "lat": 49.85,
+      "lon": 6.1,
+      "pop": 9,
+      "timezone": "Europe/Luxembourg"
+    },
+    {
+      "name": "Zurich",
+      "country": "CH",
+      "lat": 47.38,
+      "lon": 8.55,
+      "pop": 434,
+      "timezone": "Europe/Zurich"
+    },
+    {
+      "name": "Geneva",
+      "country": "CH",
+      "lat": 46.2,
+      "lon": 6.15,
+      "pop": 204,
+      "timezone": "Europe/Zurich"
+    },
+    {
+      "name": "Basel",
+      "country": "CH",
+      "lat": 47.56,
+      "lon": 7.59,
+      "pop": 178,
+      "timezone": "Europe/Zurich"
+    },
+    {
+      "name": "Lausanne",
+      "country": "CH",
+      "lat": 46.52,
+      "lon": 6.63,
+      "pop": 140,
+      "timezone": "Europe/Zurich"
+    },
+    {
+      "name": "Bern",
+      "country": "CH",
+      "lat": 46.95,
+      "lon": 7.45,
+      "pop": 134,
+      "timezone": "Europe/Zurich"
+    },
+    {
+      "name": "Winterthur",
+      "country": "CH",
+      "lat": 47.5,
+      "lon": 8.72,
+      "pop": 115,
+      "timezone": "Europe/Zurich"
+    },
+    {
+      "name": "Lucerne",
+      "country": "CH",
+      "lat": 47.05,
+      "lon": 8.31,
+      "pop": 82,
+      "timezone": "Europe/Zurich"
+    },
+    {
+      "name": "Vienna",
+      "country": "AT",
+      "lat": 48.21,
+      "lon": 16.37,
+      "pop": 1973,
+      "timezone": "Europe/Vienna"
+    },
+    {
+      "name": "Graz",
+      "country": "AT",
+      "lat": 47.07,
+      "lon": 15.44,
+      "pop": 294,
+      "timezone": "Europe/Vienna"
+    },
+    {
+      "name": "Linz",
+      "country": "AT",
+      "lat": 48.31,
+      "lon": 14.29,
+      "pop": 206,
+      "timezone": "Europe/Vienna"
+    },
+    {
+      "name": "Salzburg",
+      "country": "AT",
+      "lat": 47.81,
+      "lon": 13.06,
+      "pop": 157,
+      "timezone": "Europe/Vienna"
+    },
+    {
+      "name": "Innsbruck",
+      "country": "AT",
+      "lat": 47.27,
+      "lon": 11.39,
+      "pop": 132,
+      "timezone": "Europe/Vienna"
+    },
+    {
+      "name": "Klagenfurt",
+      "country": "AT",
+      "lat": 46.62,
+      "lon": 14.31,
+      "pop": 103,
+      "timezone": "Europe/Vienna"
+    },
+    {
+      "name": "Villach",
+      "country": "AT",
+      "lat": 46.61,
+      "lon": 13.85,
+      "pop": 64,
+      "timezone": "Europe/Vienna"
+    },
+    {
+      "name": "Prague",
+      "country": "CZ",
+      "lat": 50.08,
+      "lon": 14.44,
+      "pop": 1357,
+      "timezone": "Europe/Prague"
+    },
+    {
+      "name": "Brno",
+      "country": "CZ",
+      "lat": 49.2,
+      "lon": 16.61,
+      "pop": 383,
+      "timezone": "Europe/Prague"
+    },
+    {
+      "name": "Ostrava",
+      "country": "CZ",
+      "lat": 49.84,
+      "lon": 18.28,
+      "pop": 281,
+      "timezone": "Europe/Prague"
+    },
+    {
+      "name": "Plzeň",
+      "country": "CZ",
+      "lat": 49.75,
+      "lon": 13.38,
+      "pop": 174,
+      "timezone": "Europe/Prague"
+    },
+    {
+      "name": "Liberec",
+      "country": "CZ",
+      "lat": 50.77,
+      "lon": 15.06,
+      "pop": 104,
+      "timezone": "Europe/Prague"
+    },
+    {
+      "name": "Olomouc",
+      "country": "CZ",
+      "lat": 49.6,
+      "lon": 17.25,
+      "pop": 100,
+      "timezone": "Europe/Prague"
+    },
+    {
+      "name": "České Budějovice",
+      "country": "CZ",
+      "lat": 48.97,
+      "lon": 14.47,
+      "pop": 94,
+      "timezone": "Europe/Prague"
+    },
+    {
+      "name": "Warsaw",
+      "country": "PL",
+      "lat": 52.23,
+      "lon": 21.01,
+      "pop": 1860,
+      "timezone": "Europe/Warsaw"
+    },
+    {
+      "name": "Kraków",
+      "country": "PL",
+      "lat": 50.06,
+      "lon": 19.94,
+      "pop": 803,
+      "timezone": "Europe/Warsaw"
+    },
+    {
+      "name": "Łódź",
+      "country": "PL",
+      "lat": 51.76,
+      "lon": 19.46,
+      "pop": 672,
+      "timezone": "Europe/Warsaw"
+    },
+    {
+      "name": "Wrocław",
+      "country": "PL",
+      "lat": 51.11,
+      "lon": 17.04,
+      "pop": 672,
+      "timezone": "Europe/Warsaw"
+    },
+    {
+      "name": "Poznań",
+      "country": "PL",
+      "lat": 52.41,
+      "lon": 16.93,
+      "pop": 540,
+      "timezone": "Europe/Warsaw"
+    },
+    {
+      "name": "Gdańsk",
+      "country": "PL",
+      "lat": 54.35,
+      "lon": 18.65,
+      "pop": 471,
+      "timezone": "Europe/Warsaw"
+    },
+    {
+      "name": "Szczecin",
+      "country": "PL",
+      "lat": 53.43,
+      "lon": 14.55,
+      "pop": 396,
+      "timezone": "Europe/Warsaw"
+    },
+    {
+      "name": "Bydgoszcz",
+      "country": "PL",
+      "lat": 53.12,
+      "lon": 18.01,
+      "pop": 339,
+      "timezone": "Europe/Warsaw"
+    },
+    {
+      "name": "Lublin",
+      "country": "PL",
+      "lat": 51.25,
+      "lon": 22.57,
+      "pop": 335,
+      "timezone": "Europe/Warsaw"
+    },
+    {
+      "name": "Katowice",
+      "country": "PL",
+      "lat": 50.26,
+      "lon": 19.02,
+      "pop": 286,
+      "timezone": "Europe/Warsaw"
+    },
+    {
+      "name": "Budapest",
+      "country": "HU",
+      "lat": 47.5,
+      "lon": 19.05,
+      "pop": 1706,
+      "timezone": "Europe/Budapest"
+    },
+    {
+      "name": "Debrecen",
+      "country": "HU",
+      "lat": 47.53,
+      "lon": 21.63,
+      "pop": 202,
+      "timezone": "Europe/Budapest"
+    },
+    {
+      "name": "Szeged",
+      "country": "HU",
+      "lat": 46.25,
+      "lon": 20.15,
+      "pop": 160,
+      "timezone": "Europe/Budapest"
+    },
+    {
+      "name": "Miskolc",
+      "country": "HU",
+      "lat": 48.1,
+      "lon": 20.78,
+      "pop": 150,
+      "timezone": "Europe/Budapest"
+    },
+    {
+      "name": "Pécs",
+      "country": "HU",
+      "lat": 46.07,
+      "lon": 18.23,
+      "pop": 140,
+      "timezone": "Europe/Budapest"
+    },
+    {
+      "name": "Győr",
+      "country": "HU",
+      "lat": 47.68,
+      "lon": 17.63,
+      "pop": 131,
+      "timezone": "Europe/Budapest"
+    },
+    {
+      "name": "Nyíregyháza",
+      "country": "HU",
+      "lat": 47.96,
+      "lon": 21.73,
+      "pop": 117,
+      "timezone": "Europe/Budapest"
+    },
+    {
+      "name": "Bucharest",
+      "country": "RO",
+      "lat": 44.44,
+      "lon": 26.1,
+      "pop": 1716,
+      "timezone": "Europe/Bucharest"
+    },
+    {
+      "name": "Cluj-Napoca",
+      "country": "RO",
+      "lat": 46.77,
+      "lon": 23.6,
+      "pop": 324,
+      "timezone": "Europe/Bucharest"
+    },
+    {
+      "name": "Timișoara",
+      "country": "RO",
+      "lat": 45.75,
+      "lon": 21.23,
+      "pop": 250,
+      "timezone": "Europe/Bucharest"
+    },
+    {
+      "name": "Iași",
+      "country": "RO",
+      "lat": 47.16,
+      "lon": 27.59,
+      "pop": 271,
+      "timezone": "Europe/Bucharest"
+    },
+    {
+      "name": "Constanța",
+      "country": "RO",
+      "lat": 44.17,
+      "lon": 28.65,
+      "pop": 283,
+      "timezone": "Europe/Bucharest"
+    },
+    {
+      "name": "Craiova",
+      "country": "RO",
+      "lat": 44.33,
+      "lon": 23.82,
+      "pop": 234,
+      "timezone": "Europe/Bucharest"
+    },
+    {
+      "name": "Brașov",
+      "country": "RO",
+      "lat": 45.66,
+      "lon": 25.61,
+      "pop": 237,
+      "timezone": "Europe/Bucharest"
+    },
+    {
+      "name": "Galați",
+      "country": "RO",
+      "lat": 45.43,
+      "lon": 28.03,
+      "pop": 217,
+      "timezone": "Europe/Bucharest"
+    },
+    {
+      "name": "Sofia",
+      "country": "BG",
+      "lat": 42.7,
+      "lon": 23.32,
+      "pop": 1286,
+      "timezone": "Europe/Sofia"
+    },
+    {
+      "name": "Plovdiv",
+      "country": "BG",
+      "lat": 42.14,
+      "lon": 24.75,
+      "pop": 346,
+      "timezone": "Europe/Sofia"
+    },
+    {
+      "name": "Varna",
+      "country": "BG",
+      "lat": 43.21,
+      "lon": 27.92,
+      "pop": 335,
+      "timezone": "Europe/Sofia"
+    },
+    {
+      "name": "Burgas",
+      "country": "BG",
+      "lat": 42.51,
+      "lon": 27.47,
+      "pop": 202,
+      "timezone": "Europe/Sofia"
+    },
+    {
+      "name": "Ruse",
+      "country": "BG",
+      "lat": 43.85,
+      "lon": 25.97,
+      "pop": 144,
+      "timezone": "Europe/Sofia"
+    },
+    {
+      "name": "Stara Zagora",
+      "country": "BG",
+      "lat": 42.43,
+      "lon": 25.63,
+      "pop": 137,
+      "timezone": "Europe/Sofia"
+    },
+    {
+      "name": "Pleven",
+      "country": "BG",
+      "lat": 43.41,
+      "lon": 24.62,
+      "pop": 95,
+      "timezone": "Europe/Sofia"
+    },
+    {
+      "name": "Bratislava",
+      "country": "SK",
+      "lat": 48.15,
+      "lon": 17.11,
+      "pop": 475,
+      "timezone": "Europe/Bratislava"
+    },
+    {
+      "name": "Košice",
+      "country": "SK",
+      "lat": 48.72,
+      "lon": 21.26,
+      "pop": 229,
+      "timezone": "Europe/Bratislava"
+    },
+    {
+      "name": "Prešov",
+      "country": "SK",
+      "lat": 48.99,
+      "lon": 21.24,
+      "pop": 84,
+      "timezone": "Europe/Bratislava"
+    },
+    {
+      "name": "Žilina",
+      "country": "SK",
+      "lat": 49.22,
+      "lon": 18.74,
+      "pop": 81,
+      "timezone": "Europe/Bratislava"
+    },
+    {
+      "name": "Banská Bystrica",
+      "country": "SK",
+      "lat": 48.74,
+      "lon": 19.15,
+      "pop": 76,
+      "timezone": "Europe/Bratislava"
+    },
+    {
+      "name": "Nitra",
+      "country": "SK",
+      "lat": 48.31,
+      "lon": 18.09,
+      "pop": 76,
+      "timezone": "Europe/Bratislava"
+    },
+    {
+      "name": "Kyiv",
+      "country": "UA",
+      "lat": 50.45,
+      "lon": 30.52,
+      "pop": 2952,
+      "timezone": "Europe/Kyiv"
+    },
+    {
+      "name": "Kharkiv",
+      "country": "UA",
+      "lat": 49.99,
+      "lon": 36.23,
+      "pop": 1421,
+      "timezone": "Europe/Kyiv"
+    },
+    {
+      "name": "Odesa",
+      "country": "UA",
+      "lat": 46.48,
+      "lon": 30.73,
+      "pop": 1017,
+      "timezone": "Europe/Kyiv"
+    },
+    {
+      "name": "Dnipro",
+      "country": "UA",
+      "lat": 48.46,
+      "lon": 35.04,
+      "pop": 970,
+      "timezone": "Europe/Kyiv"
+    },
+    {
+      "name": "Donetsk",
+      "country": "UA",
+      "lat": 48.0,
+      "lon": 37.8,
+      "pop": 900,
+      "timezone": "Europe/Kyiv"
+    },
+    {
+      "name": "Zaporizhzhia",
+      "country": "UA",
+      "lat": 47.83,
+      "lon": 35.17,
+      "pop": 722,
+      "timezone": "Europe/Kyiv"
+    },
+    {
+      "name": "Lviv",
+      "country": "UA",
+      "lat": 49.84,
+      "lon": 24.03,
+      "pop": 717,
+      "timezone": "Europe/Kyiv"
+    },
+    {
+      "name": "Kryvyi Rih",
+      "country": "UA",
+      "lat": 47.91,
+      "lon": 33.39,
+      "pop": 612,
+      "timezone": "Europe/Kyiv"
+    },
+    {
+      "name": "Mykolaiv",
+      "country": "UA",
+      "lat": 46.97,
+      "lon": 31.99,
+      "pop": 470,
+      "timezone": "Europe/Kyiv"
+    },
+    {
+      "name": "Mariupol",
+      "country": "UA",
+      "lat": 47.1,
+      "lon": 37.54,
+      "pop": 431,
+      "timezone": "Europe/Kyiv"
+    },
+    {
+      "name": "Zagreb",
+      "country": "HR",
+      "lat": 45.81,
+      "lon": 15.98,
+      "pop": 767,
+      "timezone": "Europe/Zagreb"
+    },
+    {
+      "name": "Split",
+      "country": "HR",
+      "lat": 43.51,
+      "lon": 16.44,
+      "pop": 161,
+      "timezone": "Europe/Zagreb"
+    },
+    {
+      "name": "Rijeka",
+      "country": "HR",
+      "lat": 45.33,
+      "lon": 14.44,
+      "pop": 108,
+      "timezone": "Europe/Zagreb"
+    },
+    {
+      "name": "Osijek",
+      "country": "HR",
+      "lat": 45.55,
+      "lon": 18.69,
+      "pop": 96,
+      "timezone": "Europe/Zagreb"
+    },
+    {
+      "name": "Zadar",
+      "country": "HR",
+      "lat": 44.12,
+      "lon": 15.23,
+      "pop": 71,
+      "timezone": "Europe/Zagreb"
+    },
+    {
+      "name": "Pula",
+      "country": "HR",
+      "lat": 44.87,
+      "lon": 13.85,
+      "pop": 52,
+      "timezone": "Europe/Zagreb"
+    },
+    {
+      "name": "Belgrade",
+      "country": "RS",
+      "lat": 44.82,
+      "lon": 20.46,
+      "pop": 1166,
+      "timezone": "Europe/Belgrade"
+    },
+    {
+      "name": "Novi Sad",
+      "country": "RS",
+      "lat": 45.25,
+      "lon": 19.83,
+      "pop": 289,
+      "timezone": "Europe/Belgrade"
+    },
+    {
+      "name": "Niš",
+      "country": "RS",
+      "lat": 43.32,
+      "lon": 21.9,
+      "pop": 183,
+      "timezone": "Europe/Belgrade"
+    },
+    {
+      "name": "Kragujevac",
+      "country": "RS",
+      "lat": 44.01,
+      "lon": 20.91,
+      "pop": 150,
+      "timezone": "Europe/Belgrade"
+    },
+    {
+      "name": "Subotica",
+      "country": "RS",
+      "lat": 46.1,
+      "lon": 19.67,
+      "pop": 94,
+      "timezone": "Europe/Belgrade"
+    },
+    {
+      "name": "Zrenjanin",
+      "country": "RS",
+      "lat": 45.38,
+      "lon": 20.38,
+      "pop": 73,
+      "timezone": "Europe/Belgrade"
+    },
+    {
+      "name": "Pančevo",
+      "country": "RS",
+      "lat": 44.87,
+      "lon": 20.65,
+      "pop": 72,
+      "timezone": "Europe/Belgrade"
+    },
+    {
+      "name": "Athens",
+      "country": "GR",
+      "lat": 37.98,
+      "lon": 23.73,
+      "pop": 3153,
+      "timezone": "Europe/Athens"
+    },
+    {
+      "name": "Thessaloniki",
+      "country": "GR",
+      "lat": 40.64,
+      "lon": 22.94,
+      "pop": 812,
+      "timezone": "Europe/Athens"
+    },
+    {
+      "name": "Patras",
+      "country": "GR",
+      "lat": 38.25,
+      "lon": 21.74,
+      "pop": 214,
+      "timezone": "Europe/Athens"
+    },
+    {
+      "name": "Heraklion",
+      "country": "GR",
+      "lat": 35.34,
+      "lon": 25.13,
+      "pop": 179,
+      "timezone": "Europe/Athens"
+    },
+    {
+      "name": "Larissa",
+      "country": "GR",
+      "lat": 39.64,
+      "lon": 22.42,
+      "pop": 148,
+      "timezone": "Europe/Athens"
+    },
+    {
+      "name": "Volos",
+      "country": "GR",
+      "lat": 39.37,
+      "lon": 22.94,
+      "pop": 144,
+      "timezone": "Europe/Athens"
+    },
+    {
+      "name": "Ioannina",
+      "country": "GR",
+      "lat": 39.67,
+      "lon": 20.85,
+      "pop": 113,
+      "timezone": "Europe/Athens"
+    },
+    {
+      "name": "Kavala",
+      "country": "GR",
+      "lat": 40.94,
+      "lon": 24.41,
+      "pop": 70,
+      "timezone": "Europe/Athens"
+    },
+    {
+      "name": "Ljubljana",
+      "country": "SI",
+      "lat": 46.06,
+      "lon": 14.51,
+      "pop": 285,
+      "timezone": "Europe/Ljubljana"
+    },
+    {
+      "name": "Maribor",
+      "country": "SI",
+      "lat": 46.56,
+      "lon": 15.65,
+      "pop": 95,
+      "timezone": "Europe/Ljubljana"
+    },
+    {
+      "name": "Celje",
+      "country": "SI",
+      "lat": 46.23,
+      "lon": 15.26,
+      "pop": 38,
+      "timezone": "Europe/Ljubljana"
+    },
+    {
+      "name": "Kranj",
+      "country": "SI",
+      "lat": 46.24,
+      "lon": 14.36,
+      "pop": 37,
+      "timezone": "Europe/Ljubljana"
+    },
+    {
+      "name": "Koper",
+      "country": "SI",
+      "lat": 45.55,
+      "lon": 13.73,
+      "pop": 25,
+      "timezone": "Europe/Ljubljana"
+    },
+    {
+      "name": "Stockholm",
+      "country": "SE",
+      "lat": 59.33,
+      "lon": 18.07,
+      "pop": 975,
+      "timezone": "Europe/Stockholm"
+    },
+    {
+      "name": "Gothenburg",
+      "country": "SE",
+      "lat": 57.71,
+      "lon": 11.97,
+      "pop": 583,
+      "timezone": "Europe/Stockholm"
+    },
+    {
+      "name": "Malmö",
+      "country": "SE",
+      "lat": 55.6,
+      "lon": 13.0,
+      "pop": 351,
+      "timezone": "Europe/Stockholm"
+    },
+    {
+      "name": "Uppsala",
+      "country": "SE",
+      "lat": 59.86,
+      "lon": 17.64,
+      "pop": 175,
+      "timezone": "Europe/Stockholm"
+    },
+    {
+      "name": "Västerås",
+      "country": "SE",
+      "lat": 59.61,
+      "lon": 16.55,
+      "pop": 127,
+      "timezone": "Europe/Stockholm"
+    },
+    {
+      "name": "Örebro",
+      "country": "SE",
+      "lat": 59.27,
+      "lon": 15.21,
+      "pop": 126,
+      "timezone": "Europe/Stockholm"
+    },
+    {
+      "name": "Linköping",
+      "country": "SE",
+      "lat": 58.41,
+      "lon": 15.62,
+      "pop": 115,
+      "timezone": "Europe/Stockholm"
+    },
+    {
+      "name": "Helsingborg",
+      "country": "SE",
+      "lat": 56.05,
+      "lon": 12.69,
+      "pop": 114,
+      "timezone": "Europe/Stockholm"
+    },
+    {
+      "name": "Oslo",
+      "country": "NO",
+      "lat": 59.91,
+      "lon": 10.75,
+      "pop": 709,
+      "timezone": "Europe/Oslo"
+    },
+    {
+      "name": "Bergen",
+      "country": "NO",
+      "lat": 60.39,
+      "lon": 5.32,
+      "pop": 291,
+      "timezone": "Europe/Oslo"
+    },
+    {
+      "name": "Stavanger",
+      "country": "NO",
+      "lat": 58.97,
+      "lon": 5.73,
+      "pop": 148,
+      "timezone": "Europe/Oslo"
+    },
+    {
+      "name": "Trondheim",
+      "country": "NO",
+      "lat": 63.43,
+      "lon": 10.39,
+      "pop": 214,
+      "timezone": "Europe/Oslo"
+    },
+    {
+      "name": "Drammen",
+      "country": "NO",
+      "lat": 59.74,
+      "lon": 10.2,
+      "pop": 103,
+      "timezone": "Europe/Oslo"
+    },
+    {
+      "name": "Tromsø",
+      "country": "NO",
+      "lat": 69.65,
+      "lon": 18.96,
+      "pop": 78,
+      "timezone": "Europe/Oslo"
+    },
+    {
+      "name": "Copenhagen",
+      "country": "DK",
+      "lat": 55.68,
+      "lon": 12.57,
+      "pop": 1366,
+      "timezone": "Europe/Copenhagen"
+    },
+    {
+      "name": "Aarhus",
+      "country": "DK",
+      "lat": 56.16,
+      "lon": 10.2,
+      "pop": 285,
+      "timezone": "Europe/Copenhagen"
+    },
+    {
+      "name": "Odense",
+      "country": "DK",
+      "lat": 55.4,
+      "lon": 10.39,
+      "pop": 180,
+      "timezone": "Europe/Copenhagen"
+    },
+    {
+      "name": "Aalborg",
+      "country": "DK",
+      "lat": 57.05,
+      "lon": 9.92,
+      "pop": 143,
+      "timezone": "Europe/Copenhagen"
+    },
+    {
+      "name": "Esbjerg",
+      "country": "DK",
+      "lat": 55.47,
+      "lon": 8.45,
+      "pop": 72,
+      "timezone": "Europe/Copenhagen"
+    },
+    {
+      "name": "Randers",
+      "country": "DK",
+      "lat": 56.46,
+      "lon": 10.04,
+      "pop": 63,
+      "timezone": "Europe/Copenhagen"
+    },
+    {
+      "name": "Helsinki",
+      "country": "FI",
+      "lat": 60.17,
+      "lon": 24.94,
+      "pop": 658,
+      "timezone": "Europe/Helsinki"
+    },
+    {
+      "name": "Espoo",
+      "country": "FI",
+      "lat": 60.21,
+      "lon": 24.66,
+      "pop": 301,
+      "timezone": "Europe/Helsinki"
+    },
+    {
+      "name": "Tampere",
+      "country": "FI",
+      "lat": 61.5,
+      "lon": 23.78,
+      "pop": 244,
+      "timezone": "Europe/Helsinki"
+    },
+    {
+      "name": "Vantaa",
+      "country": "FI",
+      "lat": 60.29,
+      "lon": 25.04,
+      "pop": 240,
+      "timezone": "Europe/Helsinki"
+    },
+    {
+      "name": "Turku",
+      "country": "FI",
+      "lat": 60.45,
+      "lon": 22.27,
+      "pop": 195,
+      "timezone": "Europe/Helsinki"
+    },
+    {
+      "name": "Oulu",
+      "country": "FI",
+      "lat": 65.01,
+      "lon": 25.47,
+      "pop": 208,
+      "timezone": "Europe/Helsinki"
+    },
+    {
+      "name": "Reykjavík",
+      "country": "IS",
+      "lat": 64.15,
+      "lon": -21.94,
+      "pop": 140,
+      "timezone": "Atlantic/Reykjavik"
+    },
+    {
+      "name": "Kópavogur",
+      "country": "IS",
+      "lat": 64.11,
+      "lon": -21.91,
+      "pop": 40,
+      "timezone": "Atlantic/Reykjavik"
+    },
+    {
+      "name": "Hafnarfjörður",
+      "country": "IS",
+      "lat": 64.07,
+      "lon": -21.96,
+      "pop": 30,
+      "timezone": "Atlantic/Reykjavik"
+    },
+    {
+      "name": "Akureyri",
+      "country": "IS",
+      "lat": 65.69,
+      "lon": -18.11,
+      "pop": 19,
+      "timezone": "Atlantic/Reykjavik"
+    },
+    {
+      "name": "Reykjanesbær",
+      "country": "IS",
+      "lat": 64.0,
+      "lon": -22.56,
+      "pop": 21,
+      "timezone": "Atlantic/Reykjavik"
+    },
+    {
+      "name": "Tallinn",
+      "country": "EE",
+      "lat": 59.44,
+      "lon": 24.75,
+      "pop": 453,
+      "timezone": "Europe/Tallinn"
+    },
+    {
+      "name": "Tartu",
+      "country": "EE",
+      "lat": 58.38,
+      "lon": 26.73,
+      "pop": 91,
+      "timezone": "Europe/Tallinn"
+    },
+    {
+      "name": "Narva",
+      "country": "EE",
+      "lat": 59.38,
+      "lon": 28.2,
+      "pop": 53,
+      "timezone": "Europe/Tallinn"
+    },
+    {
+      "name": "Pärnu",
+      "country": "EE",
+      "lat": 58.39,
+      "lon": 24.5,
+      "pop": 39,
+      "timezone": "Europe/Tallinn"
+    },
+    {
+      "name": "Kohtla-Järve",
+      "country": "EE",
+      "lat": 59.39,
+      "lon": 27.27,
+      "pop": 31,
+      "timezone": "Europe/Tallinn"
+    },
+    {
+      "name": "Riga",
+      "country": "LV",
+      "lat": 56.95,
+      "lon": 24.11,
+      "pop": 605,
+      "timezone": "Europe/Riga"
+    },
+    {
+      "name": "Daugavpils",
+      "country": "LV",
+      "lat": 55.88,
+      "lon": 26.54,
+      "pop": 78,
+      "timezone": "Europe/Riga"
+    },
+    {
+      "name": "Liepāja",
+      "country": "LV",
+      "lat": 56.51,
+      "lon": 21.01,
+      "pop": 66,
+      "timezone": "Europe/Riga"
+    },
+    {
+      "name": "Jelgava",
+      "country": "LV",
+      "lat": 56.65,
+      "lon": 23.72,
+      "pop": 54,
+      "timezone": "Europe/Riga"
+    },
+    {
+      "name": "Jūrmala",
+      "country": "LV",
+      "lat": 56.97,
+      "lon": 23.77,
+      "pop": 50,
+      "timezone": "Europe/Riga"
+    },
+    {
+      "name": "Vilnius",
+      "country": "LT",
+      "lat": 54.69,
+      "lon": 25.28,
+      "pop": 588,
+      "timezone": "Europe/Vilnius"
+    },
+    {
+      "name": "Kaunas",
+      "country": "LT",
+      "lat": 54.9,
+      "lon": 23.9,
+      "pop": 295,
+      "timezone": "Europe/Vilnius"
+    },
+    {
+      "name": "Klaipėda",
+      "country": "LT",
+      "lat": 55.71,
+      "lon": 21.13,
+      "pop": 150,
+      "timezone": "Europe/Vilnius"
+    },
+    {
+      "name": "Šiauliai",
+      "country": "LT",
+      "lat": 55.93,
+      "lon": 23.31,
+      "pop": 102,
+      "timezone": "Europe/Vilnius"
+    },
+    {
+      "name": "Panevėžys",
+      "country": "LT",
+      "lat": 55.73,
+      "lon": 24.35,
+      "pop": 87,
+      "timezone": "Europe/Vilnius"
+    },
+    {
+      "name": "Singapore",
+      "country": "SG",
+      "lat": 1.35,
+      "lon": 103.82,
+      "pop": 5975,
+      "timezone": "Asia/Singapore"
+    },
+    {
+      "name": "Woodlands",
+      "country": "SG",
+      "lat": 1.44,
+      "lon": 103.79,
+      "pop": 253,
+      "timezone": "Asia/Singapore"
+    },
+    {
+      "name": "Tampines",
+      "country": "SG",
+      "lat": 1.35,
+      "lon": 103.95,
+      "pop": 250,
+      "timezone": "Asia/Singapore"
+    },
+    {
+      "name": "Bedok",
+      "country": "SG",
+      "lat": 1.32,
+      "lon": 103.93,
+      "pop": 281,
+      "timezone": "Asia/Singapore"
+    },
+    {
+      "name": "Jurong West",
+      "country": "SG",
+      "lat": 1.34,
+      "lon": 103.71,
+      "pop": 264,
+      "timezone": "Asia/Singapore"
+    },
+    {
+      "name": "Kuala Lumpur",
+      "country": "MY",
+      "lat": 3.14,
+      "lon": 101.69,
+      "pop": 1982,
+      "timezone": "Asia/Kuala_Lumpur"
+    },
+    {
+      "name": "Johor Bahru",
+      "country": "MY",
+      "lat": 1.49,
+      "lon": 103.76,
+      "pop": 858,
+      "timezone": "Asia/Kuala_Lumpur"
+    },
+    {
+      "name": "Ipoh",
+      "country": "MY",
+      "lat": 4.6,
+      "lon": 101.08,
+      "pop": 657,
+      "timezone": "Asia/Kuala_Lumpur"
+    },
+    {
+      "name": "Klang",
+      "country": "MY",
+      "lat": 3.04,
+      "lon": 101.45,
+      "pop": 879,
+      "timezone": "Asia/Kuala_Lumpur"
+    },
+    {
+      "name": "George Town",
+      "country": "MY",
+      "lat": 5.41,
+      "lon": 100.33,
+      "pop": 794,
+      "timezone": "Asia/Kuala_Lumpur"
+    },
+    {
+      "name": "Shah Alam",
+      "country": "MY",
+      "lat": 3.08,
+      "lon": 101.53,
+      "pop": 641,
+      "timezone": "Asia/Kuala_Lumpur"
+    },
+    {
+      "name": "Petaling Jaya",
+      "country": "MY",
+      "lat": 3.1,
+      "lon": 101.64,
+      "pop": 613,
+      "timezone": "Asia/Kuala_Lumpur"
+    },
+    {
+      "name": "Kuching",
+      "country": "MY",
+      "lat": 1.56,
+      "lon": 110.35,
+      "pop": 325,
+      "timezone": "Asia/Kuching"
+    },
+    {
+      "name": "Sydney",
+      "country": "AU",
+      "lat": -33.87,
+      "lon": 151.21,
+      "pop": 5367,
+      "timezone": "Australia/Sydney"
+    },
+    {
+      "name": "Melbourne",
+      "country": "AU",
+      "lat": -37.81,
+      "lon": 144.96,
+      "pop": 5078,
+      "timezone": "Australia/Melbourne"
+    },
+    {
+      "name": "Brisbane",
+      "country": "AU",
+      "lat": -27.47,
+      "lon": 153.02,
+      "pop": 2568,
+      "timezone": "Australia/Brisbane"
+    },
+    {
+      "name": "Perth",
+      "country": "AU",
+      "lat": -31.95,
+      "lon": 115.86,
+      "pop": 2192,
+      "timezone": "Australia/Perth"
+    },
+    {
+      "name": "Adelaide",
+      "country": "AU",
+      "lat": -34.93,
+      "lon": 138.6,
+      "pop": 1418,
+      "timezone": "Australia/Adelaide"
+    },
+    {
+      "name": "Gold Coast",
+      "country": "AU",
+      "lat": -28.02,
+      "lon": 153.4,
+      "pop": 709,
+      "timezone": "Australia/Brisbane"
+    },
+    {
+      "name": "Newcastle",
+      "country": "AU",
+      "lat": -32.93,
+      "lon": 151.78,
+      "pop": 509,
+      "timezone": "Australia/Sydney"
+    },
+    {
+      "name": "Canberra",
+      "country": "AU",
+      "lat": -35.28,
+      "lon": 149.13,
+      "pop": 463,
+      "timezone": "Australia/Sydney"
+    },
+    {
+      "name": "Hobart",
+      "country": "AU",
+      "lat": -42.88,
+      "lon": 147.33,
+      "pop": 247,
+      "timezone": "Australia/Hobart"
+    },
+    {
+      "name": "Darwin",
+      "country": "AU",
+      "lat": -12.46,
+      "lon": 130.84,
+      "pop": 150,
+      "timezone": "Australia/Darwin"
+    },
+    {
+      "name": "Auckland",
+      "country": "NZ",
+      "lat": -36.85,
+      "lon": 174.76,
+      "pop": 1718,
+      "timezone": "Pacific/Auckland"
+    },
+    {
+      "name": "Wellington",
+      "country": "NZ",
+      "lat": -41.29,
+      "lon": 174.78,
+      "pop": 217,
+      "timezone": "Pacific/Auckland"
+    },
+    {
+      "name": "Christchurch",
+      "country": "NZ",
+      "lat": -43.53,
+      "lon": 172.64,
+      "pop": 383,
+      "timezone": "Pacific/Auckland"
+    },
+    {
+      "name": "Hamilton",
+      "country": "NZ",
+      "lat": -37.79,
+      "lon": 175.28,
+      "pop": 179,
+      "timezone": "Pacific/Auckland"
+    },
+    {
+      "name": "Tauranga",
+      "country": "NZ",
+      "lat": -37.69,
+      "lon": 176.17,
+      "pop": 158,
+      "timezone": "Pacific/Auckland"
+    },
+    {
+      "name": "Toronto",
+      "country": "CA",
+      "lat": 43.65,
+      "lon": -79.38,
+      "pop": 2930,
+      "timezone": "America/Toronto"
+    },
+    {
+      "name": "Montreal",
+      "country": "CA",
+      "lat": 45.5,
+      "lon": -73.57,
+      "pop": 1762,
+      "timezone": "America/Toronto"
+    },
+    {
+      "name": "Vancouver",
+      "country": "CA",
+      "lat": 49.28,
+      "lon": -123.12,
+      "pop": 662,
+      "timezone": "America/Vancouver"
+    },
+    {
+      "name": "Calgary",
+      "country": "CA",
+      "lat": 51.05,
+      "lon": -114.07,
+      "pop": 1306,
+      "timezone": "America/Edmonton"
+    },
+    {
+      "name": "Edmonton",
+      "country": "CA",
+      "lat": 53.55,
+      "lon": -113.49,
+      "pop": 1010,
+      "timezone": "America/Edmonton"
+    },
+    {
+      "name": "Ottawa",
+      "country": "CA",
+      "lat": 45.42,
+      "lon": -75.69,
+      "pop": 1017,
+      "timezone": "America/Toronto"
+    },
+    {
+      "name": "Winnipeg",
+      "country": "CA",
+      "lat": 49.9,
+      "lon": -97.14,
+      "pop": 749,
+      "timezone": "America/Winnipeg"
+    },
+    {
+      "name": "Quebec City",
+      "country": "CA",
+      "lat": 46.81,
+      "lon": -71.21,
+      "pop": 542,
+      "timezone": "America/Toronto"
+    },
+    {
+      "name": "Hamilton",
+      "country": "CA",
+      "lat": 43.26,
+      "lon": -79.87,
+      "pop": 570,
+      "timezone": "America/Toronto"
+    },
+    {
+      "name": "Halifax",
+      "country": "CA",
+      "lat": 44.65,
+      "lon": -63.58,
+      "pop": 440,
+      "timezone": "America/Halifax"
+    },
+    {
+      "name": "Buenos Aires",
+      "country": "AR",
+      "lat": -34.61,
+      "lon": -58.38,
+      "pop": 3075,
+      "timezone": "America/Argentina/Buenos_Aires"
+    },
+    {
+      "name": "Córdoba",
+      "country": "AR",
+      "lat": -31.42,
+      "lon": -64.18,
+      "pop": 1530,
+      "timezone": "America/Argentina/Cordoba"
+    },
+    {
+      "name": "Rosario",
+      "country": "AR",
+      "lat": -32.95,
+      "lon": -60.64,
+      "pop": 1194,
+      "timezone": "America/Argentina/Buenos_Aires"
+    },
+    {
+      "name": "Mendoza",
+      "country": "AR",
+      "lat": -32.89,
+      "lon": -68.83,
+      "pop": 1115,
+      "timezone": "America/Argentina/Mendoza"
+    },
+    {
+      "name": "San Miguel de Tucumán",
+      "country": "AR",
+      "lat": -26.83,
+      "lon": -65.22,
+      "pop": 836,
+      "timezone": "America/Argentina/Tucuman"
+    },
+    {
+      "name": "La Plata",
+      "country": "AR",
+      "lat": -34.92,
+      "lon": -57.95,
+      "pop": 700,
+      "timezone": "America/Argentina/Buenos_Aires"
+    },
+    {
+      "name": "Mar del Plata",
+      "country": "AR",
+      "lat": -38.0,
+      "lon": -57.55,
+      "pop": 645,
+      "timezone": "America/Argentina/Buenos_Aires"
+    },
+    {
+      "name": "Salta",
+      "country": "AR",
+      "lat": -24.78,
+      "lon": -65.41,
+      "pop": 619,
+      "timezone": "America/Argentina/Salta"
+    },
+    {
+      "name": "Santa Fe",
+      "country": "AR",
+      "lat": -31.63,
+      "lon": -60.7,
+      "pop": 415,
+      "timezone": "America/Argentina/Buenos_Aires"
+    },
+    {
+      "name": "San Juan",
+      "country": "AR",
+      "lat": -31.54,
+      "lon": -68.54,
+      "pop": 477,
+      "timezone": "America/Argentina/San_Juan"
+    },
+    {
+      "name": "Santiago",
+      "country": "CL",
+      "lat": -33.45,
+      "lon": -70.67,
+      "pop": 6812,
+      "timezone": "America/Santiago"
+    },
+    {
+      "name": "Valparaíso",
+      "country": "CL",
+      "lat": -33.05,
+      "lon": -71.62,
+      "pop": 315,
+      "timezone": "America/Santiago"
+    },
+    {
+      "name": "Concepción",
+      "country": "CL",
+      "lat": -36.83,
+      "lon": -73.05,
+      "pop": 225,
+      "timezone": "America/Santiago"
+    },
+    {
+      "name": "La Serena",
+      "country": "CL",
+      "lat": -29.91,
+      "lon": -71.25,
+      "pop": 232,
+      "timezone": "America/Santiago"
+    },
+    {
+      "name": "Antofagasta",
+      "country": "CL",
+      "lat": -23.65,
+      "lon": -70.4,
+      "pop": 362,
+      "timezone": "America/Santiago"
+    },
+    {
+      "name": "Temuco",
+      "country": "CL",
+      "lat": -38.74,
+      "lon": -72.59,
+      "pop": 262,
+      "timezone": "America/Santiago"
+    },
+    {
+      "name": "Iquique",
+      "country": "CL",
+      "lat": -20.22,
+      "lon": -70.14,
+      "pop": 191,
+      "timezone": "America/Santiago"
+    },
+    {
+      "name": "Jerusalem",
+      "country": "IL",
+      "lat": 31.78,
+      "lon": 35.22,
+      "pop": 969,
+      "timezone": "Asia/Jerusalem"
+    },
+    {
+      "name": "Tel Aviv",
+      "country": "IL",
+      "lat": 32.08,
+      "lon": 34.78,
+      "pop": 460,
+      "timezone": "Asia/Jerusalem"
+    },
+    {
+      "name": "Haifa",
+      "country": "IL",
+      "lat": 32.79,
+      "lon": 34.99,
+      "pop": 286,
+      "timezone": "Asia/Jerusalem"
+    },
+    {
+      "name": "Rishon LeZion",
+      "country": "IL",
+      "lat": 31.97,
+      "lon": 34.8,
+      "pop": 257,
+      "timezone": "Asia/Jerusalem"
+    },
+    {
+      "name": "Petah Tikva",
+      "country": "IL",
+      "lat": 32.09,
+      "lon": 34.89,
+      "pop": 250,
+      "timezone": "Asia/Jerusalem"
+    },
+    {
+      "name": "Ashdod",
+      "country": "IL",
+      "lat": 31.79,
+      "lon": 34.65,
+      "pop": 225,
+      "timezone": "Asia/Jerusalem"
+    },
+    {
+      "name": "Netanya",
+      "country": "IL",
+      "lat": 32.33,
+      "lon": 34.86,
+      "pop": 221,
+      "timezone": "Asia/Jerusalem"
+    },
+    {
+      "name": "Dubai",
+      "country": "AE",
+      "lat": 25.2,
+      "lon": 55.27,
+      "pop": 3605,
+      "timezone": "Asia/Dubai"
+    },
+    {
+      "name": "Abu Dhabi",
+      "country": "AE",
+      "lat": 24.47,
+      "lon": 54.37,
+      "pop": 1483,
+      "timezone": "Asia/Dubai"
+    },
+    {
+      "name": "Sharjah",
+      "country": "AE",
+      "lat": 25.35,
+      "lon": 55.42,
+      "pop": 1684,
+      "timezone": "Asia/Dubai"
+    },
+    {
+      "name": "Al Ain",
+      "country": "AE",
+      "lat": 24.22,
+      "lon": 55.74,
+      "pop": 650,
+      "timezone": "Asia/Dubai"
+    },
+    {
+      "name": "Ajman",
+      "country": "AE",
+      "lat": 25.41,
+      "lon": 55.44,
+      "pop": 540,
+      "timezone": "Asia/Dubai"
+    },
+    {
+      "name": "Ras Al Khaimah",
+      "country": "AE",
+      "lat": 25.79,
+      "lon": 55.96,
+      "pop": 191,
+      "timezone": "Asia/Dubai"
+    },
+    {
+      "name": "Fujairah",
+      "country": "AE",
+      "lat": 25.13,
+      "lon": 56.33,
+      "pop": 92,
+      "timezone": "Asia/Dubai"
+    },
+    {
+      "name": "Riyadh",
+      "country": "SA",
+      "lat": 24.71,
+      "lon": 46.67,
+      "pop": 7231,
+      "timezone": "Asia/Riyadh"
+    },
+    {
+      "name": "Jeddah",
+      "country": "SA",
+      "lat": 21.49,
+      "lon": 39.19,
+      "pop": 4610,
+      "timezone": "Asia/Riyadh"
+    },
+    {
+      "name": "Mecca",
+      "country": "SA",
+      "lat": 21.39,
+      "lon": 39.86,
+      "pop": 2043,
+      "timezone": "Asia/Riyadh"
+    },
+    {
+      "name": "Medina",
+      "country": "SA",
+      "lat": 24.47,
+      "lon": 39.61,
+      "pop": 1488,
+      "timezone": "Asia/Riyadh"
+    },
+    {
+      "name": "Dammam",
+      "country": "SA",
+      "lat": 26.43,
+      "lon": 50.09,
+      "pop": 1252,
+      "timezone": "Asia/Riyadh"
+    },
+    {
+      "name": "Taif",
+      "country": "SA",
+      "lat": 21.27,
+      "lon": 40.42,
+      "pop": 688,
+      "timezone": "Asia/Riyadh"
+    },
+    {
+      "name": "Tabuk",
+      "country": "SA",
+      "lat": 28.38,
+      "lon": 36.58,
+      "pop": 667,
+      "timezone": "Asia/Riyadh"
+    },
+    {
+      "name": "Buraidah",
+      "country": "SA",
+      "lat": 26.33,
+      "lon": 43.97,
+      "pop": 614,
+      "timezone": "Asia/Riyadh"
+    },
+    {
+      "name": "Khamis Mushait",
+      "country": "SA",
+      "lat": 18.31,
+      "lon": 42.73,
+      "pop": 631,
+      "timezone": "Asia/Riyadh"
+    },
+    {
+      "name": "Khobar",
+      "country": "SA",
+      "lat": 26.28,
+      "lon": 50.21,
+      "pop": 626,
+      "timezone": "Asia/Riyadh"
+    }
+  ]
+}

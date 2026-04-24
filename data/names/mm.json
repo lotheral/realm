@@ -1,0 +1,7 @@
+{
+  "country": "MM",
+  "_note": "Burmese naming: no family names. 'last_names' here are secondary given names used culturally as distinctive suffixes.",
+  "first_names_m": ["Aung", "Kyaw", "Thant", "Hla", "Tun", "Zaw", "Min", "Soe", "Myo", "Win", "Bo", "Htin", "Thein", "Nyan", "Nay"],
+  "first_names_f": ["Su", "Thida", "Zin", "May", "Aye", "Nyein", "Hnin", "Yin", "Khin", "Thet", "Hla", "Mi", "Moe", "Sandar", "Phyu"],
+  "last_names": ["Myint", "Thein", "Lwin", "Maung", "Htun", "Htin", "Nyunt", "Oo", "Kyi", "Win", "Soe", "Naing", "Aung", "Zaw", "Hlaing"]
+}

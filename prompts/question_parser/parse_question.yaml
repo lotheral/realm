@@ -1,0 +1,37 @@
+name: question_parser_v1
+version: 1
+description: |
+  Parses a natural-language Q&A question into a structured BranchSpec. The
+  LLM returns JSON matching the schema below so the PredictionEngine can
+  execute without any fallback heuristics.
+content: |
+  Parse the user's question into a prediction specification for a REALM
+  multi-branch simulation. Valid metrics are:
+
+    - "topic_share"   — fraction of posts on a given topic (politics, tech,
+                        finance, culture, personal, news)
+    - "mean_trait"    — mean of a specific trait across all agents
+    - "engagement_rate" — engagements per post globally
+
+  Trait names are: openness, conscientiousness, extraversion, agreeableness,
+  neuroticism, risk_appetite, analytical_depth, impulsivity, patience,
+  social_dominance, herd_susceptibility, authority_compliance,
+  contrarian_tendency, empathy, financial_optimism, loss_aversion,
+  fomo_susceptibility, communication_assertiveness, persuasion_skill,
+  information_sharing, political_spectrum, tradition_vs_progress,
+  individualism, spirituality.
+
+  Question: $question
+
+  Output JSON with these keys:
+    {
+      "metric": "topic_share" | "mean_trait" | "engagement_rate",
+      "target": "<topic or trait name>",   // omit for engagement_rate
+      "threshold": float,
+      "horizon_ticks": int,
+      "n_agents": int,
+      "n_branches": int
+    }
+
+  Defaults: horizon_ticks=15, n_agents=300, n_branches=5. Only include
+  valid keys. Output JSON ONLY.

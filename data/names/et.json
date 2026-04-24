@@ -1,0 +1,6 @@
+{
+  "country": "ET",
+  "first_names_m": ["Abebe", "Bereket", "Solomon", "Daniel", "Dawit", "Yohannes", "Tesfaye", "Girma", "Bekele", "Habte", "Mekonnen", "Assefa", "Getachew", "Teshome", "Asfaw"],
+  "first_names_f": ["Selam", "Tigist", "Meseret", "Hanna", "Bethlehem", "Rahel", "Almaz", "Aster", "Birtukan", "Meaza", "Sara", "Hiwot", "Genet", "Yeshi", "Kidist"],
+  "last_names": ["Haile", "Teklu", "Tesfaye", "Mekonnen", "Assefa", "Girma", "Bekele", "Alemu", "Gebre", "Yohannes", "Desta", "Negash", "Tadesse", "Wolde", "Asrat"]
+}

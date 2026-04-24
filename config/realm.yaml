@@ -1,0 +1,87 @@
+realm:
+  version: "0.1.0"
+  name: "REALM"
+
+  simulation:
+    master_seed: 42              # Full determinism — same seed = same result
+    tick_interval: "1d"          # "1h", "4h", "1d"
+    catchup_speed: 10
+    max_ticks_per_run: 365
+    seed_check_interval: 6
+    checkpoint_interval: 10
+    max_checkpoints: 5
+    checkpoint_dir: "db/checkpoints/"
+
+  population:
+    total_agents: 10000
+    scale_target: 50000
+    mode: "static"               # "static" | "semi_dynamic" | "dynamic"
+    experience_drift: true
+    max_drift_ratio: 0.10
+
+  personality:
+    mode: "rule_based"           # "rule_based" | "llm" | "hybrid" (used when adapter == "astrological")
+    adapter: "astrological"      # "astrological" | "big_five" | "demographic" | "blended"
+    cache_profiles: true
+    llm_batch_size: 50
+    big_five:                    # Only consulted by BigFiveAdapter
+      use_facets: false          # true → consume facet scores (O1..N6) when present; false → domain only
+    blended:                     # Only consulted when adapter == "blended"
+      components:
+        - type: "big_five"
+          weight: 0.6
+        - type: "astrological"
+          weight: 0.4
+      noise_sigma: 0.05          # per-agent Gaussian perturbation (trait-wise)
+
+  llm:
+    default_backend: "openai"    # "openai" | "moonshot" | "ollama"
+    personality_backend: "openai"
+    spotlight_backend: "openai"
+    parser_backend: "openai"
+    report_backend: "openai"
+    simulation_backend: "openai"
+    # Moonshot serves as the cost-effective fallback when OpenAI is unreachable.
+    fallback_backend: "moonshot"
+
+  database:
+    path: "db/realm.db"
+    backup_interval: 24
+
+  visualization:
+    enabled: true
+    web_port: 8888
+    graph_layout: "force_directed"
+    max_visible_nodes: 2000
+    update_interval: 5
+
+  birth_time:
+    distribution: "realistic"    # "uniform" | "realistic"
+
+  geography:
+    granularity: "city"          # "city" | "country_center"
+    cities_per_country: 20
+    rural_offset_degrees: 1.0
+    timezone_auto: true
+
+  network:
+    topology: "hybrid"           # "small_world" | "scale_free" | "hybrid"
+    local_k: 10
+    rewire_p: 0.1
+    hub_boost_factor: 2.5
+    cross_country_ratio: 0.05
+
+  spotlight:
+    enabled: true
+    ratio: 0.02
+
+  prediction:
+    default_branches: 5
+    max_branches: 20
+    expert_weight: 3.0
+    min_relevant_agents: 50
+    branch_seed_offset: 1000
+
+  signal:
+    polyliq_enabled: false
+    argus_enabled: false

@@ -1,0 +1,48 @@
+[project]
+name = "realm"
+version = "0.1.0"
+description = "Astrological Swarm Intelligence Prediction Engine"
+requires-python = ">=3.11"
+dependencies = [
+    # Phase 1 ephemeris backend. Pure-Python + compiled wheels on all platforms.
+    "skyfield>=1.50",
+    "pydantic>=2.0",
+    "pyyaml>=6.0",
+    "python-dotenv>=1.0",
+    "numpy>=1.26",
+    "faker>=20.0",
+]
+
+[project.optional-dependencies]
+# Preferred production ephemeris (needs MSVC Build Tools on Windows+Py3.12).
+kerykeion = ["kerykeion>=5.12"]
+# Later-phase additions.
+web = ["fastapi>=0.110", "uvicorn>=0.27"]
+sim = ["networkx>=3.2", "pandas>=2.1", "aiohttp>=3.9", "requests>=2.31", "timezonefinder>=6.0"]
+llm = ["anthropic>=0.40", "openai>=1.40", "ollama>=0.4"]
+dev = ["pytest>=8.0", "pytest-asyncio", "pytest-cov", "ruff", "black"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["realm*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests", "realm"]
+asyncio_mode = "auto"
+python_files = ["test_*.py"]
+filterwarnings = [
+    # Kerykeion v5 → v6 deprecations — not our concern until we upgrade.
+    "ignore::DeprecationWarning:kerykeion",
+    "ignore::pydantic.PydanticDeprecatedSince211",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "C4", "SIM"]
+ignore = ["E501"]

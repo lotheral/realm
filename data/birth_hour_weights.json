@@ -1,0 +1,12 @@
+{
+  "_comment": "Relative probability weight per 24 hour-of-day bucket for a birth event. Based on aggregate CDC/WHO natal hour statistics: daytime peak 8am-4pm (scheduled sections + inductions), quiet overnight (1-5am). Weights do not sum to 24 — the sampler normalizes at use.",
+  "hour_weights": [
+    0.60, 0.55, 0.55, 0.55, 0.55, 0.60,
+    0.70, 0.90, 1.40, 1.45, 1.30, 1.20,
+    1.15, 1.10, 1.15, 1.30, 1.20, 1.10,
+    1.00, 0.90, 0.85, 0.80, 0.70, 0.65
+  ],
+  "_index_guide": "index 0 = 00:00-00:59 (midnight), index 8 = 08:00-08:59, index 23 = 23:00-23:59",
+  "_month_weights_comment": "Monthly birth bias — Northern hemisphere shows slight August-October peak. Keep flat for Phase 2; add seasonality in Phase 3 if needed.",
+  "month_weights": [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+}

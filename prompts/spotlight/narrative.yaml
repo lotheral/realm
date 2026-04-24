@@ -1,0 +1,23 @@
+name: spotlight_narrative_v1
+version: 1
+description: |
+  Generates the body text for a top-virality post written "as" a specific
+  agent. The agent's demographic and trait context drives voice and tone.
+content: |
+  You are writing a single short social-media post (40-80 words, ONE post,
+  no hashtags unless natural) from the perspective of this person:
+
+  - Name: $name
+  - Age: $age
+  - Country: $country
+  - Profession: $profession
+  - Dominant traits: $top_traits
+
+  Context:
+  - Topic: $topic
+  - Sentiment tone: $sentiment_descriptor
+  - Today's world news snippets: $news_context
+
+  Write the post in the voice this person would plausibly use. No quotation
+  marks, no "Here is a post:", just the post text itself. Return ONLY the
+  post body — no JSON, no preamble.

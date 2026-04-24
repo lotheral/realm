@@ -1,0 +1,75 @@
+[
+  {
+    "event_id": "nw:001",
+    "timestamp": "2026-04-23T09:00:00Z",
+    "headline": "OpenAI releases Claude-competitor LLM, boosting developer productivity",
+    "body": "The new model surpassed previous benchmarks in software engineering tasks. Tech stocks rallied.",
+    "virality": 2.5
+  },
+  {
+    "event_id": "nw:002",
+    "timestamp": "2026-04-23T11:00:00Z",
+    "headline": "Federal Reserve raises interest rates amid inflation crisis",
+    "body": "Markets plunged as banks across Europe fear a recession. Stock losses deepened.",
+    "virality": 3.0,
+    "geography": "US"
+  },
+  {
+    "event_id": "nw:003",
+    "timestamp": "2026-04-23T14:00:00Z",
+    "headline": "Earthquake disaster in Türkiye kills dozens, thousands injured",
+    "body": "Government declared emergency. International aid pours in.",
+    "virality": 2.8,
+    "geography": "TR"
+  },
+  {
+    "event_id": "nw:004",
+    "timestamp": "2026-04-24T08:00:00Z",
+    "headline": "Breakthrough film wins Oscar for best picture at the Academy Awards",
+    "body": "Cultural celebration as the director thanked fans worldwide.",
+    "virality": 1.8
+  },
+  {
+    "event_id": "nw:005",
+    "timestamp": "2026-04-24T10:00:00Z",
+    "headline": "China announces new GPU chip, challenging American semiconductor dominance",
+    "body": "Trade war tensions escalate as tariffs loom.",
+    "virality": 2.6,
+    "geography": "CN"
+  },
+  {
+    "event_id": "nw:006",
+    "timestamp": "2026-04-25T07:00:00Z",
+    "headline": "Parliament votes down controversial legislation amid protest",
+    "body": "Opposition celebrated the outcome. The president may veto the failure.",
+    "virality": 2.0
+  },
+  {
+    "event_id": "nw:007",
+    "timestamp": "2026-04-25T12:00:00Z",
+    "headline": "Bitcoin surges past record high, boosted by institutional buying",
+    "body": "Crypto analysts celebrate the rally. Bond markets unchanged.",
+    "virality": 2.4
+  },
+  {
+    "event_id": "nw:008",
+    "timestamp": "2026-04-26T10:00:00Z",
+    "headline": "Pandemic outbreak reported in East Africa, WHO issues alert",
+    "body": "Health officials fear the worst. Vaccines mobilized. Kenya and Ethiopia most affected.",
+    "virality": 3.2
+  },
+  {
+    "event_id": "nw:009",
+    "timestamp": "2026-04-26T15:00:00Z",
+    "headline": "Diplomat signs historic peace treaty ending decade-long conflict",
+    "body": "International community celebrates. Sanctions lifted. Hope for recovery.",
+    "virality": 2.3
+  },
+  {
+    "event_id": "nw:010",
+    "timestamp": "2026-04-27T09:00:00Z",
+    "headline": "Celebrity scandal shakes the film industry",
+    "body": "Allegations of fraud surface. Awards rescinded. Family denies wrongdoing.",
+    "virality": 1.5
+  }
+]

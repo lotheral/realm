@@ -1,0 +1,223 @@
+{
+  "_comment": "Big Five → 19 domain trait derivation coefficients for BigFiveAdapter. Formula: value = 0.5 + sum_{bf in OCEAN}(coeff_bf * (bf_score - 0.5)), clamped to [0,1]. Each trait entry cites its literature source with DOI where available and a confidence marker (high/moderate/low). Traits omitted from this table fall back to 0.5 — this is explicit, NOT a bug. Coefficients are literature-informed best estimates, NOT measured correlations on a REALM-specific sample; report validity-study results against a held-out trait inventory before claiming predictive accuracy.",
+  "_formula": "value = 0.5 + sum(coeff_bf * (bf_score - 0.5)) for bf in {openness, conscientiousness, extraversion, agreeableness, neuroticism}; clamp to [0, 1]",
+  "_confidence_legend": {
+    "high": "Direct facet/aspect loading from a primary source; construct near-identical to REALM trait.",
+    "moderate": "Composite derivation from multiple partial correlations, or mapping from closely-related but non-identical construct.",
+    "low": "Translated from a near-synonym or single weak-magnitude study. Validity study may show weak performance — framed explicitly, not retroactively."
+  },
+  "_sources": {
+    "Zhao_Seibert_2006": "Zhao, H., & Seibert, S. E. (2006). The big five personality dimensions and entrepreneurial status: A meta-analytical review. Journal of Applied Psychology, 91(2), 259-271. DOI: 10.1037/0021-9010.91.2.259",
+    "Lauriola_Levin_2001": "Lauriola, M., & Levin, I. P. (2001). Personality traits and risky decision-making in a controlled experimental task: An exploratory study. Personality and Individual Differences, 31(2), 215-226. DOI: 10.1016/S0191-8869(00)00130-6",
+    "Costa_McCrae_1992": "Costa, P. T. Jr., & McCrae, R. R. (1992). Revised NEO Personality Inventory (NEO-PI-R) and NEO Five-Factor Inventory (NEO-FFI): Professional Manual. Odessa, FL: Psychological Assessment Resources.",
+    "DeYoung_Quilty_Peterson_2007": "DeYoung, C. G., Quilty, L. C., & Peterson, J. B. (2007). Between facets and domains: 10 aspects of the Big Five. Journal of Personality and Social Psychology, 93(5), 880-896. DOI: 10.1037/0022-3514.93.5.880"
+  },
+  "_excluded_by_design": {
+    "political_spectrum": "See data/astro/planet_trait_map.json:_excluded_by_design. REALM models personality temperament, not ideological preference. Scope boundary applies uniformly across input adapters — the BigFive layer also deliberately does not parameterize political orientation."
+  },
+  "_unsourced_traits": {
+    "herd_susceptibility": "No published Big Five correlation found for this trait. Weakly speculated links to Agreeableness (compliance) or Neuroticism (anxiety-driven conformity) exist but lack clean empirical derivation. Fallback to 0.5.",
+    "fomo_susceptibility": "No published Big Five correlation found for this trait. Recent FOMO scales post-date NEO development and haven't been cross-validated against Big Five. Fallback to 0.5.",
+    "individualism": "Individualism is a cultural dimension (Hofstede IDV), not a Big Five construct. Use DemographicAdapter for culture-derived individualism. Fallback to 0.5 in BigFive path.",
+    "tradition_vs_progress": "Cultural/ideological dimension, not Big Five. NEO Openness.Values is weak and contested for this mapping. Fallback to 0.5.",
+    "spirituality": "No robust Big Five correlation. NEO Openness.Values and Openness.Aesthetics show weak, culture-dependent links but not sufficient for derivation. Fallback to 0.5."
+  },
+  "traits": {
+    "risk_appetite": {
+      "coefficients": {
+        "openness": 0.3,
+        "extraversion": 0.2,
+        "neuroticism": -0.25,
+        "conscientiousness": -0.15,
+        "agreeableness": -0.15
+      },
+      "source": "Zhao_Seibert_2006 (entrepreneurs higher O, lower N/A); Lauriola_Levin_2001 (Openness strongest trait-level predictor of risk-taking in experimental lottery tasks). Primary facet loadings: E5 Excitement-Seeking (Zuckerman sensation-seeking) drives the E+ path; N5 Impulsiveness carries the within-N positive component that offsets anxiety-driven risk aversion; C6 Cautiousness is the inverse-C facet (high cautiousness suppresses risk appetite).",
+      "confidence": "moderate",
+      "note": "Meta-analytic entrepreneurial-risk findings (Zhao-Seibert) converge with experimental risk-taking correlations (Lauriola-Levin). Composite; no single study reports all five coefficients. The C- loading reflects entrepreneurial risk-tolerance, which runs counter to the general-population C↔caution link. Facet refinement (Sprint 6): E5 Excitement-Seeking, N5 Impulsiveness, C6 Cautiousness are the carrying facets on their respective domains.",
+      "facet_coefficients": {
+        "O5": 0.3,
+        "E5": 0.2,
+        "N1": -0.15,
+        "N5": 0.1,
+        "C6": -0.15,
+        "A2": -0.15
+      }
+    },
+    "analytical_depth": {
+      "coefficients": {
+        "openness": 0.4,
+        "conscientiousness": 0.3
+      },
+      "source": "Costa_McCrae_1992 (NEO-PI-R facets O5 Ideas, C6 Deliberation)",
+      "confidence": "high",
+      "note": "O.Ideas measures intellectual curiosity and appetite for analysis; C.Deliberation measures careful thought before action. Both facets load near-cleanly on their domain, so large coefficients are justified.",
+      "facet_coefficients": {
+        "O5": 0.4,
+        "C6": 0.3
+      }
+    },
+    "impulsivity": {
+      "coefficients": {
+        "neuroticism": 0.35,
+        "extraversion": 0.2,
+        "conscientiousness": -0.3
+      },
+      "source": "Costa_McCrae_1992 (N5 Impulsiveness is the canonical Big-Five impulsivity facet; E5 Excitement-Seeking contributes the E+ path via reward-driven behavioral activation; C6 Cautiousness is the inverse-C facet whose low pole characterizes impulsive action).",
+      "confidence": "high",
+      "note": "N5 Impulsiveness is Costa-McCrae's eponymous facet — inability to resist cravings/urges. E+ via E5 Excitement-Seeking. C- via C6 Cautiousness (anti-Deliberation). Sprint 6: E6 Cheerfulness citation removed — Johnson IPIP-NEO-120 data shows r(E6, impulsivity_synth) = -0.265, opposite sign from REALM's E+ coefficient. The E domain effect on impulsivity runs through E5, not E6.",
+      "facet_coefficients": {
+        "N5": 0.35,
+        "E5": 0.2,
+        "C6": -0.3
+      }
+    },
+    "patience": {
+      "coefficients": {
+        "conscientiousness": 0.4,
+        "neuroticism": -0.25,
+        "extraversion": -0.1
+      },
+      "source": "Costa_McCrae_1992 (C5 Self-Discipline; conceptual inverse of N5 Impulsiveness)",
+      "confidence": "high",
+      "note": "Patience derived as conceptual inverse of impulsivity: C.Self-Discipline primary positive loading, N- and E- mirror the impulsivity mapping.",
+      "facet_coefficients": {
+        "C5": 0.4,
+        "N5": -0.25,
+        "E5": -0.1
+      }
+    },
+    "social_dominance": {
+      "coefficients": {
+        "extraversion": 0.4,
+        "agreeableness": -0.25
+      },
+      "source": "DeYoung_Quilty_Peterson_2007 (BFAS Extraversion.Assertiveness aspect negatively correlates with Agreeableness.Politeness)",
+      "confidence": "high",
+      "note": "Assertiveness is the canonical dominance construct in BFAS. Politeness is the anti-dominance agreeableness aspect. Direct aspect loadings.",
+      "facet_coefficients": {
+        "E3": 0.4,
+        "A4": -0.25
+      }
+    },
+    "empathy": {
+      "coefficients": {
+        "agreeableness": 0.45,
+        "neuroticism": 0.1
+      },
+      "source": "Costa_McCrae_1992 (NEO A6 Tender-Mindedness, A3 Altruism)",
+      "confidence": "high",
+      "note": "Tender-Mindedness measures sympathy/concern for others — construct-closest to empathy. Small N+ reflects anxious-empathic subtype (emotional contagion). Pure A loading would understate the N-linked sensitivity.",
+      "facet_coefficients": {
+        "A3": 0.2,
+        "A6": 0.25,
+        "N3": 0.1
+      }
+    },
+    "loss_aversion": {
+      "coefficients": {
+        "neuroticism": 0.3,
+        "conscientiousness": 0.15,
+        "extraversion": -0.1
+      },
+      "source": "Lauriola_Levin_2001 (Neuroticism associates with loss-oriented framing in lottery experiments; Extraversion effect stronger in gain than loss contexts). Primary facet loadings: N1 Anxiety and N3 Depression carry the N+ path (loss-framing sensitivity is amplified by anxiety and negative affect); C6 Cautiousness contributes the C+ path (risk-avoidance orientation); E5 Excitement-Seeking contributes the inverse-E path (high sensation-seekers are less loss-averse).",
+      "confidence": "moderate",
+      "note": "Lauriola-Levin report partial correlations in experimental tasks rather than a full personality-loss-aversion meta-analysis. Coefficients are the authors' directional findings scaled to REALM's additive range. Facet refinement (Sprint 6): N1 Anxiety, N3 Depression, C6 Cautiousness, E5 Excitement-Seeking (inverse) are the carrying facets.",
+      "facet_coefficients": {
+        "N1": 0.2,
+        "N3": 0.1,
+        "C6": 0.15,
+        "E5": -0.1
+      }
+    },
+    "financial_optimism": {
+      "coefficients": {
+        "extraversion": 0.3,
+        "neuroticism": -0.3,
+        "openness": 0.1
+      },
+      "source": "Costa_McCrae_1992 (E6 Positive-Emotion; inverse of N3 Depression)",
+      "confidence": "moderate",
+      "note": "Financial optimism mapped to general trait optimism: E.Positive-Emotion primary, minus N.Depression. Small O+ for openness-to-upside-scenarios.",
+      "facet_coefficients": {
+        "E6": 0.3,
+        "N3": -0.3,
+        "O4": 0.1
+      }
+    },
+    "communication_assertiveness": {
+      "coefficients": {
+        "extraversion": 0.4,
+        "agreeableness": -0.15
+      },
+      "source": "DeYoung_Quilty_Peterson_2007 (BFAS E.Assertiveness aspect)",
+      "confidence": "high",
+      "note": "Direct aspect loading. Mild A- reflects willingness to push back / occupy airtime in conversation, which trades against Politeness.",
+      "facet_coefficients": {
+        "E3": 0.4,
+        "A4": -0.15
+      }
+    },
+    "persuasion_skill": {
+      "coefficients": {
+        "extraversion": 0.35,
+        "agreeableness": 0.15,
+        "openness": 0.1
+      },
+      "source": "DeYoung_Quilty_Peterson_2007 (E.Enthusiasm + E.Assertiveness); Costa_McCrae_1992 (E.Warmth)",
+      "confidence": "moderate",
+      "note": "Persuasion combines assertiveness (airtime) with warmth/enthusiasm (likability). Mild A+ reflects warm-persuasion style; mild O+ for cognitive flexibility in framing arguments.",
+      "facet_coefficients": {
+        "E3": 0.25,
+        "E6": 0.1,
+        "A1": 0.15,
+        "O5": 0.1
+      }
+    },
+    "information_sharing": {
+      "coefficients": {
+        "extraversion": 0.25,
+        "openness": 0.2,
+        "agreeableness": 0.1
+      },
+      "source": "Costa_McCrae_1992 (E2 Gregariousness, O5 Ideas)",
+      "confidence": "moderate",
+      "note": "No direct construct in the Big-Five literature. Composite of E.Gregariousness (interaction frequency) + O.Ideas (enjoyment of intellectual exchange). A+ small contribution for prosocial sharing orientation.",
+      "facet_coefficients": {
+        "E2": 0.25,
+        "O5": 0.2,
+        "A3": 0.1
+      }
+    },
+    "contrarian_tendency": {
+      "coefficients": {
+        "agreeableness": -0.3,
+        "openness": 0.15,
+        "conscientiousness": -0.1
+      },
+      "source": "Costa_McCrae_1992 (A4 Compliance negative); DeYoung_Quilty_Peterson_2007 (A.Politeness negative)",
+      "confidence": "low",
+      "note": "Contrarian behavior anti-correlates with A.Compliance but there is no dedicated Big-Five contrarianism study. Low confidence — treat as directional derivation only, subject to validity-study re-measurement.",
+      "facet_coefficients": {
+        "A4": -0.3,
+        "O6": 0.15,
+        "C3": -0.1
+      }
+    },
+    "authority_compliance": {
+      "coefficients": {
+        "agreeableness": 0.25,
+        "conscientiousness": 0.2,
+        "openness": -0.15
+      },
+      "source": "Costa_McCrae_1992 (A4 Compliance, C3 Dutifulness); NEO O.Values inverse",
+      "confidence": "low",
+      "note": "Authority compliance is heavily culturally-driven (cf. Hofstede PDI), not primarily a Big-Five construct. Low-confidence derivation — use DemographicAdapter when authority compliance is a focus.",
+      "facet_coefficients": {
+        "A4": 0.25,
+        "C3": 0.2,
+        "O6": -0.15
+      }
+    }
+  },
+  "_facet_formula": "When use_facets=true AND all required facets are provided: value = 0.5 + sum(facet_coeff * (facet_score - 0.5)) over the trait's facet_coefficients; clamp to [0, 1]. Unlisted facets contribute 0. Falls back to domain formula otherwise."
+}

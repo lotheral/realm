@@ -1,0 +1,92 @@
+{
+  "_comment": "Per-planet contribution to each trait dimension. Values in [-1, 1] where positive pushes the trait higher, negative lower. Sparse: missing traits mean zero contribution.",
+  "_excluded_by_design": {
+    "political_spectrum": "REALM models personality temperament, not ideological preference. Political orientation is the product of socialization, geography, economic position, and generational conditions -- not natal temperament. Mapping planets to left/right is epistemically unsupported and commercially risky; the asymmetry is that a correct guess wins nothing while a wrong guess loses credibility. This trait remains in TraitVector for downstream consumers (questionnaires, demographic layers) to populate; the astrological layer deliberately stays silent. Do not add entries for political_spectrum to this file or to sign_modifiers.json."
+  },
+  "Sun": {
+    "extraversion": 0.60,
+    "social_dominance": 0.50,
+    "individualism": 0.45,
+    "conscientiousness": 0.25,
+    "persuasion_skill": 0.20
+  },
+  "Moon": {
+    "empathy": 0.60,
+    "neuroticism": 0.40,
+    "herd_susceptibility": 0.40,
+    "agreeableness": 0.20,
+    "communication_assertiveness": -0.15
+  },
+  "Mercury": {
+    "analytical_depth": 0.70,
+    "communication_assertiveness": 0.50,
+    "information_sharing": 0.55,
+    "persuasion_skill": 0.30,
+    "openness": 0.15
+  },
+  "Venus": {
+    "agreeableness": 0.60,
+    "financial_optimism": 0.40,
+    "empathy": 0.30,
+    "fomo_susceptibility": 0.20,
+    "communication_assertiveness": -0.10
+  },
+  "Mars": {
+    "risk_appetite": 0.70,
+    "impulsivity": 0.60,
+    "contrarian_tendency": 0.35,
+    "communication_assertiveness": 0.40,
+    "patience": -0.30,
+    "extraversion": 0.20
+  },
+  "Jupiter": {
+    "openness": 0.55,
+    "financial_optimism": 0.60,
+    "persuasion_skill": 0.45,
+    "spirituality": 0.25,
+    "risk_appetite": 0.20,
+    "agreeableness": 0.15
+  },
+  "Saturn": {
+    "conscientiousness": 0.70,
+    "patience": 0.65,
+    "authority_compliance": 0.50,
+    "loss_aversion": 0.55,
+    "risk_appetite": -0.35,
+    "spirituality": -0.15,
+    "fomo_susceptibility": -0.25
+  },
+  "Uranus": {
+    "contrarian_tendency": 0.65,
+    "openness": 0.50,
+    "tradition_vs_progress": 0.55,
+    "authority_compliance": -0.40,
+    "analytical_depth": 0.20
+  },
+  "Neptune": {
+    "spirituality": 0.70,
+    "empathy": 0.50,
+    "herd_susceptibility": 0.35,
+    "analytical_depth": -0.20,
+    "neuroticism": 0.20
+  },
+  "Pluto": {
+    "social_dominance": 0.55,
+    "risk_appetite": 0.40,
+    "persuasion_skill": 0.35,
+    "neuroticism": 0.25,
+    "agreeableness": -0.20
+  },
+  "North_Node": {
+    "tradition_vs_progress": 0.30,
+    "openness": 0.20
+  },
+  "South_Node": {
+    "herd_susceptibility": 0.25,
+    "tradition_vs_progress": -0.25
+  },
+  "Chiron": {
+    "empathy": 0.25,
+    "neuroticism": 0.15
+  }
+}

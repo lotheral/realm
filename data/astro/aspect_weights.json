@@ -1,0 +1,25 @@
+{
+  "_comment": "Amplification factor applied to planet's trait contribution when involved in each aspect type. Harmonious aspects (trine, sextile) boost positively; challenging aspects (square, opposition) also amplify but add turbulence. Quincunx is weak/awkward. Factor is applied as (1 + weight * orb_tightness) multiplier on the planet contribution; i.e., a tight conjunction ~1.25x, a wide sextile ~1.05x.",
+  "conjunction": 0.25,
+  "trine": 0.18,
+  "sextile": 0.12,
+  "square": 0.15,
+  "opposition": 0.15,
+  "quincunx": 0.05,
+  "_planet_weights_comment": "Relative influence of each planet on final trait computation. Luminaries dominate personality; outer planets contribute generational flavor.",
+  "planet_weights": {
+    "Sun": 1.00,
+    "Moon": 1.00,
+    "Mercury": 0.75,
+    "Venus": 0.75,
+    "Mars": 0.75,
+    "Jupiter": 0.55,
+    "Saturn": 0.55,
+    "Uranus": 0.35,
+    "Neptune": 0.35,
+    "Pluto": 0.35,
+    "North_Node": 0.25,
+    "South_Node": 0.25,
+    "Chiron": 0.20
+  }
+}

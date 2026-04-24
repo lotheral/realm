@@ -1,0 +1,26 @@
+name: personality_hybrid_refinement_v1
+version: 1
+description: |
+  Used by the hybrid (Mode C) embedder. The rule-based baseline vector is
+  provided; the LLM outputs small ADJUSTMENTS (not absolute values) that the
+  orchestrator blends into the final vector.
+content: |
+  Baseline trait vector (24 dims, values in [0, 1]) produced by rule-based
+  astrology mapping:
+
+  $baseline_json
+
+  Natal chart details:
+
+  $chart_json
+
+  Return a JSON object where each key is a trait name and the value is a
+  small signed ADJUSTMENT (in the range [-0.15, +0.15]) reflecting nuances
+  the rule-based pass missed — tight aspect patterns, mutual receptions,
+  specific stellium dynamics, angular emphasis, etc.
+
+  Only include traits you want to adjust. Omit keys that should stay at the
+  baseline. Output JSON ONLY.
+
+  Example:
+    {"risk_appetite": 0.08, "spirituality": -0.05, "patience": 0.03}

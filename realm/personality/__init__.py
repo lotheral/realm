@@ -1,0 +1,1 @@
+"""PersonalityEngine — trait vector embedder."""

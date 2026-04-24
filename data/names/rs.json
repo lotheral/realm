@@ -1,0 +1,6 @@
+{
+  "country": "RS",
+  "first_names_m": ["Nikola", "Marko", "Stefan", "Aleksandar", "Nemanja", "Luka", "Ivan", "Milan", "Dušan", "Jovan", "Petar", "Miloš", "Vuk", "Filip", "Uroš"],
+  "first_names_f": ["Milica", "Ana", "Jovana", "Marija", "Jelena", "Tijana", "Katarina", "Nikolina", "Teodora", "Sara", "Ivana", "Tamara", "Dragana", "Bojana", "Mila"],
+  "last_names": ["Jović", "Petrović", "Popović", "Nikolić", "Stojanović", "Marković", "Ilić", "Jovanović", "Mitić", "Đorđević", "Stanković", "Pavlović", "Kostić", "Ristić", "Milošević"]
+}

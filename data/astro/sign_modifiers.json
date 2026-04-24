@@ -1,0 +1,76 @@
+{
+  "_comment": "Per-sign additive shift applied to a planet's trait contribution when placed in that sign. Sparse: only traits the sign flavors noticeably are listed. Values in [-0.3, 0.3].",
+  "_excluded_by_design": {
+    "political_spectrum": "See planet_trait_map.json:_excluded_by_design. REALM does not derive ideological preference from natal data; scope boundary enforced across both the planet and sign layers."
+  },
+  "Aries": {
+    "risk_appetite": 0.15,
+    "impulsivity": 0.15,
+    "patience": -0.10,
+    "extraversion": 0.08
+  },
+  "Taurus": {
+    "patience": 0.12,
+    "loss_aversion": 0.12,
+    "conscientiousness": 0.08,
+    "impulsivity": -0.08
+  },
+  "Gemini": {
+    "analytical_depth": 0.08,
+    "information_sharing": 0.12,
+    "communication_assertiveness": 0.08,
+    "patience": -0.06
+  },
+  "Cancer": {
+    "empathy": 0.15,
+    "herd_susceptibility": 0.10,
+    "risk_appetite": -0.08,
+    "loss_aversion": 0.08
+  },
+  "Leo": {
+    "social_dominance": 0.12,
+    "extraversion": 0.12,
+    "individualism": 0.08,
+    "persuasion_skill": 0.08
+  },
+  "Virgo": {
+    "conscientiousness": 0.12,
+    "analytical_depth": 0.08,
+    "fomo_susceptibility": -0.06
+  },
+  "Libra": {
+    "agreeableness": 0.15,
+    "communication_assertiveness": -0.05,
+    "authority_compliance": 0.05
+  },
+  "Scorpio": {
+    "neuroticism": 0.08,
+    "risk_appetite": 0.08,
+    "social_dominance": 0.08,
+    "persuasion_skill": 0.06
+  },
+  "Sagittarius": {
+    "openness": 0.12,
+    "spirituality": 0.08,
+    "financial_optimism": 0.08,
+    "tradition_vs_progress": 0.06
+  },
+  "Capricorn": {
+    "conscientiousness": 0.12,
+    "patience": 0.10,
+    "authority_compliance": 0.10,
+    "spirituality": -0.06
+  },
+  "Aquarius": {
+    "contrarian_tendency": 0.15,
+    "openness": 0.08,
+    "tradition_vs_progress": 0.08,
+    "authority_compliance": -0.08
+  },
+  "Pisces": {
+    "spirituality": 0.12,
+    "empathy": 0.10,
+    "herd_susceptibility": 0.08,
+    "analytical_depth": -0.06
+  }
+}

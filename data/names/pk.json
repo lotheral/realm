@@ -1,0 +1,6 @@
+{
+  "country": "PK",
+  "first_names_m": ["Muhammad", "Ahmed", "Ali", "Hassan", "Hussain", "Omar", "Bilal", "Faisal", "Imran", "Kamran", "Usman", "Nadeem", "Tariq", "Salman", "Waqar"],
+  "first_names_f": ["Ayesha", "Fatima", "Zainab", "Sara", "Hina", "Sadia", "Noor", "Maria", "Sana", "Amina", "Rabia", "Shazia", "Farzana", "Samina", "Nazia"],
+  "last_names": ["Khan", "Ahmed", "Ali", "Hussain", "Malik", "Siddiqui", "Shah", "Sheikh", "Chaudhry", "Qureshi", "Hashmi", "Akhtar", "Rashid", "Khan", "Baig"]
+}

@@ -1,0 +1,46 @@
+{
+  "_comment": "ISCO-08 inspired occupation categories with global-average distribution weights. Weights do NOT sum to 1 — the sampler normalizes and applies country adjustments (e.g., higher agriculture in developing economies).",
+  "_fields": {
+    "weight": "Global share — approximate fraction of adult population",
+    "typical_income_multiplier": "Relative income multiplier vs country median (1.0 = median)",
+    "skill_level": "1=elementary, 4=expert"
+  },
+  "categories": [
+    {"code": "managers",       "name": "Managers / Executives",             "weight": 0.04, "typical_income_multiplier": 2.8, "skill_level": 4},
+    {"code": "professionals",  "name": "Professionals (doctors, engineers, teachers)", "weight": 0.10, "typical_income_multiplier": 2.0, "skill_level": 4},
+    {"code": "technicians",    "name": "Technicians & associate professionals", "weight": 0.08, "typical_income_multiplier": 1.3, "skill_level": 3},
+    {"code": "clerical",       "name": "Clerical support",                  "weight": 0.07, "typical_income_multiplier": 0.9, "skill_level": 2},
+    {"code": "service_sales",  "name": "Service & sales workers",           "weight": 0.18, "typical_income_multiplier": 0.7, "skill_level": 2},
+    {"code": "agriculture",    "name": "Agriculture, forestry & fishery",   "weight": 0.12, "typical_income_multiplier": 0.5, "skill_level": 2},
+    {"code": "crafts_trades",  "name": "Craft & related trades",            "weight": 0.10, "typical_income_multiplier": 0.9, "skill_level": 3},
+    {"code": "machine_ops",    "name": "Plant & machine operators",         "weight": 0.06, "typical_income_multiplier": 0.8, "skill_level": 2},
+    {"code": "elementary",     "name": "Elementary occupations (cleaners, laborers)", "weight": 0.14, "typical_income_multiplier": 0.4, "skill_level": 1},
+    {"code": "armed_forces",   "name": "Armed forces",                      "weight": 0.005,"typical_income_multiplier": 1.0, "skill_level": 2},
+    {"code": "student",        "name": "Student / in education",            "weight": 0.05, "typical_income_multiplier": 0.2, "skill_level": 0},
+    {"code": "unemployed",     "name": "Unemployed",                        "weight": 0.05, "typical_income_multiplier": 0.2, "skill_level": 0},
+    {"code": "retired",        "name": "Retired",                           "weight": 0.08, "typical_income_multiplier": 0.6, "skill_level": 0},
+    {"code": "homemaker",      "name": "Homemaker / unpaid care",           "weight": 0.06, "typical_income_multiplier": 0.0, "skill_level": 0},
+    {"code": "informal",       "name": "Informal / self-employed micro",    "weight": 0.035,"typical_income_multiplier": 0.5, "skill_level": 1}
+  ],
+  "_country_adjustments_comment": "Override default weights by country economic profile. 'developing' tags boost agriculture/informal, reduce professionals/managers.",
+  "country_adjustments": {
+    "developed": {
+      "agriculture": 0.02, "informal": 0.01, "elementary": 0.08,
+      "professionals": 0.16, "managers": 0.07, "retired": 0.18
+    },
+    "developing": {
+      "agriculture": 0.28, "informal": 0.12, "elementary": 0.18,
+      "professionals": 0.04, "managers": 0.02, "retired": 0.04
+    }
+  },
+  "country_tier": {
+    "CN": "mid", "IN": "developing", "US": "developed", "ID": "developing",
+    "PK": "developing", "NG": "developing", "BR": "mid", "BD": "developing",
+    "RU": "mid", "MX": "mid", "JP": "developed", "ET": "developing",
+    "PH": "developing", "EG": "developing", "VN": "developing", "CD": "developing",
+    "IR": "mid", "TR": "mid", "DE": "developed", "TH": "mid",
+    "GB": "developed", "FR": "developed", "IT": "developed", "ZA": "mid",
+    "TZ": "developing", "MM": "developing", "KR": "developed", "CO": "mid",
+    "KE": "developing", "ES": "developed"
+  }
+}

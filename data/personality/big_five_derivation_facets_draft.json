@@ -1,0 +1,2195 @@
+{
+  "_draft_status": "proposal",
+  "_provenance": {
+    "script": "scripts/draft_facet_coefficients.py",
+    "generated_at": "2026-04-24T07:26:57Z",
+    "ipip120_dat_sha256": "526daf7ebe7d480ba71258cd20f0fc3b37ab3a43a2e4191c19a49e185a1df53b",
+    "n_respondents": 612595,
+    "abs_beta_min": 0.1,
+    "p_threshold_bonferroni": 0.01
+  },
+  "_formula": "value = 0.5 + sum(coeff_facet * (facet_score - 0.5)) for facet in IPIP-NEO facet scores (30 facets); clamp to [0, 1]",
+  "_status": "NOT SHIPPED. This is a backlog artifact for a future sprint that migrates BigFiveAdapter to facet-level inputs. Current BigFiveAdapter reads domain scores only.",
+  "traits": {
+    "risk_appetite": {
+      "coefficients": {
+        "O2": 0.3,
+        "C1": -0.15,
+        "E5": 0.2,
+        "A1": -0.15,
+        "N2": -0.25
+      },
+      "rationale": {
+        "O2": "chosen from O facets: |β|=0.050, p_adj=0",
+        "C1": "chosen from C facets: |β|=0.025, p_adj=0",
+        "E5": "chosen from E facets: |β|=0.033, p_adj=0",
+        "A1": "chosen from A facets: |β|=0.025, p_adj=0",
+        "N2": "chosen from N facets: |β|=0.042, p_adj=0"
+      },
+      "r2_full_ols": 1.0,
+      "full_ols_betas": {
+        "O1": {
+          "beta": 0.05,
+          "t": 897124510.98,
+          "p_adj": 0.0
+        },
+        "O2": {
+          "beta": 0.05,
+          "t": 942984700.23,
+          "p_adj": 0.0
+        },
+        "O3": {
+          "beta": 0.05,
+          "t": 761639421.56,
+          "p_adj": 0.0
+        },
+        "O4": {
+          "beta": 0.05,
+          "t": 837093214.99,
+          "p_adj": 0.0
+        },
+        "O5": {
+          "beta": 0.05,
+          "t": 910198245.54,
+          "p_adj": 0.0
+        },
+        "O6": {
+          "beta": 0.05,
+          "t": 1032769173.51,
+          "p_adj": 0.0
+        },
+        "C1": {
+          "beta": -0.025,
+          "t": -269651878.14,
+          "p_adj": 0.0
+        },
+        "C2": {
+          "beta": -0.025,
+          "t": -591200797.37,
+          "p_adj": 0.0
+        },
+        "C3": {
+          "beta": -0.025,
+          "t": -315048024.33,
+          "p_adj": 0.0
+        },
+        "C4": {
+          "beta": -0.025,
+          "t": -362446583.93,
+          "p_adj": 0.0
+        },
+        "C5": {
+          "beta": -0.025,
+          "t": -321048248.72,
+          "p_adj": 0.0
+        },
+        "C6": {
+          "beta": -0.025,
+          "t": -498402606.7,
+          "p_adj": 0.0
+        },
+        "E1": {
+          "beta": 0.0333,
+          "t": 429042294.92,
+          "p_adj": 0.0
+        },
+        "E2": {
+          "beta": 0.0333,
+          "t": 548339479.07,
+          "p_adj": 0.0
+        },
+        "E3": {
+          "beta": 0.0333,
+          "t": 561318056.96,
+          "p_adj": 0.0
+        },
+        "E4": {
+          "beta": 0.0333,
+          "t": 551724916.05,
+          "p_adj": 0.0
+        },
+        "E5": {
+          "beta": 0.0333,
+          "t": 510955766.26,
+          "p_adj": 0.0
+        },
+        "E6": {
+          "beta": 0.0333,
+          "t": 434747056.0,
+          "p_adj": 0.0
+        },
+        "A1": {
+          "beta": -0.025,
+          "t": -478265419.53,
+          "p_adj": 0.0
+        },
+        "A2": {
+          "beta": -0.025,
+          "t": -352872797.85,
+          "p_adj": 0.0
+        },
+        "A3": {
+          "beta": -0.025,
+          "t": -279357258.83,
+          "p_adj": 0.0
+        },
+        "A4": {
+          "beta": -0.025,
+          "t": -399307842.87,
+          "p_adj": 0.0
+        },
+        "A5": {
+          "beta": -0.025,
+          "t": -456006708.84,
+          "p_adj": 0.0
+        },
+        "A6": {
+          "beta": -0.025,
+          "t": -388488090.08,
+          "p_adj": 0.0
+        },
+        "N1": {
+          "beta": -0.0417,
+          "t": -608746097.91,
+          "p_adj": 0.0
+        },
+        "N2": {
+          "beta": -0.0417,
+          "t": -800317452.42,
+          "p_adj": 0.0
+        },
+        "N3": {
+          "beta": -0.0417,
+          "t": -629698708.4,
+          "p_adj": 0.0
+        },
+        "N4": {
+          "beta": -0.0417,
+          "t": -633907524.23,
+          "p_adj": 0.0
+        },
+        "N5": {
+          "beta": -0.0417,
+          "t": -783452830.82,
+          "p_adj": 0.0
+        },
+        "N6": {
+          "beta": -0.0417,
+          "t": -585654599.95,
+          "p_adj": 0.0
+        }
+      },
+      "source": "draft derived via scripts/draft_facet_coefficients.py",
+      "confidence": "draft",
+      "note": "OLS on 612,595 Johnson IPIP-NEO-120 respondents. For each domain present in the original derivation, the best single facet (by |β|, sign-matched, Bonferroni p<0.01) is chosen to carry the domain-level coefficient. Fallback: domain-level '*' key if no facet passes the filter. Full OLS table in full_ols_betas."
+    },
+    "analytical_depth": {
+      "coefficients": {
+        "O6": 0.4,
+        "C4": 0.3
+      },
+      "rationale": {
+        "O6": "chosen from O facets: |β|=0.067, p_adj=0",
+        "C4": "chosen from C facets: |β|=0.050, p_adj=0"
+      },
+      "r2_full_ols": 1.0,
+      "full_ols_betas": {
+        "O1": {
+          "beta": 0.0667,
+          "t": 1100151031.49,
+          "p_adj": 0.0
+        },
+        "O2": {
+          "beta": 0.0667,
+          "t": 1156389750.54,
+          "p_adj": 0.0
+        },
+        "O3": {
+          "beta": 0.0667,
+          "t": 934004570.85,
+          "p_adj": 0.0
+        },
+        "O4": {
+          "beta": 0.0667,
+          "t": 1026534164.97,
+          "p_adj": 0.0
+        },
+        "O5": {
+          "beta": 0.0667,
+          "t": 1116183457.51,
+          "p_adj": 0.0
+        },
+        "O6": {
+          "beta": 0.0667,
+          "t": 1266493177.71,
+          "p_adj": 0.0
+        },
+        "C1": {
+          "beta": 0.05,
+          "t": 496014406.05,
+          "p_adj": 0.0
+        },
+        "C2": {
+          "beta": 0.05,
+          "t": 1087491468.46,
+          "p_adj": 0.0
+        },
+        "C3": {
+          "beta": 0.05,
+          "t": 579518903.29,
+          "p_adj": 0.0
+        },
+        "C4": {
+          "beta": 0.05,
+          "t": 666706763.53,
+          "p_adj": 0.0
+        },
+        "C5": {
+          "beta": 0.05,
+          "t": 590556088.72,
+          "p_adj": 0.0
+        },
+        "C6": {
+          "beta": 0.05,
+          "t": 916792710.14,
+          "p_adj": 0.0
+        },
+        "E1": {
+          "beta": -0.0,
+          "t": -0.92,
+          "p_adj": 1.0
+        },
+        "E2": {
+          "beta": 0.0,
+          "t": 0.61,
+          "p_adj": 1.0
+        },
+        "E3": {
+          "beta": 0.0,
+          "t": 1.01,
+          "p_adj": 1.0
+        },
+        "E4": {
+          "beta": -0.0,
+          "t": -0.98,
+          "p_adj": 1.0
+        },
+        "E5": {
+          "beta": -0.0,
+          "t": -1.83,
+          "p_adj": 1.0
+        },
+        "E6": {
+          "beta": 0.0,
+          "t": 1.63,
+          "p_adj": 1.0
+        },
+        "A1": {
+          "beta": -0.0,
+          "t": -0.33,
+          "p_adj": 1.0
+        },
+        "A2": {
+          "beta": -0.0,
+          "t": -1.75,
+          "p_adj": 1.0
+        },
+        "A3": {
+          "beta": 0.0,
+          "t": 1.46,
+          "p_adj": 1.0
+        },
+        "A4": {
+          "beta": -0.0,
+          "t": -0.04,
+          "p_adj": 1.0
+        },
+        "A5": {
+          "beta": -0.0,
+          "t": -0.22,
+          "p_adj": 1.0
+        },
+        "A6": {
+          "beta": 0.0,
+          "t": 1.26,
+          "p_adj": 1.0
+        },
+        "N1": {
+          "beta": 0.0,
+          "t": 0.48,
+          "p_adj": 1.0
+        },
+        "N2": {
+          "beta": 0.0,
+          "t": 1.24,
+          "p_adj": 1.0
+        },
+        "N3": {
+          "beta": -0.0,
+          "t": -1.12,
+          "p_adj": 1.0
+        },
+        "N4": {
+          "beta": -0.0,
+          "t": -1.68,
+          "p_adj": 1.0
+        },
+        "N5": {
+          "beta": -0.0,
+          "t": -0.72,
+          "p_adj": 1.0
+        },
+        "N6": {
+          "beta": -0.0,
+          "t": -0.93,
+          "p_adj": 1.0
+        }
+      },
+      "source": "draft derived via scripts/draft_facet_coefficients.py",
+      "confidence": "draft",
+      "note": "OLS on 612,595 Johnson IPIP-NEO-120 respondents. For each domain present in the original derivation, the best single facet (by |β|, sign-matched, Bonferroni p<0.01) is chosen to carry the domain-level coefficient. Fallback: domain-level '*' key if no facet passes the filter. Full OLS table in full_ols_betas."
+    },
+    "impulsivity": {
+      "coefficients": {
+        "C4": -0.3,
+        "E4": 0.2,
+        "N1": 0.35
+      },
+      "rationale": {
+        "C4": "chosen from C facets: |β|=0.050, p_adj=0",
+        "E4": "chosen from E facets: |β|=0.033, p_adj=0",
+        "N1": "chosen from N facets: |β|=0.058, p_adj=0"
+      },
+      "r2_full_ols": 1.0,
+      "full_ols_betas": {
+        "O1": {
+          "beta": 0.0,
+          "t": 0.2,
+          "p_adj": 1.0
+        },
+        "O2": {
+          "beta": -0.0,
+          "t": -1.12,
+          "p_adj": 1.0
+        },
+        "O3": {
+          "beta": 0.0,
+          "t": 0.51,
+          "p_adj": 1.0
+        },
+        "O4": {
+          "beta": 0.0,
+          "t": 2.96,
+          "p_adj": 0.0928
+        },
+        "O5": {
+          "beta": 0.0,
+          "t": 0.29,
+          "p_adj": 1.0
+        },
+        "O6": {
+          "beta": -0.0,
+          "t": -1.61,
+          "p_adj": 1.0
+        },
+        "C1": {
+          "beta": -0.05,
+          "t": -552191867.2,
+          "p_adj": 0.0
+        },
+        "C2": {
+          "beta": -0.05,
+          "t": -1210658269.62,
+          "p_adj": 0.0
+        },
+        "C3": {
+          "beta": -0.05,
+          "t": -645153892.19,
+          "p_adj": 0.0
+        },
+        "C4": {
+          "beta": -0.05,
+          "t": -742216451.22,
+          "p_adj": 0.0
+        },
+        "C5": {
+          "beta": -0.05,
+          "t": -657441123.99,
+          "p_adj": 0.0
+        },
+        "C6": {
+          "beta": -0.05,
+          "t": -1020626561.58,
+          "p_adj": 0.0
+        },
+        "E1": {
+          "beta": 0.0333,
+          "t": 439295417.55,
+          "p_adj": 0.0
+        },
+        "E2": {
+          "beta": 0.0333,
+          "t": 561443529.56,
+          "p_adj": 0.0
+        },
+        "E3": {
+          "beta": 0.0333,
+          "t": 574732263.94,
+          "p_adj": 0.0
+        },
+        "E4": {
+          "beta": 0.0333,
+          "t": 564909873.61,
+          "p_adj": 0.0
+        },
+        "E5": {
+          "beta": 0.0333,
+          "t": 523166432.06,
+          "p_adj": 0.0
+        },
+        "E6": {
+          "beta": 0.0333,
+          "t": 445136508.71,
+          "p_adj": 0.0
+        },
+        "A1": {
+          "beta": -0.0,
+          "t": -0.56,
+          "p_adj": 1.0
+        },
+        "A2": {
+          "beta": 0.0,
+          "t": 1.9,
+          "p_adj": 1.0
+        },
+        "A3": {
+          "beta": -0.0,
+          "t": -0.86,
+          "p_adj": 1.0
+        },
+        "A4": {
+          "beta": -0.0,
+          "t": -0.33,
+          "p_adj": 1.0
+        },
+        "A5": {
+          "beta": -0.0,
+          "t": -0.88,
+          "p_adj": 1.0
+        },
+        "A6": {
+          "beta": -0.0,
+          "t": -0.16,
+          "p_adj": 1.0
+        },
+        "N1": {
+          "beta": 0.0583,
+          "t": 872611218.75,
+          "p_adj": 0.0
+        },
+        "N2": {
+          "beta": 0.0583,
+          "t": 1147220471.53,
+          "p_adj": 0.0
+        },
+        "N3": {
+          "beta": 0.0583,
+          "t": 902645877.66,
+          "p_adj": 0.0
+        },
+        "N4": {
+          "beta": 0.0583,
+          "t": 908679034.68,
+          "p_adj": 0.0
+        },
+        "N5": {
+          "beta": 0.0583,
+          "t": 1123045767.38,
+          "p_adj": 0.0
+        },
+        "N6": {
+          "beta": 0.0583,
+          "t": 839510557.59,
+          "p_adj": 0.0
+        }
+      },
+      "source": "draft derived via scripts/draft_facet_coefficients.py",
+      "confidence": "draft",
+      "note": "OLS on 612,595 Johnson IPIP-NEO-120 respondents. For each domain present in the original derivation, the best single facet (by |β|, sign-matched, Bonferroni p<0.01) is chosen to carry the domain-level coefficient. Fallback: domain-level '*' key if no facet passes the filter. Full OLS table in full_ols_betas."
+    },
+    "patience": {
+      "coefficients": {
+        "C4": 0.4,
+        "E5": -0.1,
+        "N6": -0.25
+      },
+      "rationale": {
+        "C4": "chosen from C facets: |β|=0.067, p_adj=0",
+        "E5": "chosen from E facets: |β|=0.017, p_adj=0",
+        "N6": "chosen from N facets: |β|=0.042, p_adj=0"
+      },
+      "r2_full_ols": 1.0,
+      "full_ols_betas": {
+        "O1": {
+          "beta": -0.0,
+          "t": -0.26,
+          "p_adj": 1.0
+        },
+        "O2": {
+          "beta": 0.0,
+          "t": 0.86,
+          "p_adj": 1.0
+        },
+        "O3": {
+          "beta": -0.0,
+          "t": -1.13,
+          "p_adj": 1.0
+        },
+        "O4": {
+          "beta": -0.0,
+          "t": -3.19,
+          "p_adj": 0.0429
+        },
+        "O5": {
+          "beta": -0.0,
+          "t": -0.38,
+          "p_adj": 1.0
+        },
+        "O6": {
+          "beta": 0.0,
+          "t": 2.05,
+          "p_adj": 1.0
+        },
+        "C1": {
+          "beta": 0.0667,
+          "t": 722851082.08,
+          "p_adj": 0.0
+        },
+        "C2": {
+          "beta": 0.0667,
+          "t": 1584821674.0,
+          "p_adj": 0.0
+        },
+        "C3": {
+          "beta": 0.0667,
+          "t": 844543746.6,
+          "p_adj": 0.0
+        },
+        "C4": {
+          "beta": 0.0667,
+          "t": 971604247.46,
+          "p_adj": 0.0
+        },
+        "C5": {
+          "beta": 0.0667,
+          "t": 860628443.7,
+          "p_adj": 0.0
+        },
+        "C6": {
+          "beta": 0.0667,
+          "t": 1336059180.52,
+          "p_adj": 0.0
+        },
+        "E1": {
+          "beta": -0.0167,
+          "t": -215648663.29,
+          "p_adj": 0.0
+        },
+        "E2": {
+          "beta": -0.0167,
+          "t": -275610765.44,
+          "p_adj": 0.0
+        },
+        "E3": {
+          "beta": -0.0167,
+          "t": -282134160.44,
+          "p_adj": 0.0
+        },
+        "E4": {
+          "beta": -0.0167,
+          "t": -277312382.84,
+          "p_adj": 0.0
+        },
+        "E5": {
+          "beta": -0.0167,
+          "t": -256820666.25,
+          "p_adj": 0.0
+        },
+        "E6": {
+          "beta": -0.0167,
+          "t": -218516034.86,
+          "p_adj": 0.0
+        },
+        "A1": {
+          "beta": 0.0,
+          "t": 1.09,
+          "p_adj": 1.0
+        },
+        "A2": {
+          "beta": -0.0,
+          "t": -1.52,
+          "p_adj": 1.0
+        },
+        "A3": {
+          "beta": 0.0,
+          "t": 1.2,
+          "p_adj": 1.0
+        },
+        "A4": {
+          "beta": 0.0,
+          "t": 0.25,
+          "p_adj": 1.0
+        },
+        "A5": {
+          "beta": 0.0,
+          "t": 0.66,
+          "p_adj": 1.0
+        },
+        "A6": {
+          "beta": 0.0,
+          "t": 0.35,
+          "p_adj": 1.0
+        },
+        "N1": {
+          "beta": -0.0417,
+          "t": -611945645.51,
+          "p_adj": 0.0
+        },
+        "N2": {
+          "beta": -0.0417,
+          "t": -804523889.47,
+          "p_adj": 0.0
+        },
+        "N3": {
+          "beta": -0.0417,
+          "t": -633008380.83,
+          "p_adj": 0.0
+        },
+        "N4": {
+          "beta": -0.0417,
+          "t": -637239318.98,
+          "p_adj": 0.0
+        },
+        "N5": {
+          "beta": -0.0417,
+          "t": -787570630.27,
+          "p_adj": 0.0
+        },
+        "N6": {
+          "beta": -0.0417,
+          "t": -588732782.63,
+          "p_adj": 0.0
+        }
+      },
+      "source": "draft derived via scripts/draft_facet_coefficients.py",
+      "confidence": "draft",
+      "note": "OLS on 612,595 Johnson IPIP-NEO-120 respondents. For each domain present in the original derivation, the best single facet (by |β|, sign-matched, Bonferroni p<0.01) is chosen to carry the domain-level coefficient. Fallback: domain-level '*' key if no facet passes the filter. Full OLS table in full_ols_betas."
+    },
+    "social_dominance": {
+      "coefficients": {
+        "E5": 0.4,
+        "A5": -0.25
+      },
+      "rationale": {
+        "E5": "chosen from E facets: |β|=0.067, p_adj=0",
+        "A5": "chosen from A facets: |β|=0.042, p_adj=0"
+      },
+      "r2_full_ols": 1.0,
+      "full_ols_betas": {
+        "O1": {
+          "beta": -0.0,
+          "t": -0.4,
+          "p_adj": 1.0
+        },
+        "O2": {
+          "beta": 0.0,
+          "t": 0.48,
+          "p_adj": 1.0
+        },
+        "O3": {
+          "beta": -0.0,
+          "t": -0.79,
+          "p_adj": 1.0
+        },
+        "O4": {
+          "beta": 0.0,
+          "t": 0.57,
+          "p_adj": 1.0
+        },
+        "O5": {
+          "beta": 0.0,
+          "t": 0.05,
+          "p_adj": 1.0
+        },
+        "O6": {
+          "beta": 0.0,
+          "t": 0.13,
+          "p_adj": 1.0
+        },
+        "C1": {
+          "beta": 0.0,
+          "t": 0.39,
+          "p_adj": 1.0
+        },
+        "C2": {
+          "beta": -0.0,
+          "t": -0.42,
+          "p_adj": 1.0
+        },
+        "C3": {
+          "beta": -0.0,
+          "t": -1.23,
+          "p_adj": 1.0
+        },
+        "C4": {
+          "beta": 0.0,
+          "t": 0.15,
+          "p_adj": 1.0
+        },
+        "C5": {
+          "beta": -0.0,
+          "t": -0.32,
+          "p_adj": 1.0
+        },
+        "C6": {
+          "beta": 0.0,
+          "t": 0.47,
+          "p_adj": 1.0
+        },
+        "E1": {
+          "beta": 0.0667,
+          "t": 832680086.66,
+          "p_adj": 0.0
+        },
+        "E2": {
+          "beta": 0.0667,
+          "t": 1064210616.66,
+          "p_adj": 0.0
+        },
+        "E3": {
+          "beta": 0.0667,
+          "t": 1089399282.75,
+          "p_adj": 0.0
+        },
+        "E4": {
+          "beta": 0.0667,
+          "t": 1070781034.54,
+          "p_adj": 0.0
+        },
+        "E5": {
+          "beta": 0.0667,
+          "t": 991656759.29,
+          "p_adj": 0.0
+        },
+        "E6": {
+          "beta": 0.0667,
+          "t": 843751816.54,
+          "p_adj": 0.0
+        },
+        "A1": {
+          "beta": -0.0417,
+          "t": -773509772.78,
+          "p_adj": 0.0
+        },
+        "A2": {
+          "beta": -0.0417,
+          "t": -570709372.0,
+          "p_adj": 0.0
+        },
+        "A3": {
+          "beta": -0.0417,
+          "t": -451810985.56,
+          "p_adj": 0.0
+        },
+        "A4": {
+          "beta": -0.0417,
+          "t": -645809851.86,
+          "p_adj": 0.0
+        },
+        "A5": {
+          "beta": -0.0417,
+          "t": -737510245.72,
+          "p_adj": 0.0
+        },
+        "A6": {
+          "beta": -0.0417,
+          "t": -628310815.19,
+          "p_adj": 0.0
+        },
+        "N1": {
+          "beta": 0.0,
+          "t": 0.08,
+          "p_adj": 1.0
+        },
+        "N2": {
+          "beta": -0.0,
+          "t": -0.69,
+          "p_adj": 1.0
+        },
+        "N3": {
+          "beta": -0.0,
+          "t": -0.92,
+          "p_adj": 1.0
+        },
+        "N4": {
+          "beta": 0.0,
+          "t": 1.09,
+          "p_adj": 1.0
+        },
+        "N5": {
+          "beta": -0.0,
+          "t": -0.49,
+          "p_adj": 1.0
+        },
+        "N6": {
+          "beta": 0.0,
+          "t": 0.91,
+          "p_adj": 1.0
+        }
+      },
+      "source": "draft derived via scripts/draft_facet_coefficients.py",
+      "confidence": "draft",
+      "note": "OLS on 612,595 Johnson IPIP-NEO-120 respondents. For each domain present in the original derivation, the best single facet (by |β|, sign-matched, Bonferroni p<0.01) is chosen to carry the domain-level coefficient. Fallback: domain-level '*' key if no facet passes the filter. Full OLS table in full_ols_betas."
+    },
+    "empathy": {
+      "coefficients": {
+        "A1": 0.45,
+        "N1": 0.1
+      },
+      "rationale": {
+        "A1": "chosen from A facets: |β|=0.075, p_adj=0",
+        "N1": "chosen from N facets: |β|=0.017, p_adj=0"
+      },
+      "r2_full_ols": 1.0,
+      "full_ols_betas": {
+        "O1": {
+          "beta": -0.0,
+          "t": -0.1,
+          "p_adj": 1.0
+        },
+        "O2": {
+          "beta": -0.0,
+          "t": -1.41,
+          "p_adj": 1.0
+        },
+        "O3": {
+          "beta": -0.0,
+          "t": -0.36,
+          "p_adj": 1.0
+        },
+        "O4": {
+          "beta": 0.0,
+          "t": 1.32,
+          "p_adj": 1.0
+        },
+        "O5": {
+          "beta": -0.0,
+          "t": -1.41,
+          "p_adj": 1.0
+        },
+        "O6": {
+          "beta": 0.0,
+          "t": 0.42,
+          "p_adj": 1.0
+        },
+        "C1": {
+          "beta": -0.0,
+          "t": -0.11,
+          "p_adj": 1.0
+        },
+        "C2": {
+          "beta": 0.0,
+          "t": 1.52,
+          "p_adj": 1.0
+        },
+        "C3": {
+          "beta": 0.0,
+          "t": 0.99,
+          "p_adj": 1.0
+        },
+        "C4": {
+          "beta": -0.0,
+          "t": -1.73,
+          "p_adj": 1.0
+        },
+        "C5": {
+          "beta": -0.0,
+          "t": -0.18,
+          "p_adj": 1.0
+        },
+        "C6": {
+          "beta": -0.0,
+          "t": -0.4,
+          "p_adj": 1.0
+        },
+        "E1": {
+          "beta": -0.0,
+          "t": -0.78,
+          "p_adj": 1.0
+        },
+        "E2": {
+          "beta": 0.0,
+          "t": 0.04,
+          "p_adj": 1.0
+        },
+        "E3": {
+          "beta": 0.0,
+          "t": 0.2,
+          "p_adj": 1.0
+        },
+        "E4": {
+          "beta": -0.0,
+          "t": -0.03,
+          "p_adj": 1.0
+        },
+        "E5": {
+          "beta": -0.0,
+          "t": -1.51,
+          "p_adj": 1.0
+        },
+        "E6": {
+          "beta": 0.0,
+          "t": 2.06,
+          "p_adj": 1.0
+        },
+        "A1": {
+          "beta": 0.075,
+          "t": 1394473262.23,
+          "p_adj": 0.0
+        },
+        "A2": {
+          "beta": 0.075,
+          "t": 1028867362.92,
+          "p_adj": 0.0
+        },
+        "A3": {
+          "beta": 0.075,
+          "t": 814518912.14,
+          "p_adj": 0.0
+        },
+        "A4": {
+          "beta": 0.075,
+          "t": 1164257519.58,
+          "p_adj": 0.0
+        },
+        "A5": {
+          "beta": 0.075,
+          "t": 1329573785.77,
+          "p_adj": 0.0
+        },
+        "A6": {
+          "beta": 0.075,
+          "t": 1132710487.08,
+          "p_adj": 0.0
+        },
+        "N1": {
+          "beta": 0.0167,
+          "t": 236655249.74,
+          "p_adj": 0.0
+        },
+        "N2": {
+          "beta": 0.0167,
+          "t": 311130248.65,
+          "p_adj": 0.0
+        },
+        "N3": {
+          "beta": 0.0167,
+          "t": 244800753.66,
+          "p_adj": 0.0
+        },
+        "N4": {
+          "beta": 0.0167,
+          "t": 246436964.81,
+          "p_adj": 0.0
+        },
+        "N5": {
+          "beta": 0.0167,
+          "t": 304573982.84,
+          "p_adj": 0.0
+        },
+        "N6": {
+          "beta": 0.0167,
+          "t": 227678230.03,
+          "p_adj": 0.0
+        }
+      },
+      "source": "draft derived via scripts/draft_facet_coefficients.py",
+      "confidence": "draft",
+      "note": "OLS on 612,595 Johnson IPIP-NEO-120 respondents. For each domain present in the original derivation, the best single facet (by |β|, sign-matched, Bonferroni p<0.01) is chosen to carry the domain-level coefficient. Fallback: domain-level '*' key if no facet passes the filter. Full OLS table in full_ols_betas."
+    },
+    "loss_aversion": {
+      "coefficients": {
+        "C1": 0.15,
+        "E5": -0.1,
+        "N2": 0.3
+      },
+      "rationale": {
+        "C1": "chosen from C facets: |β|=0.025, p_adj=0",
+        "E5": "chosen from E facets: |β|=0.017, p_adj=0",
+        "N2": "chosen from N facets: |β|=0.050, p_adj=0"
+      },
+      "r2_full_ols": 1.0,
+      "full_ols_betas": {
+        "O1": {
+          "beta": 0.0,
+          "t": 0.6,
+          "p_adj": 1.0
+        },
+        "O2": {
+          "beta": -0.0,
+          "t": -0.98,
+          "p_adj": 1.0
+        },
+        "O3": {
+          "beta": -0.0,
+          "t": -0.51,
+          "p_adj": 1.0
+        },
+        "O4": {
+          "beta": -0.0,
+          "t": -1.8,
+          "p_adj": 1.0
+        },
+        "O5": {
+          "beta": 0.0,
+          "t": 1.01,
+          "p_adj": 1.0
+        },
+        "O6": {
+          "beta": 0.0,
+          "t": 0.41,
+          "p_adj": 1.0
+        },
+        "C1": {
+          "beta": 0.025,
+          "t": 425282304.66,
+          "p_adj": 0.0
+        },
+        "C2": {
+          "beta": 0.025,
+          "t": 932414196.1,
+          "p_adj": 0.0
+        },
+        "C3": {
+          "beta": 0.025,
+          "t": 496878981.15,
+          "p_adj": 0.0
+        },
+        "C4": {
+          "beta": 0.025,
+          "t": 571633770.35,
+          "p_adj": 0.0
+        },
+        "C5": {
+          "beta": 0.025,
+          "t": 506342254.37,
+          "p_adj": 0.0
+        },
+        "C6": {
+          "beta": 0.025,
+          "t": 786057236.85,
+          "p_adj": 0.0
+        },
+        "E1": {
+          "beta": -0.0167,
+          "t": -338332702.28,
+          "p_adj": 0.0
+        },
+        "E2": {
+          "beta": -0.0167,
+          "t": -432407665.81,
+          "p_adj": 0.0
+        },
+        "E3": {
+          "beta": -0.0167,
+          "t": -442642268.92,
+          "p_adj": 0.0
+        },
+        "E4": {
+          "beta": -0.0167,
+          "t": -435077342.09,
+          "p_adj": 0.0
+        },
+        "E5": {
+          "beta": -0.0167,
+          "t": -402927747.25,
+          "p_adj": 0.0
+        },
+        "E6": {
+          "beta": -0.0167,
+          "t": -342831342.35,
+          "p_adj": 0.0
+        },
+        "A1": {
+          "beta": 0.0,
+          "t": 0.24,
+          "p_adj": 1.0
+        },
+        "A2": {
+          "beta": 0.0,
+          "t": 0.72,
+          "p_adj": 1.0
+        },
+        "A3": {
+          "beta": 0.0,
+          "t": 0.42,
+          "p_adj": 1.0
+        },
+        "A4": {
+          "beta": 0.0,
+          "t": 0.05,
+          "p_adj": 1.0
+        },
+        "A5": {
+          "beta": -0.0,
+          "t": -1.05,
+          "p_adj": 1.0
+        },
+        "A6": {
+          "beta": 0.0,
+          "t": 0.26,
+          "p_adj": 1.0
+        },
+        "N1": {
+          "beta": 0.05,
+          "t": 1152102985.54,
+          "p_adj": 0.0
+        },
+        "N2": {
+          "beta": 0.05,
+          "t": 1514667821.97,
+          "p_adj": 0.0
+        },
+        "N3": {
+          "beta": 0.05,
+          "t": 1191757554.29,
+          "p_adj": 0.0
+        },
+        "N4": {
+          "beta": 0.05,
+          "t": 1199723091.88,
+          "p_adj": 0.0
+        },
+        "N5": {
+          "beta": 0.05,
+          "t": 1482750112.21,
+          "p_adj": 0.0
+        },
+        "N6": {
+          "beta": 0.05,
+          "t": 1108400392.95,
+          "p_adj": 0.0
+        }
+      },
+      "source": "draft derived via scripts/draft_facet_coefficients.py",
+      "confidence": "draft",
+      "note": "OLS on 612,595 Johnson IPIP-NEO-120 respondents. For each domain present in the original derivation, the best single facet (by |β|, sign-matched, Bonferroni p<0.01) is chosen to carry the domain-level coefficient. Fallback: domain-level '*' key if no facet passes the filter. Full OLS table in full_ols_betas."
+    },
+    "financial_optimism": {
+      "coefficients": {
+        "O4": 0.1,
+        "E3": 0.3,
+        "N4": -0.3
+      },
+      "rationale": {
+        "O4": "chosen from O facets: |β|=0.017, p_adj=0",
+        "E3": "chosen from E facets: |β|=0.050, p_adj=0",
+        "N4": "chosen from N facets: |β|=0.050, p_adj=0"
+      },
+      "r2_full_ols": 1.0,
+      "full_ols_betas": {
+        "O1": {
+          "beta": 0.0167,
+          "t": 354589660.24,
+          "p_adj": 0.0
+        },
+        "O2": {
+          "beta": 0.0167,
+          "t": 372715962.33,
+          "p_adj": 0.0
+        },
+        "O3": {
+          "beta": 0.0167,
+          "t": 301038997.49,
+          "p_adj": 0.0
+        },
+        "O4": {
+          "beta": 0.0167,
+          "t": 330862211.52,
+          "p_adj": 0.0
+        },
+        "O5": {
+          "beta": 0.0167,
+          "t": 359757070.71,
+          "p_adj": 0.0
+        },
+        "O6": {
+          "beta": 0.0167,
+          "t": 408203395.85,
+          "p_adj": 0.0
+        },
+        "C1": {
+          "beta": -0.0,
+          "t": -1.79,
+          "p_adj": 1.0
+        },
+        "C2": {
+          "beta": 0.0,
+          "t": 0.77,
+          "p_adj": 1.0
+        },
+        "C3": {
+          "beta": -0.0,
+          "t": -0.41,
+          "p_adj": 1.0
+        },
+        "C4": {
+          "beta": 0.0,
+          "t": 1.63,
+          "p_adj": 1.0
+        },
+        "C5": {
+          "beta": -0.0,
+          "t": -0.53,
+          "p_adj": 1.0
+        },
+        "C6": {
+          "beta": 0.0,
+          "t": 0.41,
+          "p_adj": 1.0
+        },
+        "E1": {
+          "beta": 0.05,
+          "t": 763107929.58,
+          "p_adj": 0.0
+        },
+        "E2": {
+          "beta": 0.05,
+          "t": 975293601.38,
+          "p_adj": 0.0
+        },
+        "E3": {
+          "beta": 0.05,
+          "t": 998377703.01,
+          "p_adj": 0.0
+        },
+        "E4": {
+          "beta": 0.05,
+          "t": 981315045.51,
+          "p_adj": 0.0
+        },
+        "E5": {
+          "beta": 0.05,
+          "t": 908801769.68,
+          "p_adj": 0.0
+        },
+        "E6": {
+          "beta": 0.05,
+          "t": 773254595.13,
+          "p_adj": 0.0
+        },
+        "A1": {
+          "beta": 0.0,
+          "t": 0.57,
+          "p_adj": 1.0
+        },
+        "A2": {
+          "beta": -0.0,
+          "t": -0.76,
+          "p_adj": 1.0
+        },
+        "A3": {
+          "beta": 0.0,
+          "t": 0.63,
+          "p_adj": 1.0
+        },
+        "A4": {
+          "beta": -0.0,
+          "t": -0.19,
+          "p_adj": 1.0
+        },
+        "A5": {
+          "beta": 0.0,
+          "t": 0.76,
+          "p_adj": 1.0
+        },
+        "A6": {
+          "beta": 0.0,
+          "t": 0.47,
+          "p_adj": 1.0
+        },
+        "N1": {
+          "beta": -0.05,
+          "t": -866187747.8,
+          "p_adj": 0.0
+        },
+        "N2": {
+          "beta": -0.05,
+          "t": -1138775549.47,
+          "p_adj": 0.0
+        },
+        "N3": {
+          "beta": -0.05,
+          "t": -896001318.51,
+          "p_adj": 0.0
+        },
+        "N4": {
+          "beta": -0.05,
+          "t": -901990063.3,
+          "p_adj": 0.0
+        },
+        "N5": {
+          "beta": -0.05,
+          "t": -1114778798.85,
+          "p_adj": 0.0
+        },
+        "N6": {
+          "beta": -0.05,
+          "t": -833330747.08,
+          "p_adj": 0.0
+        }
+      },
+      "source": "draft derived via scripts/draft_facet_coefficients.py",
+      "confidence": "draft",
+      "note": "OLS on 612,595 Johnson IPIP-NEO-120 respondents. For each domain present in the original derivation, the best single facet (by |β|, sign-matched, Bonferroni p<0.01) is chosen to carry the domain-level coefficient. Fallback: domain-level '*' key if no facet passes the filter. Full OLS table in full_ols_betas."
+    },
+    "communication_assertiveness": {
+      "coefficients": {
+        "E3": 0.4,
+        "A5": -0.15
+      },
+      "rationale": {
+        "E3": "chosen from E facets: |β|=0.067, p_adj=0",
+        "A5": "chosen from A facets: |β|=0.025, p_adj=0"
+      },
+      "r2_full_ols": 1.0,
+      "full_ols_betas": {
+        "O1": {
+          "beta": -0.0,
+          "t": -0.5,
+          "p_adj": 1.0
+        },
+        "O2": {
+          "beta": 0.0,
+          "t": 0.24,
+          "p_adj": 1.0
+        },
+        "O3": {
+          "beta": -0.0,
+          "t": -0.96,
+          "p_adj": 1.0
+        },
+        "O4": {
+          "beta": 0.0,
+          "t": 0.94,
+          "p_adj": 1.0
+        },
+        "O5": {
+          "beta": -0.0,
+          "t": -0.33,
+          "p_adj": 1.0
+        },
+        "O6": {
+          "beta": 0.0,
+          "t": 0.28,
+          "p_adj": 1.0
+        },
+        "C1": {
+          "beta": 0.0,
+          "t": 0.33,
+          "p_adj": 1.0
+        },
+        "C2": {
+          "beta": -0.0,
+          "t": -0.09,
+          "p_adj": 1.0
+        },
+        "C3": {
+          "beta": -0.0,
+          "t": -1.11,
+          "p_adj": 1.0
+        },
+        "C4": {
+          "beta": -0.0,
+          "t": -0.14,
+          "p_adj": 1.0
+        },
+        "C5": {
+          "beta": -0.0,
+          "t": -0.4,
+          "p_adj": 1.0
+        },
+        "C6": {
+          "beta": 0.0,
+          "t": 0.45,
+          "p_adj": 1.0
+        },
+        "E1": {
+          "beta": 0.0667,
+          "t": 926255348.49,
+          "p_adj": 0.0
+        },
+        "E2": {
+          "beta": 0.0667,
+          "t": 1183804910.89,
+          "p_adj": 0.0
+        },
+        "E3": {
+          "beta": 0.0667,
+          "t": 1211824239.26,
+          "p_adj": 0.0
+        },
+        "E4": {
+          "beta": 0.0667,
+          "t": 1191113701.77,
+          "p_adj": 0.0
+        },
+        "E5": {
+          "beta": 0.0667,
+          "t": 1103097566.24,
+          "p_adj": 0.0
+        },
+        "E6": {
+          "beta": 0.0667,
+          "t": 938571302.43,
+          "p_adj": 0.0
+        },
+        "A1": {
+          "beta": -0.025,
+          "t": -516261341.07,
+          "p_adj": 0.0
+        },
+        "A2": {
+          "beta": -0.025,
+          "t": -380906869.05,
+          "p_adj": 0.0
+        },
+        "A3": {
+          "beta": -0.025,
+          "t": -301550870.59,
+          "p_adj": 0.0
+        },
+        "A4": {
+          "beta": -0.025,
+          "t": -431030960.82,
+          "p_adj": 0.0
+        },
+        "A5": {
+          "beta": -0.025,
+          "t": -492234283.53,
+          "p_adj": 0.0
+        },
+        "A6": {
+          "beta": -0.025,
+          "t": -419351630.26,
+          "p_adj": 0.0
+        },
+        "N1": {
+          "beta": 0.0,
+          "t": 0.67,
+          "p_adj": 1.0
+        },
+        "N2": {
+          "beta": -0.0,
+          "t": -0.63,
+          "p_adj": 1.0
+        },
+        "N3": {
+          "beta": -0.0,
+          "t": -0.92,
+          "p_adj": 1.0
+        },
+        "N4": {
+          "beta": 0.0,
+          "t": 0.76,
+          "p_adj": 1.0
+        },
+        "N5": {
+          "beta": -0.0,
+          "t": -0.44,
+          "p_adj": 1.0
+        },
+        "N6": {
+          "beta": 0.0,
+          "t": 0.84,
+          "p_adj": 1.0
+        }
+      },
+      "source": "draft derived via scripts/draft_facet_coefficients.py",
+      "confidence": "draft",
+      "note": "OLS on 612,595 Johnson IPIP-NEO-120 respondents. For each domain present in the original derivation, the best single facet (by |β|, sign-matched, Bonferroni p<0.01) is chosen to carry the domain-level coefficient. Fallback: domain-level '*' key if no facet passes the filter. Full OLS table in full_ols_betas."
+    },
+    "persuasion_skill": {
+      "coefficients": {
+        "O4": 0.1,
+        "E3": 0.35,
+        "A1": 0.15
+      },
+      "rationale": {
+        "O4": "chosen from O facets: |β|=0.017, p_adj=0",
+        "E3": "chosen from E facets: |β|=0.058, p_adj=0",
+        "A1": "chosen from A facets: |β|=0.025, p_adj=0"
+      },
+      "r2_full_ols": 1.0,
+      "full_ols_betas": {
+        "O1": {
+          "beta": 0.0167,
+          "t": 349927080.61,
+          "p_adj": 0.0
+        },
+        "O2": {
+          "beta": 0.0167,
+          "t": 367815034.28,
+          "p_adj": 0.0
+        },
+        "O3": {
+          "beta": 0.0167,
+          "t": 297080567.12,
+          "p_adj": 0.0
+        },
+        "O4": {
+          "beta": 0.0167,
+          "t": 326511630.21,
+          "p_adj": 0.0
+        },
+        "O5": {
+          "beta": 0.0167,
+          "t": 355026543.26,
+          "p_adj": 0.0
+        },
+        "O6": {
+          "beta": 0.0167,
+          "t": 402835836.74,
+          "p_adj": 0.0
+        },
+        "C1": {
+          "beta": -0.0,
+          "t": -0.75,
+          "p_adj": 1.0
+        },
+        "C2": {
+          "beta": 0.0,
+          "t": 1.37,
+          "p_adj": 1.0
+        },
+        "C3": {
+          "beta": -0.0,
+          "t": -0.21,
+          "p_adj": 1.0
+        },
+        "C4": {
+          "beta": -0.0,
+          "t": -0.73,
+          "p_adj": 1.0
+        },
+        "C5": {
+          "beta": -0.0,
+          "t": -0.56,
+          "p_adj": 1.0
+        },
+        "C6": {
+          "beta": -0.0,
+          "t": -0.03,
+          "p_adj": 1.0
+        },
+        "E1": {
+          "beta": 0.0583,
+          "t": 878585925.1,
+          "p_adj": 0.0
+        },
+        "E2": {
+          "beta": 0.0583,
+          "t": 1122880785.87,
+          "p_adj": 0.0
+        },
+        "E3": {
+          "beta": 0.0583,
+          "t": 1149458109.13,
+          "p_adj": 0.0
+        },
+        "E4": {
+          "beta": 0.0583,
+          "t": 1129813431.61,
+          "p_adj": 0.0
+        },
+        "E5": {
+          "beta": 0.0583,
+          "t": 1046327016.4,
+          "p_adj": 0.0
+        },
+        "E6": {
+          "beta": 0.0583,
+          "t": 890268045.23,
+          "p_adj": 0.0
+        },
+        "A1": {
+          "beta": 0.025,
+          "t": 559648142.66,
+          "p_adj": 0.0
+        },
+        "A2": {
+          "beta": 0.025,
+          "t": 412918428.8,
+          "p_adj": 0.0
+        },
+        "A3": {
+          "beta": 0.025,
+          "t": 326893321.65,
+          "p_adj": 0.0
+        },
+        "A4": {
+          "beta": 0.025,
+          "t": 467254966.36,
+          "p_adj": 0.0
+        },
+        "A5": {
+          "beta": 0.025,
+          "t": 533601840.28,
+          "p_adj": 0.0
+        },
+        "A6": {
+          "beta": 0.025,
+          "t": 454594101.95,
+          "p_adj": 0.0
+        },
+        "N1": {
+          "beta": 0.0,
+          "t": 2.52,
+          "p_adj": 0.3492
+        },
+        "N2": {
+          "beta": -0.0,
+          "t": -0.12,
+          "p_adj": 1.0
+        },
+        "N3": {
+          "beta": -0.0,
+          "t": -0.87,
+          "p_adj": 1.0
+        },
+        "N4": {
+          "beta": -0.0,
+          "t": -1.14,
+          "p_adj": 1.0
+        },
+        "N5": {
+          "beta": -0.0,
+          "t": -0.27,
+          "p_adj": 1.0
+        },
+        "N6": {
+          "beta": 0.0,
+          "t": 0.35,
+          "p_adj": 1.0
+        }
+      },
+      "source": "draft derived via scripts/draft_facet_coefficients.py",
+      "confidence": "draft",
+      "note": "OLS on 612,595 Johnson IPIP-NEO-120 respondents. For each domain present in the original derivation, the best single facet (by |β|, sign-matched, Bonferroni p<0.01) is chosen to carry the domain-level coefficient. Fallback: domain-level '*' key if no facet passes the filter. Full OLS table in full_ols_betas."
+    },
+    "information_sharing": {
+      "coefficients": {
+        "O4": 0.2,
+        "E3": 0.25,
+        "A6": 0.1
+      },
+      "rationale": {
+        "O4": "chosen from O facets: |β|=0.033, p_adj=0",
+        "E3": "chosen from E facets: |β|=0.042, p_adj=0",
+        "A6": "chosen from A facets: |β|=0.017, p_adj=0"
+      },
+      "r2_full_ols": 1.0,
+      "full_ols_betas": {
+        "O1": {
+          "beta": 0.0333,
+          "t": 823361223.46,
+          "p_adj": 0.0
+        },
+        "O2": {
+          "beta": 0.0333,
+          "t": 865450699.38,
+          "p_adj": 0.0
+        },
+        "O3": {
+          "beta": 0.0333,
+          "t": 699015975.35,
+          "p_adj": 0.0
+        },
+        "O4": {
+          "beta": 0.0333,
+          "t": 768265815.74,
+          "p_adj": 0.0
+        },
+        "O5": {
+          "beta": 0.0333,
+          "t": 835360009.79,
+          "p_adj": 0.0
+        },
+        "O6": {
+          "beta": 0.0333,
+          "t": 947852924.33,
+          "p_adj": 0.0
+        },
+        "C1": {
+          "beta": -0.0,
+          "t": -1.73,
+          "p_adj": 1.0
+        },
+        "C2": {
+          "beta": 0.0,
+          "t": 1.55,
+          "p_adj": 1.0
+        },
+        "C3": {
+          "beta": -0.0,
+          "t": -0.1,
+          "p_adj": 1.0
+        },
+        "C4": {
+          "beta": -0.0,
+          "t": -0.08,
+          "p_adj": 1.0
+        },
+        "C5": {
+          "beta": -0.0,
+          "t": -0.49,
+          "p_adj": 1.0
+        },
+        "C6": {
+          "beta": -0.0,
+          "t": -0.36,
+          "p_adj": 1.0
+        },
+        "E1": {
+          "beta": 0.0417,
+          "t": 738310535.91,
+          "p_adj": 0.0
+        },
+        "E2": {
+          "beta": 0.0417,
+          "t": 943601179.33,
+          "p_adj": 0.0
+        },
+        "E3": {
+          "beta": 0.0417,
+          "t": 965935156.22,
+          "p_adj": 0.0
+        },
+        "E4": {
+          "beta": 0.0417,
+          "t": 949426955.46,
+          "p_adj": 0.0
+        },
+        "E5": {
+          "beta": 0.0417,
+          "t": 879270015.53,
+          "p_adj": 0.0
+        },
+        "E6": {
+          "beta": 0.0417,
+          "t": 748127484.72,
+          "p_adj": 0.0
+        },
+        "A1": {
+          "beta": 0.0167,
+          "t": 438941524.18,
+          "p_adj": 0.0
+        },
+        "A2": {
+          "beta": 0.0167,
+          "t": 323858922.35,
+          "p_adj": 0.0
+        },
+        "A3": {
+          "beta": 0.0167,
+          "t": 256387973.58,
+          "p_adj": 0.0
+        },
+        "A4": {
+          "beta": 0.0167,
+          "t": 366475990.36,
+          "p_adj": 0.0
+        },
+        "A5": {
+          "beta": 0.0167,
+          "t": 418512968.14,
+          "p_adj": 0.0
+        },
+        "A6": {
+          "beta": 0.0167,
+          "t": 356545860.35,
+          "p_adj": 0.0
+        },
+        "N1": {
+          "beta": 0.0,
+          "t": 2.22,
+          "p_adj": 0.7842
+        },
+        "N2": {
+          "beta": -0.0,
+          "t": -0.01,
+          "p_adj": 1.0
+        },
+        "N3": {
+          "beta": -0.0,
+          "t": -1.19,
+          "p_adj": 1.0
+        },
+        "N4": {
+          "beta": -0.0,
+          "t": -1.63,
+          "p_adj": 1.0
+        },
+        "N5": {
+          "beta": -0.0,
+          "t": -0.45,
+          "p_adj": 1.0
+        },
+        "N6": {
+          "beta": 0.0,
+          "t": 0.46,
+          "p_adj": 1.0
+        }
+      },
+      "source": "draft derived via scripts/draft_facet_coefficients.py",
+      "confidence": "draft",
+      "note": "OLS on 612,595 Johnson IPIP-NEO-120 respondents. For each domain present in the original derivation, the best single facet (by |β|, sign-matched, Bonferroni p<0.01) is chosen to carry the domain-level coefficient. Fallback: domain-level '*' key if no facet passes the filter. Full OLS table in full_ols_betas."
+    },
+    "contrarian_tendency": {
+      "coefficients": {
+        "O2": 0.15,
+        "C2": -0.1,
+        "A1": -0.3
+      },
+      "rationale": {
+        "O2": "chosen from O facets: |β|=0.025, p_adj=0",
+        "C2": "chosen from C facets: |β|=0.017, p_adj=0",
+        "A1": "chosen from A facets: |β|=0.050, p_adj=0"
+      },
+      "r2_full_ols": 1.0,
+      "full_ols_betas": {
+        "O1": {
+          "beta": 0.025,
+          "t": 573677353.95,
+          "p_adj": 0.0
+        },
+        "O2": {
+          "beta": 0.025,
+          "t": 603003218.57,
+          "p_adj": 0.0
+        },
+        "O3": {
+          "beta": 0.025,
+          "t": 487039739.63,
+          "p_adj": 0.0
+        },
+        "O4": {
+          "beta": 0.025,
+          "t": 535289598.58,
+          "p_adj": 0.0
+        },
+        "O5": {
+          "beta": 0.025,
+          "t": 582037516.16,
+          "p_adj": 0.0
+        },
+        "O6": {
+          "beta": 0.025,
+          "t": 660417008.16,
+          "p_adj": 0.0
+        },
+        "C1": {
+          "beta": -0.0167,
+          "t": -229909632.45,
+          "p_adj": 0.0
+        },
+        "C2": {
+          "beta": -0.0167,
+          "t": -504067541.03,
+          "p_adj": 0.0
+        },
+        "C3": {
+          "beta": -0.0167,
+          "t": -268615136.31,
+          "p_adj": 0.0
+        },
+        "C4": {
+          "beta": -0.0167,
+          "t": -309027928.97,
+          "p_adj": 0.0
+        },
+        "C5": {
+          "beta": -0.0167,
+          "t": -273731025.66,
+          "p_adj": 0.0
+        },
+        "C6": {
+          "beta": -0.0167,
+          "t": -424946273.58,
+          "p_adj": 0.0
+        },
+        "E1": {
+          "beta": 0.0,
+          "t": 0.59,
+          "p_adj": 1.0
+        },
+        "E2": {
+          "beta": -0.0,
+          "t": -0.15,
+          "p_adj": 1.0
+        },
+        "E3": {
+          "beta": -0.0,
+          "t": -0.76,
+          "p_adj": 1.0
+        },
+        "E4": {
+          "beta": -0.0,
+          "t": -0.24,
+          "p_adj": 1.0
+        },
+        "E5": {
+          "beta": 0.0,
+          "t": 0.99,
+          "p_adj": 1.0
+        },
+        "E6": {
+          "beta": -0.0,
+          "t": -1.33,
+          "p_adj": 1.0
+        },
+        "A1": {
+          "beta": -0.05,
+          "t": -1223330926.72,
+          "p_adj": 0.0
+        },
+        "A2": {
+          "beta": -0.05,
+          "t": -902595480.26,
+          "p_adj": 0.0
+        },
+        "A3": {
+          "beta": -0.05,
+          "t": -714553804.56,
+          "p_adj": 0.0
+        },
+        "A4": {
+          "beta": -0.05,
+          "t": -1021369335.56,
+          "p_adj": 0.0
+        },
+        "A5": {
+          "beta": -0.05,
+          "t": -1166396498.7,
+          "p_adj": 0.0
+        },
+        "A6": {
+          "beta": -0.05,
+          "t": -993694038.96,
+          "p_adj": 0.0
+        },
+        "N1": {
+          "beta": -0.0,
+          "t": -1.98,
+          "p_adj": 1.0
+        },
+        "N2": {
+          "beta": -0.0,
+          "t": -0.87,
+          "p_adj": 1.0
+        },
+        "N3": {
+          "beta": -0.0,
+          "t": -0.77,
+          "p_adj": 1.0
+        },
+        "N4": {
+          "beta": 0.0,
+          "t": 0.92,
+          "p_adj": 1.0
+        },
+        "N5": {
+          "beta": -0.0,
+          "t": -0.45,
+          "p_adj": 1.0
+        },
+        "N6": {
+          "beta": 0.0,
+          "t": 1.37,
+          "p_adj": 1.0
+        }
+      },
+      "source": "draft derived via scripts/draft_facet_coefficients.py",
+      "confidence": "draft",
+      "note": "OLS on 612,595 Johnson IPIP-NEO-120 respondents. For each domain present in the original derivation, the best single facet (by |β|, sign-matched, Bonferroni p<0.01) is chosen to carry the domain-level coefficient. Fallback: domain-level '*' key if no facet passes the filter. Full OLS table in full_ols_betas."
+    },
+    "authority_compliance": {
+      "coefficients": {
+        "O2": -0.15,
+        "C2": 0.2,
+        "A1": 0.25
+      },
+      "rationale": {
+        "O2": "chosen from O facets: |β|=0.025, p_adj=0",
+        "C2": "chosen from C facets: |β|=0.033, p_adj=0",
+        "A1": "chosen from A facets: |β|=0.042, p_adj=0"
+      },
+      "r2_full_ols": 1.0,
+      "full_ols_betas": {
+        "O1": {
+          "beta": -0.025,
+          "t": -571362435.56,
+          "p_adj": 0.0
+        },
+        "O2": {
+          "beta": -0.025,
+          "t": -600569963.41,
+          "p_adj": 0.0
+        },
+        "O3": {
+          "beta": -0.025,
+          "t": -485074424.07,
+          "p_adj": 0.0
+        },
+        "O4": {
+          "beta": -0.025,
+          "t": -533129584.52,
+          "p_adj": 0.0
+        },
+        "O5": {
+          "beta": -0.025,
+          "t": -579688862.43,
+          "p_adj": 0.0
+        },
+        "O6": {
+          "beta": -0.025,
+          "t": -657752075.03,
+          "p_adj": 0.0
+        },
+        "C1": {
+          "beta": 0.0333,
+          "t": 457963788.98,
+          "p_adj": 0.0
+        },
+        "C2": {
+          "beta": 0.0333,
+          "t": 1004067026.94,
+          "p_adj": 0.0
+        },
+        "C3": {
+          "beta": 0.0333,
+          "t": 535062425.54,
+          "p_adj": 0.0
+        },
+        "C4": {
+          "beta": 0.0333,
+          "t": 615561863.99,
+          "p_adj": 0.0
+        },
+        "C5": {
+          "beta": 0.0333,
+          "t": 545252917.8,
+          "p_adj": 0.0
+        },
+        "C6": {
+          "beta": 0.0333,
+          "t": 846463037.67,
+          "p_adj": 0.0
+        },
+        "E1": {
+          "beta": -0.0,
+          "t": -0.66,
+          "p_adj": 1.0
+        },
+        "E2": {
+          "beta": 0.0,
+          "t": 0.4,
+          "p_adj": 1.0
+        },
+        "E3": {
+          "beta": 0.0,
+          "t": 1.16,
+          "p_adj": 1.0
+        },
+        "E4": {
+          "beta": 0.0,
+          "t": 0.35,
+          "p_adj": 1.0
+        },
+        "E5": {
+          "beta": -0.0,
+          "t": -1.11,
+          "p_adj": 1.0
+        },
+        "E6": {
+          "beta": 0.0,
+          "t": 1.22,
+          "p_adj": 1.0
+        },
+        "A1": {
+          "beta": 0.0417,
+          "t": 1015328757.75,
+          "p_adj": 0.0
+        },
+        "A2": {
+          "beta": 0.0417,
+          "t": 749127751.99,
+          "p_adj": 0.0
+        },
+        "A3": {
+          "beta": 0.0417,
+          "t": 593058681.79,
+          "p_adj": 0.0
+        },
+        "A4": {
+          "beta": 0.0417,
+          "t": 847706565.33,
+          "p_adj": 0.0
+        },
+        "A5": {
+          "beta": 0.0417,
+          "t": 968074853.34,
+          "p_adj": 0.0
+        },
+        "A6": {
+          "beta": 0.0417,
+          "t": 824736881.63,
+          "p_adj": 0.0
+        },
+        "N1": {
+          "beta": 0.0,
+          "t": 1.7,
+          "p_adj": 1.0
+        },
+        "N2": {
+          "beta": 0.0,
+          "t": 1.26,
+          "p_adj": 1.0
+        },
+        "N3": {
+          "beta": 0.0,
+          "t": 0.63,
+          "p_adj": 1.0
+        },
+        "N4": {
+          "beta": -0.0,
+          "t": -0.73,
+          "p_adj": 1.0
+        },
+        "N5": {
+          "beta": 0.0,
+          "t": 0.27,
+          "p_adj": 1.0
+        },
+        "N6": {
+          "beta": -0.0,
+          "t": -1.83,
+          "p_adj": 1.0
+        }
+      },
+      "source": "draft derived via scripts/draft_facet_coefficients.py",
+      "confidence": "draft",
+      "note": "OLS on 612,595 Johnson IPIP-NEO-120 respondents. For each domain present in the original derivation, the best single facet (by |β|, sign-matched, Bonferroni p<0.01) is chosen to carry the domain-level coefficient. Fallback: domain-level '*' key if no facet passes the filter. Full OLS table in full_ols_betas."
+    }
+  }
+}

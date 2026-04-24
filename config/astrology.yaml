@@ -1,0 +1,61 @@
+﻿astrology:
+  system: "western_tropical"
+  house_system: "placidus"
+
+  celestial_bodies:
+    core: true          # Sunâ€“Pluto (10 bodies)
+    nodes: true         # North Node, South Node
+    chiron: true        # Chiron
+    lilith: false       # Phase 2+
+    asteroids: false    # Phase 2+
+
+  orbs:
+    conjunction: 8.0
+    opposition: 8.0
+    trine: 7.0
+    square: 7.0
+    sextile: 5.0
+    quincunx: 3.0
+
+  transit_orbs:
+    conjunction: 3.0
+    opposition: 3.0
+    trine: 2.5
+    square: 2.5
+    sextile: 2.0
+
+  transit_weights:
+    # Slower bodies have stronger transit impact
+    pluto: 1.0
+    neptune: 0.95
+    uranus: 0.90
+    saturn: 0.85
+    jupiter: 0.75
+    mars: 0.60
+    sun: 0.50
+    venus: 0.45
+    mercury: 0.40
+    moon: 0.30
+
+  cultural_modifier:
+    enabled: true
+    blend_ratio: 0.3
+
+  rule_based_embedder:
+    # Scales each planet's per-trait contribution. Higher values widen the
+    # trait distribution but risk [0,1] clamp saturation above ~0.50.
+    # Data-driven choice from scripts/diag_variance.py 2026-04-24:
+    # damp=0.40 yields S4 std~0.066 at ~8% clamp rate. Phase 3 calibration
+    # layer lifts to target std=0.17 on top of this.
+    dampening: 0.40
+
+  trait_calibration:
+    # Opt-in soft-rescale layer applied AFTER the cultural modifier. When
+    # enabled, each trait is stretched toward (target_mean, target_std)
+    # using observed population statistics from stats_path.
+    # Regenerate stats_path via scripts/build_calibration_stats.py any time
+    # dampening, planet_trait_map, or sign_modifiers change.
+    enabled: false
+    target_mean: 0.50
+    target_std: 0.17
+    stats_path: "config/trait_calibration_astrological.json"

@@ -1,0 +1,6 @@
+{
+  "country": "IR",
+  "first_names_m": ["Ali", "Reza", "Mohammad", "Hossein", "Amir", "Mehdi", "Ahmad", "Hassan", "Mostafa", "Pouya", "Arash", "Farhad", "Behzad", "Kaveh", "Saeed"],
+  "first_names_f": ["Fatemeh", "Zahra", "Maryam", "Sara", "Narges", "Zeinab", "Leila", "Mahsa", "Negar", "Yasaman", "Parisa", "Shirin", "Roya", "Golnaz", "Azadeh"],
+  "last_names": ["Ahmadi", "Rezai", "Mohammadi", "Hosseini", "Karimi", "Moradi", "Rahimi", "Sadeghi", "Alavi", "Kazemi", "Najafi", "Ghasemi", "Ebrahimi", "Hashemi", "Jafari"]
+}

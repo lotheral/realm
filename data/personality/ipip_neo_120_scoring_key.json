@@ -1,0 +1,726 @@
+{
+  "_source": "Johnson 2014 IPIP-NEO-120 — https://osf.io/ycvdk (qza3d) Admin 120 sheet",
+  "_schema": "{item_num: {facet, facet_name, text, reverse}}; items already pre-reversed in IPIP120.dat",
+  "items": {
+    "1": {
+      "facet": "N1",
+      "facet_name": "Anxiety",
+      "text": "Worry about things",
+      "reverse": false
+    },
+    "2": {
+      "facet": "E1",
+      "facet_name": "Friendliness",
+      "text": "Make friends easily",
+      "reverse": false
+    },
+    "3": {
+      "facet": "O1",
+      "facet_name": "Imagination",
+      "text": "Have a vivid imagination",
+      "reverse": false
+    },
+    "4": {
+      "facet": "A1",
+      "facet_name": "Trust",
+      "text": "Trust others",
+      "reverse": false
+    },
+    "5": {
+      "facet": "C1",
+      "facet_name": "Self-efficacy",
+      "text": "Complete tasks successfully",
+      "reverse": false
+    },
+    "6": {
+      "facet": "N2",
+      "facet_name": "Anger",
+      "text": "Get angry easily",
+      "reverse": false
+    },
+    "7": {
+      "facet": "E2",
+      "facet_name": "Gregariousness",
+      "text": "Love large parties",
+      "reverse": false
+    },
+    "8": {
+      "facet": "O2",
+      "facet_name": "Artistic Interests",
+      "text": "Believe in the importance of art",
+      "reverse": false
+    },
+    "9": {
+      "facet": "A2",
+      "facet_name": "Morality",
+      "text": "Use others for my own ends",
+      "reverse": true
+    },
+    "10": {
+      "facet": "C2",
+      "facet_name": "Orderliness",
+      "text": "Like to tidy up",
+      "reverse": false
+    },
+    "11": {
+      "facet": "N3",
+      "facet_name": "Depression",
+      "text": "Often feel blue",
+      "reverse": false
+    },
+    "12": {
+      "facet": "E3",
+      "facet_name": "Assertiveness",
+      "text": "Take charge",
+      "reverse": false
+    },
+    "13": {
+      "facet": "O3",
+      "facet_name": "Emotionality",
+      "text": "Experience my emotions intensely",
+      "reverse": false
+    },
+    "14": {
+      "facet": "A3",
+      "facet_name": "Altruism",
+      "text": "Love to help others",
+      "reverse": false
+    },
+    "15": {
+      "facet": "C3",
+      "facet_name": "Dutifulness",
+      "text": "Keep my promises",
+      "reverse": false
+    },
+    "16": {
+      "facet": "N4",
+      "facet_name": "Self-consciousness",
+      "text": "Find it difficult to approach others",
+      "reverse": false
+    },
+    "17": {
+      "facet": "E4",
+      "facet_name": "Activity Level",
+      "text": "Am always busy",
+      "reverse": false
+    },
+    "18": {
+      "facet": "O4",
+      "facet_name": "Adventurousness",
+      "text": "Prefer variety to routine",
+      "reverse": false
+    },
+    "19": {
+      "facet": "A4",
+      "facet_name": "Cooperation",
+      "text": "Love a good fight",
+      "reverse": true
+    },
+    "20": {
+      "facet": "C4",
+      "facet_name": "Achievement-striving",
+      "text": "Work hard",
+      "reverse": false
+    },
+    "21": {
+      "facet": "N5",
+      "facet_name": "Immoderation",
+      "text": "Go on binges",
+      "reverse": false
+    },
+    "22": {
+      "facet": "E5",
+      "facet_name": "Excitement-seeking",
+      "text": "Love excitement",
+      "reverse": false
+    },
+    "23": {
+      "facet": "O5",
+      "facet_name": "Intellect",
+      "text": "Love to read challenging material",
+      "reverse": false
+    },
+    "24": {
+      "facet": "A5",
+      "facet_name": "Modesty",
+      "text": "Believe that I am better than others",
+      "reverse": true
+    },
+    "25": {
+      "facet": "C5",
+      "facet_name": "Self-discipline",
+      "text": "Am always prepared",
+      "reverse": false
+    },
+    "26": {
+      "facet": "N6",
+      "facet_name": "Vulnerability",
+      "text": "Panic easily",
+      "reverse": false
+    },
+    "27": {
+      "facet": "E6",
+      "facet_name": "Cheerfulness",
+      "text": "Radiate joy",
+      "reverse": false
+    },
+    "28": {
+      "facet": "O6",
+      "facet_name": "Liberalism",
+      "text": "Tend to vote for liberal political candidates",
+      "reverse": false
+    },
+    "29": {
+      "facet": "A6",
+      "facet_name": "Sympathy",
+      "text": "Sympathize with the homeless",
+      "reverse": false
+    },
+    "30": {
+      "facet": "C6",
+      "facet_name": "Cautiousness",
+      "text": "Jump into things without thinking",
+      "reverse": true
+    },
+    "31": {
+      "facet": "N1",
+      "facet_name": "Anxiety",
+      "text": "Fear for the worst",
+      "reverse": false
+    },
+    "32": {
+      "facet": "E1",
+      "facet_name": "Friendliness",
+      "text": "Feel comfortable around other people",
+      "reverse": false
+    },
+    "33": {
+      "facet": "O1",
+      "facet_name": "Imagination",
+      "text": "Enjoy wild flights of fancy",
+      "reverse": false
+    },
+    "34": {
+      "facet": "A1",
+      "facet_name": "Trust",
+      "text": "Believe that others have good intentions",
+      "reverse": false
+    },
+    "35": {
+      "facet": "C1",
+      "facet_name": "Self-efficacy",
+      "text": "Excel in what I do",
+      "reverse": false
+    },
+    "36": {
+      "facet": "N2",
+      "facet_name": "Anger",
+      "text": "Get irritated easily",
+      "reverse": false
+    },
+    "37": {
+      "facet": "E2",
+      "facet_name": "Gregariousness",
+      "text": "Talk to a lot of different people at parties",
+      "reverse": false
+    },
+    "38": {
+      "facet": "O2",
+      "facet_name": "Artistic Interests",
+      "text": "See beauty in things that others might not notice",
+      "reverse": false
+    },
+    "39": {
+      "facet": "A2",
+      "facet_name": "Morality",
+      "text": "Cheat to get ahead",
+      "reverse": true
+    },
+    "40": {
+      "facet": "C2",
+      "facet_name": "Orderliness",
+      "text": "Often forget to put things back in their proper place",
+      "reverse": true
+    },
+    "41": {
+      "facet": "N3",
+      "facet_name": "Depression",
+      "text": "Dislike myself",
+      "reverse": false
+    },
+    "42": {
+      "facet": "E3",
+      "facet_name": "Assertiveness",
+      "text": "Try to lead others",
+      "reverse": false
+    },
+    "43": {
+      "facet": "O3",
+      "facet_name": "Emotionality",
+      "text": "Feel others' emotions",
+      "reverse": false
+    },
+    "44": {
+      "facet": "A3",
+      "facet_name": "Altruism",
+      "text": "Am concerned about others",
+      "reverse": false
+    },
+    "45": {
+      "facet": "C3",
+      "facet_name": "Dutifulness",
+      "text": "Tell the truth",
+      "reverse": false
+    },
+    "46": {
+      "facet": "N4",
+      "facet_name": "Self-consciousness",
+      "text": "Am afraid to draw attention to myself",
+      "reverse": false
+    },
+    "47": {
+      "facet": "E4",
+      "facet_name": "Activity Level",
+      "text": "Am always on the go",
+      "reverse": false
+    },
+    "48": {
+      "facet": "O4",
+      "facet_name": "Adventurousness",
+      "text": "Prefer to stick with things that I know",
+      "reverse": true
+    },
+    "49": {
+      "facet": "A4",
+      "facet_name": "Cooperation",
+      "text": "Yell at people",
+      "reverse": true
+    },
+    "50": {
+      "facet": "C4",
+      "facet_name": "Achievement-striving",
+      "text": "Do more than what's expected of me",
+      "reverse": false
+    },
+    "51": {
+      "facet": "N5",
+      "facet_name": "Immoderation",
+      "text": "Rarely overindulge",
+      "reverse": true
+    },
+    "52": {
+      "facet": "E5",
+      "facet_name": "Excitement-seeking",
+      "text": "Seek adventure",
+      "reverse": false
+    },
+    "53": {
+      "facet": "O5",
+      "facet_name": "Intellect",
+      "text": "Avoid philosophical discussions",
+      "reverse": true
+    },
+    "54": {
+      "facet": "A5",
+      "facet_name": "Modesty",
+      "text": "Think highly of myself",
+      "reverse": true
+    },
+    "55": {
+      "facet": "C5",
+      "facet_name": "Self-discipline",
+      "text": "Carry out my plans",
+      "reverse": false
+    },
+    "56": {
+      "facet": "N6",
+      "facet_name": "Vulnerability",
+      "text": "Become overwhelmed by events",
+      "reverse": false
+    },
+    "57": {
+      "facet": "E6",
+      "facet_name": "Cheerfulness",
+      "text": "Have a lot of fun",
+      "reverse": false
+    },
+    "58": {
+      "facet": "O6",
+      "facet_name": "Liberalism",
+      "text": "Believe that there is no absolute right or wrong",
+      "reverse": false
+    },
+    "59": {
+      "facet": "A6",
+      "facet_name": "Sympathy",
+      "text": "Feel sympathy for those who are worse off than myself",
+      "reverse": false
+    },
+    "60": {
+      "facet": "C6",
+      "facet_name": "Cautiousness",
+      "text": "Make rash decisions",
+      "reverse": true
+    },
+    "61": {
+      "facet": "N1",
+      "facet_name": "Anxiety",
+      "text": "Am afraid of many things",
+      "reverse": false
+    },
+    "62": {
+      "facet": "E1",
+      "facet_name": "Friendliness",
+      "text": "Avoid contacts with others",
+      "reverse": true
+    },
+    "63": {
+      "facet": "O1",
+      "facet_name": "Imagination",
+      "text": "Love to daydream",
+      "reverse": false
+    },
+    "64": {
+      "facet": "A1",
+      "facet_name": "Trust",
+      "text": "Trust what people say",
+      "reverse": false
+    },
+    "65": {
+      "facet": "C1",
+      "facet_name": "Self-efficacy",
+      "text": "Handle tasks smoothly",
+      "reverse": false
+    },
+    "66": {
+      "facet": "N2",
+      "facet_name": "Anger",
+      "text": "Lose my temper",
+      "reverse": false
+    },
+    "67": {
+      "facet": "E2",
+      "facet_name": "Gregariousness",
+      "text": "Prefer to be alone",
+      "reverse": true
+    },
+    "68": {
+      "facet": "O2",
+      "facet_name": "Artistic Interests",
+      "text": "Do not like poetry",
+      "reverse": true
+    },
+    "69": {
+      "facet": "A2",
+      "facet_name": "Morality",
+      "text": "Take advantage of others",
+      "reverse": true
+    },
+    "70": {
+      "facet": "C2",
+      "facet_name": "Orderliness",
+      "text": "Leave a mess in my room",
+      "reverse": true
+    },
+    "71": {
+      "facet": "N3",
+      "facet_name": "Depression",
+      "text": "Am often down in the dumps",
+      "reverse": false
+    },
+    "72": {
+      "facet": "E3",
+      "facet_name": "Assertiveness",
+      "text": "Take control of things",
+      "reverse": false
+    },
+    "73": {
+      "facet": "O3",
+      "facet_name": "Emotionality",
+      "text": "Rarely notice my emotional reactions",
+      "reverse": true
+    },
+    "74": {
+      "facet": "A3",
+      "facet_name": "Altruism",
+      "text": "Am indifferent to the feelings of others",
+      "reverse": true
+    },
+    "75": {
+      "facet": "C3",
+      "facet_name": "Dutifulness",
+      "text": "Break rules",
+      "reverse": true
+    },
+    "76": {
+      "facet": "N4",
+      "facet_name": "Self-consciousness",
+      "text": "Only feel comfortable with friends",
+      "reverse": false
+    },
+    "77": {
+      "facet": "E4",
+      "facet_name": "Activity Level",
+      "text": "Do a lot in my spare time",
+      "reverse": false
+    },
+    "78": {
+      "facet": "O4",
+      "facet_name": "Adventurousness",
+      "text": "Dislike changes",
+      "reverse": true
+    },
+    "79": {
+      "facet": "A4",
+      "facet_name": "Cooperation",
+      "text": "Insult people",
+      "reverse": true
+    },
+    "80": {
+      "facet": "C4",
+      "facet_name": "Achievement-striving",
+      "text": "Do just enough work to get by",
+      "reverse": true
+    },
+    "81": {
+      "facet": "N5",
+      "facet_name": "Immoderation",
+      "text": "Easily resist temptations",
+      "reverse": true
+    },
+    "82": {
+      "facet": "E5",
+      "facet_name": "Excitement-seeking",
+      "text": "Enjoy being reckless",
+      "reverse": false
+    },
+    "83": {
+      "facet": "O5",
+      "facet_name": "Intellect",
+      "text": "Have difficulty understanding abstract ideas",
+      "reverse": true
+    },
+    "84": {
+      "facet": "A5",
+      "facet_name": "Modesty",
+      "text": "Have a high opinion of myself",
+      "reverse": true
+    },
+    "85": {
+      "facet": "C5",
+      "facet_name": "Self-discipline",
+      "text": "Waste my time",
+      "reverse": true
+    },
+    "86": {
+      "facet": "N6",
+      "facet_name": "Vulnerability",
+      "text": "Feel that I'm unable to deal with things",
+      "reverse": false
+    },
+    "87": {
+      "facet": "E6",
+      "facet_name": "Cheerfulness",
+      "text": "Love life",
+      "reverse": false
+    },
+    "88": {
+      "facet": "O6",
+      "facet_name": "Liberalism",
+      "text": "Tend to vote for conservative political candidates",
+      "reverse": true
+    },
+    "89": {
+      "facet": "A6",
+      "facet_name": "Sympathy",
+      "text": "Am not interested in other people's problems",
+      "reverse": true
+    },
+    "90": {
+      "facet": "C6",
+      "facet_name": "Cautiousness",
+      "text": "Rush into things",
+      "reverse": true
+    },
+    "91": {
+      "facet": "N1",
+      "facet_name": "Anxiety",
+      "text": "Get stressed out easily",
+      "reverse": false
+    },
+    "92": {
+      "facet": "E1",
+      "facet_name": "Friendliness",
+      "text": "Keep others at a distance",
+      "reverse": true
+    },
+    "93": {
+      "facet": "O1",
+      "facet_name": "Imagination",
+      "text": "Like to get lost in thought",
+      "reverse": false
+    },
+    "94": {
+      "facet": "A1",
+      "facet_name": "Trust",
+      "text": "Distrust people",
+      "reverse": true
+    },
+    "95": {
+      "facet": "C1",
+      "facet_name": "Self-efficacy",
+      "text": "Know how to get things done",
+      "reverse": false
+    },
+    "96": {
+      "facet": "N2",
+      "facet_name": "Anger",
+      "text": "Am not easily annoyed",
+      "reverse": true
+    },
+    "97": {
+      "facet": "E2",
+      "facet_name": "Gregariousness",
+      "text": "Avoid crowds",
+      "reverse": true
+    },
+    "98": {
+      "facet": "O2",
+      "facet_name": "Artistic Interests",
+      "text": "Do not enjoy going to art museums",
+      "reverse": true
+    },
+    "99": {
+      "facet": "A2",
+      "facet_name": "Morality",
+      "text": "Obstruct others' plans",
+      "reverse": true
+    },
+    "100": {
+      "facet": "C2",
+      "facet_name": "Orderliness",
+      "text": "Leave my belongings around",
+      "reverse": true
+    },
+    "101": {
+      "facet": "N3",
+      "facet_name": "Depression",
+      "text": "Feel comfortable with myself",
+      "reverse": true
+    },
+    "102": {
+      "facet": "E3",
+      "facet_name": "Assertiveness",
+      "text": "Wait for others to lead the way",
+      "reverse": true
+    },
+    "103": {
+      "facet": "O3",
+      "facet_name": "Emotionality",
+      "text": "Don't understand people who get emotional",
+      "reverse": true
+    },
+    "104": {
+      "facet": "A3",
+      "facet_name": "Altruism",
+      "text": "Take no time for others",
+      "reverse": true
+    },
+    "105": {
+      "facet": "C3",
+      "facet_name": "Dutifulness",
+      "text": "Break my promises",
+      "reverse": true
+    },
+    "106": {
+      "facet": "N4",
+      "facet_name": "Self-consciousness",
+      "text": "Am not bothered by difficult social situations",
+      "reverse": true
+    },
+    "107": {
+      "facet": "E4",
+      "facet_name": "Activity Level",
+      "text": "Like to take it easy",
+      "reverse": true
+    },
+    "108": {
+      "facet": "O4",
+      "facet_name": "Adventurousness",
+      "text": "Am attached to conventional ways",
+      "reverse": true
+    },
+    "109": {
+      "facet": "A4",
+      "facet_name": "Cooperation",
+      "text": "Get back at others",
+      "reverse": true
+    },
+    "110": {
+      "facet": "C4",
+      "facet_name": "Achievement-striving",
+      "text": "Put little time and effort into my work",
+      "reverse": true
+    },
+    "111": {
+      "facet": "N5",
+      "facet_name": "Immoderation",
+      "text": "Am able to control my cravings",
+      "reverse": true
+    },
+    "112": {
+      "facet": "E5",
+      "facet_name": "Excitement-seeking",
+      "text": "Act wild and crazy",
+      "reverse": false
+    },
+    "113": {
+      "facet": "O5",
+      "facet_name": "Intellect",
+      "text": "Am not interested in theoretical discussions",
+      "reverse": true
+    },
+    "114": {
+      "facet": "A5",
+      "facet_name": "Modesty",
+      "text": "Boast about my virtues",
+      "reverse": true
+    },
+    "115": {
+      "facet": "C5",
+      "facet_name": "Self-discipline",
+      "text": "Have difficulty starting tasks",
+      "reverse": true
+    },
+    "116": {
+      "facet": "N6",
+      "facet_name": "Vulnerability",
+      "text": "Remain calm under pressure",
+      "reverse": true
+    },
+    "117": {
+      "facet": "E6",
+      "facet_name": "Cheerfulness",
+      "text": "Look at the bright side of life",
+      "reverse": false
+    },
+    "118": {
+      "facet": "O6",
+      "facet_name": "Liberalism",
+      "text": "Believe that we should be tough on crime",
+      "reverse": true
+    },
+    "119": {
+      "facet": "A6",
+      "facet_name": "Sympathy",
+      "text": "Try not to think about the needy",
+      "reverse": true
+    },
+    "120": {
+      "facet": "C6",
+      "facet_name": "Cautiousness",
+      "text": "Act without thinking",
+      "reverse": true
+    }
+  }
+}
