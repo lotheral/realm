@@ -1,7 +1,10 @@
 [project]
 name = "realm"
-version = "0.1.0"
-description = "Astrological Swarm Intelligence Prediction Engine"
+version = "0.19.2"
+description = "Collective Sentiment Simulation Platform — time-seeded trait diversification + LLM-as-partner scenario analysis"
+authors = [{ name = "Suvar Ergun" }]
+license = { text = "MIT" }
+readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     # Phase 1 ephemeris backend. Pure-Python + compiled wheels on all platforms.

@@ -6,7 +6,7 @@
 > **Created:** 2026-04-22
 > **Last Updated:** 2026-05-04 (v0.19.0 — Repositioning: baseline LLM-dominant + scenario sim-dominant blend + multi-cat full parameter blending + About panel reframe)
 > **Author:** Loth + Claude (Anthropic)
-> **License:** TBD (placeholder pending decision; see README.md)
+> **License:** MIT — Copyright © 2026 Suvar Ergun. See `LICENSE`.
 > **Status:** Phase 1-6 + LLM + scenario panel + Sprints 1-19 complete. **881 tests passing**, all Sprint 19 files ruff clean. Sprint 16 added 3 geopolitics-pool drift event types (regime_consolidation, diplomatic_stalemate, sanctions_pressure) and a per-category `baseline_probability_offset` fine-tuning knob, but the headline finding was a **latent engine bug since Sprint 10**: `ExperienceDriftEngine._EVENT_TRAIT_MAP` only ever held the 6 Sprint 9 events, and `build_branch_sim` never passed `bridge.event_map` into the engine — so all Sprint 10 events (leadership_act, group_conformity, group_dissent, financial_loss, financial_gain, cultural_experience) had been silently no-op'd by `engine.event_map.get(event_type)` returning None for 6 sprints. Two-line fix in `realm/output/predictor.py`: load bridge first, then pass `event_map=drift_bridge.event_map`. Sprint 14/15 baseline differentiation calibrations had been running on only 6 events; Sprint 16 is the first calibration where all 15 events actually contribute to drift accumulation.
 
 ---

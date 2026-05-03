@@ -3,7 +3,7 @@
 > **Status:** v0.19.2 (Sprint 19.2 — delta decomposition hotfix) · **Tests:** 887 passing
 > · **Article:** [`REALM_ARTICLE_DRAFT.md`](./REALM_ARTICLE_DRAFT.md) — *REALM: Collective Sentiment Simulation Through Time-Seeded Trait Diversification*
 >
-> **License:** MIT *(intent declared in the article; pyproject still says TBD pending repo-level housekeeping — the publishable artifact is MIT)*
+> **License:** MIT — Copyright © 2026 Suvar Ergun. See [`LICENSE`](./LICENSE).
 
 ---
 
