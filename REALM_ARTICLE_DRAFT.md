@@ -2,6 +2,8 @@
 
 **A Swarm Intelligence Approach to Scenario Analysis and Opinion Dynamics**
 
+**Suvar Ergun** · 2026 · v0.19.2 · MIT License · [`github.com/lotheral/realm`](https://github.com/lotheral/realm)
+
 ---
 
 ## Abstract
