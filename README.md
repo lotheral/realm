@@ -13,7 +13,7 @@ REALM is published as a research artifact accompanying the
 forthcoming article above. The codebase reflects the state at
 article publication and is **not actively maintained for external
 contributions**. Issues / PRs are disabled at the repo level. Fork
-freely; please cite `REALM v0.19.2, Loth (2026)` if you reference
+freely; please cite `REALM v0.19.2, Ergun (2026)` if you reference
 the work.
 
 ---
@@ -339,7 +339,7 @@ pass. 200 agents × 30 ticks × 5 branches × 10 runs/category. See
 If you reference REALM in academic work:
 
 ```
-Loth (2026). REALM v0.19.2: Collective Sentiment Simulation
+Ergun, S. (2026). REALM v0.19.2: Collective Sentiment Simulation
 Through Time-Seeded Trait Diversification.
 https://github.com/lotheral/realm
 ```
