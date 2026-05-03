@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>REALM — Simulation Observatory</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
+<style>
+  :root {
+    --bg: #0b0d12;
+    --panel: #11141b;
+    --panel-2: #161a23;
+    --ink: #e8ecf2;
+    --ink-dim: #9099a8;
+    --ink-faint: #5c6372;
+    --border: rgba(255,255,255,0.08);
+    --accent: #4dd3ff;
+    --accent-2: #b794f4;
+    --good: #4ade80;
+    --warn: #fbbf24;
+    --bad: #ef4444;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html,body { background: var(--bg); color: var(--ink); font-family: 'Inter', system-ui, sans-serif; line-height: 1.5; }
+  .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+
+  /* Nav */
+  nav {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(11,13,18,0.92);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 32px;
+    display: flex; align-items: center; gap: 24px;
+  }
+  nav .brand { font-family: 'JetBrains Mono', monospace; font-weight: 700; letter-spacing: 0.08em; font-size: 14px; }
+  nav .brand .dot { color: var(--accent); }
+  nav ul { list-style: none; display: flex; gap: 20px; margin-left: auto; flex-wrap: wrap; }
+  nav a { color: var(--ink-dim); text-decoration: none; font-size: 13px; font-weight: 500; transition: color 0.15s; }
+  nav a:hover, nav a.active { color: var(--ink); }
+
+  main { max-width: 1400px; margin: 0 auto; padding: 48px 32px 96px; }
+  section { margin-bottom: 72px; scroll-margin-top: 72px; }
+  section > h2 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+  section > h3 {
+    font-size: 28px; font-weight: 600; letter-spacing: -0.015em;
+    margin-bottom: 16px;
+  }
+  section > p.lede { color: var(--ink-dim); font-size: 15px; max-width: 820px; margin-bottom: 32px; }
+
+  .grid { display: grid; gap: 16px; }
+  .grid-2 { grid-template-columns: repeat(2, 1fr); }
+  .grid-3 { grid-template-columns: repeat(3, 1fr); }
+  .grid-4 { grid-template-columns: repeat(4, 1fr); }
+  @media (max-width: 1024px) { .grid-3, .grid-4 { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 720px)  { .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; } }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+  }
+  .card .card-title {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 10px;
+  }
+  .card .big { font-size: 32px; font-weight: 700; font-family: 'JetBrains Mono', monospace; letter-spacing: -0.02em; }
+  .card .big.good { color: var(--good); }
+  .card .big.warn { color: var(--warn); }
+  .card .big.bad  { color: var(--bad); }
+  .card .sub { color: var(--ink-dim); font-size: 13px; margin-top: 6px; }
+
+  .kpi-row { display: flex; flex-wrap: wrap; gap: 12px; }
+  .kpi {
+    background: var(--panel-2);
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    display: flex; flex-direction: column;
+  }
+  .kpi .v { font-family: 'JetBrains Mono', monospace; font-size: 20px; font-weight: 700; }
+  .kpi .k { color: var(--ink-faint); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; }
+
+  /* Pipeline diagram */
+  .pipeline svg { max-width: 100%; height: auto; }
+  .pipe-box { fill: var(--panel-2); stroke: var(--border); stroke-width: 1; }
+  .pipe-box-active { stroke: var(--accent); stroke-width: 1.5; }
+  .pipe-label { fill: var(--ink); font: 600 13px 'JetBrains Mono', monospace; }
+  .pipe-sub { fill: var(--ink-dim); font: 400 11px 'JetBrains Mono', monospace; }
+  .pipe-arrow { stroke: var(--ink-faint); stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+
+  /* Radar */
+  .radar-axis { stroke: rgba(255,255,255,0.05); }
+  .radar-axis-label { fill: var(--ink-faint); font: 400 9px 'JetBrains Mono', monospace; }
+  .radar-poly { fill: rgba(77,211,255,0.18); stroke: var(--accent); stroke-width: 1.5; }
+  .radar-dot { fill: var(--accent); }
+
+  /* Bars */
+  .bar { transition: opacity 0.15s; }
+  .bar:hover { opacity: 0.8; }
+  .bar-label { fill: var(--ink-dim); font: 400 10px 'JetBrains Mono', monospace; }
+  .bar-value { fill: var(--ink); font: 500 10px 'JetBrains Mono', monospace; }
+
+  /* Histogram overlay */
+  .hist-tick0 { fill: rgba(183,148,244,0.25); stroke: var(--accent-2); stroke-width: 1; }
+  .hist-tickN { fill: rgba(77,211,255,0.25); stroke: var(--accent); stroke-width: 1; }
+
+  /* Choropleth */
+  .country { stroke: var(--bg); stroke-width: 0.5; cursor: pointer; }
+  .country:hover { stroke: var(--ink); stroke-width: 1; }
+  .country-unknown { fill: #1a1d25; }
+
+  /* Network */
+  .node circle { stroke: var(--panel); stroke-width: 1.5; }
+  .node-label { fill: var(--ink-dim); font: 400 10px 'JetBrains Mono', monospace; pointer-events: none; }
+  .link { stroke: rgba(77,211,255,0.2); stroke-width: 1; }
+
+  /* Timeline */
+  .sprint-box { fill: var(--panel-2); stroke: var(--border); }
+  .sprint-box-current { fill: rgba(77,211,255,0.15); stroke: var(--accent); }
+  .sprint-label { fill: var(--ink); font: 600 11px 'JetBrains Mono', monospace; }
+  .sprint-sub { fill: var(--ink-dim); font: 400 10px 'Inter', sans-serif; }
+
+  /* Table */
+  table { width: 100%; border-collapse: collapse; font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+  th,td { padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--border); }
+  th { color: var(--ink-faint); font-weight: 500; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; }
+  td.num { text-align: right; }
+  .pass { color: var(--good); }
+  .fail { color: var(--bad); }
+  .pill { padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 600; }
+  .pill.good { background: rgba(74,222,128,0.15); color: var(--good); }
+  .pill.warn { background: rgba(251,191,36,0.15); color: var(--warn); }
+  .pill.bad  { background: rgba(239,68,68,0.15);  color: var(--bad);  }
+
+  .select {
+    background: var(--panel-2); color: var(--ink); border: 1px solid var(--border);
+    padding: 6px 10px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 12px;
+  }
+
+  .hint { color: var(--ink-faint); font-size: 11px; font-family: 'JetBrains Mono', monospace; }
+</style>
+</head>
+<body>
+<nav>
+  <div class="brand">REALM<span class="dot"> · </span><span style="color:var(--ink-dim);font-weight:400;">Simulation Observatory</span></div>
+  <ul>
+    <li><a href="#panel-1">01&nbsp;Overview</a></li>
+    <li><a href="#panel-2">02&nbsp;Engine</a></li>
+    <li><a href="#panel-3">03&nbsp;Validation</a></li>
+    <li><a href="#panel-4">04&nbsp;Simulation</a></li>
+    <li><a href="#panel-5">05&nbsp;Performance</a></li>
+  </ul>
+</nav>
+
+<main>
+
+  <!-- ================================================================== -->
+  <!-- Panel 1 — What is REALM?                                            -->
+  <!-- ================================================================== -->
+  <section id="panel-1">
+    <h2>01 &mdash; Overview</h2>
+    <h3>What is REALM?</h3>
+    <p class="lede">
+      REALM is a swarm-intelligence simulation engine. It builds a population of
+      synthetic agents from three parallel signals &mdash; birth-chart astrology,
+      Big-Five personality scores, and country-level Hofstede culture &mdash; and
+      runs them through a tick-based social platform where they post, engage,
+      drift, and react to transiting celestial events. The aim is a working
+      laboratory for testing how personality, culture, and timing compose into
+      collective behaviour.
+    </p>
+    <div class="kpi-row">
+      <div class="kpi"><span class="k">Tests</span><span class="v" id="kpi-tests">620</span></div>
+      <div class="kpi"><span class="k">Countries</span><span class="v">66</span></div>
+      <div class="kpi"><span class="k">Traits</span><span class="v" id="kpi-traits">24</span></div>
+      <div class="kpi"><span class="k">BF Validation N</span><span class="v">612,711</span></div>
+      <div class="kpi"><span class="k">Astro Validation N</span><span class="v">22</span></div>
+      <div class="kpi"><span class="k">10K Sim Agents</span><span class="v" id="kpi-agents">10,000</span></div>
+    </div>
+    <p style="margin-top:20px;color:var(--ink-dim);font-size:13px;">
+      <span class="mono" style="color:var(--accent);">Stack:</span>
+      Kerykeion (Swiss Ephemeris) natal charts
+      <span style="color:var(--ink-faint);">&rarr;</span> AstrologicalAdapter + BigFiveAdapter + DemographicAdapter
+      <span style="color:var(--ink-faint);">&rarr;</span> 24-trait vector
+      <span style="color:var(--ink-faint);">&rarr;</span> SimulationEngine with TransitModulator, ExperienceDriftEngine, ClimateEngine, NetworkTopology.
+    </p>
+  </section>
+
+  <!-- ================================================================== -->
+  <!-- Panel 2 — How does the engine work?                                 -->
+  <!-- ================================================================== -->
+  <section id="panel-2">
+    <h2>02 &mdash; Engine</h2>
+    <h3>How does the personality engine work?</h3>
+    <p class="lede">
+      Every agent is built from three adapters running in parallel and merged
+      by a BlendedAdapter. The diagram traces one path. On the right, the
+      24-trait output for a real sample &mdash; produced by the current REALM
+      code running on the figure's natal chart.
+    </p>
+    <div class="grid grid-2">
+      <div class="card pipeline">
+        <div class="card-title">Adapter pipeline &mdash; one agent</div>
+        <svg id="pipeline-svg" viewBox="0 0 520 380"></svg>
+      </div>
+      <div class="card">
+        <div class="card-title" id="radar-title">Sample agent &mdash; 23 astro traits</div>
+        <svg id="sample-radar" viewBox="-180 -180 360 360" style="width:100%;height:auto;"></svg>
+        <div id="radar-sub" class="hint" style="margin-top:8px;"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================== -->
+  <!-- Panel 3 — Scientific basis                                          -->
+  <!-- ================================================================== -->
+  <section id="panel-3">
+    <h2>03 &mdash; Validation</h2>
+    <h3>What is the scientific basis?</h3>
+    <p class="lede">
+      Two validation studies back the engine. Big-Five facet output is checked
+      against the public Johnson IPIP-NEO-120 dataset (N=612,711). Astrological
+      output is checked against 22 hand-authored celebrity profiles with
+      expert-rated expected traits.
+    </p>
+    <div class="grid grid-2" style="margin-bottom:16px;">
+      <div class="card">
+        <div class="card-title">Big-Five validity</div>
+        <div class="big good">8&nbsp;/&nbsp;8 PASS</div>
+        <div class="sub">Johnson IPIP-NEO-120, N=612,711 &middot; facet-mode adapter &middot; online-sample tolerances.</div>
+        <div class="hint" style="margin-top:10px;">Structural pairs 15/15 &middot; Per-facet BF 13/13 PASS</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Astrological validity</div>
+        <div class="big good">4&nbsp;/&nbsp;4 PASS</div>
+        <div class="sub">Directional Accuracy <b id="val-da">–</b> &middot; Extreme Detection <b id="val-ext">–</b> &middot; CW-DA <b id="val-cw">–</b>.</div>
+        <div class="hint" style="margin-top:10px;">N=22 figures, 490 trait judgements &middot; raw (uncalibrated) adapter.</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Per-trait Directional Accuracy &mdash; celebrity cohort</div>
+      <svg id="per-trait-bars" viewBox="0 0 900 520" style="width:100%;height:auto;"></svg>
+      <div class="hint" style="margin-top:10px;">
+        DA &mdash; per trait hit rate against expected direction. 0.50 is the chance line. Bars are coloured by DA tier.
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================== -->
+  <!-- Panel 4 — Simulation outputs (the core panel)                       -->
+  <!-- ================================================================== -->
+  <section id="panel-4">
+    <h2>04 &mdash; Simulation</h2>
+    <h3>What does the 10K&nbsp;&times;&nbsp;30 run produce?</h3>
+    <p class="lede">
+      This is what the engine actually does. Every number below comes from the
+      seed=42 run persisted to <span class="mono">outputs/sim_10k_run1/</span>:
+      10,000 agents, 30 ticks, real drift events, real posts, real engagements.
+    </p>
+
+    <div class="grid grid-4" style="margin-bottom:16px;">
+      <div class="card">
+        <div class="card-title">Posts</div>
+        <div class="big" id="sim-posts">–</div>
+        <div class="sub" id="sim-posts-sub">across 30 ticks</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Engagements</div>
+        <div class="big" id="sim-eng">–</div>
+        <div class="sub">likes, shares, replies</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Agents with drift</div>
+        <div class="big good" id="sim-drift-agents">–</div>
+        <div class="sub" id="sim-drift-sub">mean magnitude &mdash;</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Mean drift events / agent</div>
+        <div class="big" id="sim-events">–</div>
+        <div class="sub">max <span id="sim-events-max">–</span></div>
+      </div>
+    </div>
+
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="card-title">Trait distribution &mdash; tick 0 vs tick 30 (drifted)</div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+          <label class="hint">Trait:</label>
+          <select class="select" id="trait-select"></select>
+        </div>
+        <svg id="hist-svg" viewBox="0 0 520 280" style="width:100%;height:auto;"></svg>
+        <div class="hint" style="margin-top:6px;">
+          Normal approximation using &mu;/&sigma; reported by the run. Solid stats labelled below.
+        </div>
+        <div id="hist-stats" class="mono" style="font-size:11px;color:var(--ink-dim);margin-top:6px;"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Mean drift per trait (tick&nbsp;30 &minus; tick&nbsp;0)</div>
+        <svg id="drift-bars" viewBox="0 0 520 520" style="width:100%;height:auto;"></svg>
+        <div class="hint" style="margin-top:8px;">
+          Social event bridge currently drifts empathy, social_dominance, agreeableness, contrarian_tendency, neuroticism. Risk/knowledge/stress traits show zero drift until Sprint 10 WP3 event bridge expansion is active.
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <div class="card-title">World coverage &mdash; per-country mean trait</div>
+      <div style="display:flex;gap:12px;margin-bottom:8px;align-items:center;">
+        <label class="hint">Trait:</label>
+        <select class="select" id="map-trait-select"></select>
+        <span class="hint" id="map-legend"></span>
+      </div>
+      <svg id="map-svg" viewBox="0 0 960 480" style="width:100%;height:auto;"></svg>
+      <div id="map-tooltip" class="mono" style="font-size:12px;color:var(--ink-dim);min-height:18px;margin-top:4px;"></div>
+      <div class="hint" style="margin-top:6px;">
+        Hover a country to see sample size and trait mean. Grey countries are outside the 66-country panel.
+      </div>
+    </div>
+
+    <div class="grid grid-2" style="margin-top:16px;">
+      <div class="card">
+        <div class="card-title">Action mix across the run</div>
+        <svg id="action-pie" viewBox="-100 -100 200 200" style="width:200px;height:200px;display:block;margin:0 auto;"></svg>
+        <div id="action-legend" style="margin-top:12px;"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Country cluster network &mdash; trait-similarity graph</div>
+        <svg id="country-net" viewBox="0 0 480 320" style="width:100%;height:320px;"></svg>
+        <div class="hint" style="margin-top:6px;">
+          Top-30 simulated countries, positioned by force layout. Node size = population, link opacity = cosine similarity on the 23-trait mean vector.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================== -->
+  <!-- Panel 5 — Performance                                               -->
+  <!-- ================================================================== -->
+  <section id="panel-5">
+    <h2>05 &mdash; Performance</h2>
+    <h3>What does the system cost?</h3>
+    <p class="lede">
+      10K agents &times; 30 ticks on a single CPU. Sprint 10 WP1 shrank the
+      hot-path aspect calculator from 94% of tick time down to a smaller share
+      via allocation-free transit-aspect evaluation.
+    </p>
+    <div class="grid grid-4" style="margin-bottom:16px;">
+      <div class="card">
+        <div class="card-title">Runtime (10K&times;30)</div>
+        <div class="big good" id="perf-runtime">20.4 min</div>
+        <div class="sub" id="perf-runtime-sub">Sprint 9 baseline 38.4 min &rarr; <b>1.88&times; faster</b> after WP1</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Peak memory</div>
+        <div class="big good" id="perf-memory">0.20 GB</div>
+        <div class="sub">40&times; below the 8 GB budget</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Test coverage</div>
+        <div class="big" id="perf-tests">654</div>
+        <div class="sub">Ruff clean on all Sprint 10 files</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Aspect-calculator share</div>
+        <div class="big good" id="perf-aspect">63% &rarr; 24%</div>
+        <div class="sub">cProfile 10K&times;30 &mdash; cumulative tick-time fraction</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Sprint timeline &mdash; test count and milestones</div>
+      <svg id="sprint-svg" viewBox="0 0 900 160" style="width:100%;height:auto;"></svg>
+    </div>
+  </section>
+
+</main>
+
+<script id="payload" type="application/json">{"generated_at":"2026-04-24","version":"0.10.0","trait_names":["openness","conscientiousness","extraversion","agreeableness","neuroticism","risk_appetite","analytical_depth","impulsivity","patience","social_dominance","herd_susceptibility","authority_compliance","contrarian_tendency","empathy","financial_optimism","loss_aversion","fomo_susceptibility","communication_assertiveness","persuasion_skill","information_sharing","political_spectrum","tradition_vs_progress","individualism","spirituality"],"trait_dist":{"tick_0":{"openness":{"mean":0.8305150030894595,"std":0.06757994089375187,"min":0.6506908389157029,"max":1.0},"conscientiousness":{"mean":0.8600270439162415,"std":0.07365100196082368,"min":0.6150898807981662,"max":1.0},"extraversion":{"mean":0.8870770960222072,"std":0.0809649650961083,"min":0.6387995749959643,"max":1.0},"agreeableness":{"mean":0.8584484082842823,"std":0.07784871416289342,"min":0.6309731431621531,"max":1.0},"neuroticism":{"mean":0.8111745100190906,"std":0.06216036401839075,"min":0.6594399743878601,"max":1.0},"risk_appetite":{"mean":0.8055091065218966,"std":0.0990456012551551,"min":0.5061262854666392,"max":1.0},"analytical_depth":{"mean":0.641454980131753,"std":0.10755597089237638,"min":0.2839517548767348,"max":1.0},"impulsivity":{"mean":0.7180308881995214,"std":0.08272383310384201,"min":0.52898,"max":1.0},"patience":{"mean":0.5940855768879116,"std":0.08465689751654706,"min":0.22789760224815472,"max":0.9531279128650593},"social_dominance":{"mean":0.7597606844389447,"std":0.10185217832384952,"min":0.4398120746994022,"max":1.0},"herd_susceptibility":{"mean":0.8219317475647211,"std":0.07278722296350325,"min":0.6101488997992764,"max":1.0},"authority_compliance":{"mean":0.6012003170426649,"std":0.06682758195997639,"min":0.3735282117819363,"max":0.8870074855345484},"contrarian_tendency":{"mean":0.7471987008990788,"std":0.06291495681875224,"min":0.5845206946718421,"max":0.9932557247448068},"empathy":{"mean":0.8429691517180872,"std":0.10412753693496107,"min":0.46666981432049537,"max":1.0},"financial_optimism":{"mean":0.8079195936674738,"std":0.07437465561335319,"min":0.6083398206805177,"max":1.0},"loss_aversion":{"mean":0.3830494636434665,"std":0.08006351524394464,"min":0.044323211974296346,"max":0.6859553784280153},"fomo_susceptibility":{"mean":0.4999898892876929,"std":0.03411141993476238,"min":0.37226093028897417,"max":0.6295751494781674},"communication_assertiveness":{"mean":0.7336441582559727,"std":0.08677369325375393,"min":0.4672256965112504,"max":1.0},"persuasion_skill":{"mean":0.912781929811348,"std":0.06305343919832045,"min":0.6941795089861609,"max":1.0},"information_sharing":{"mean":0.724742899349227,"std":0.07830169878452874,"min":0.57425,"max":1.0},"political_spectrum":{"mean":0.5,"std":0.0,"min":0.5,"max":0.5},"tradition_vs_progress":{"mean":0.6127628421923498,"std":0.0354022979461514,"min":0.5047551958936445,"max":0.7827116951499892},"individualism":{"mean":0.7177995277946142,"std":0.08433354947194706,"min":0.5276,"max":1.0},"spirituality":{"mean":0.6587982088024184,"std":0.060855492585338566,"min":0.5439618489562855,"max":0.8726058373879794}},"tick_N":{"openness":{"mean":0.8305150030894595,"std":0.06757994089375187,"min":0.6506908389157029,"max":1.0},"conscientiousness":{"mean":0.8600270439162415,"std":0.07365100196082368,"min":0.6150898807981662,"max":1.0},"extraversion":{"mean":0.8870770960222072,"std":0.0809649650961083,"min":0.6387995749959643,"max":1.0},"agreeableness":{"mean":0.8757935616382727,"std":0.07753922396720857,"min":0.6419390541652588,"max":1.0},"neuroticism":{"mean":0.8053385302017451,"std":0.06415831780761035,"min":0.645088699629903,"max":1.0},"risk_appetite":{"mean":0.8055091065218966,"std":0.0990456012551551,"min":0.5061262854666392,"max":1.0},"analytical_depth":{"mean":0.641454980131753,"std":0.10755597089237638,"min":0.2839517548767348,"max":1.0},"impulsivity":{"mean":0.7180308881995214,"std":0.08272383310384201,"min":0.52898,"max":1.0},"patience":{"mean":0.5940855768879116,"std":0.08465689751654706,"min":0.22789760224815472,"max":0.9531279128650593},"social_dominance":{"mean":0.7713733250512066,"std":0.10109306447334257,"min":0.4473120746994022,"max":1.0},"herd_susceptibility":{"mean":0.8219317475647211,"std":0.07278722296350325,"min":0.6101488997992764,"max":1.0},"authority_compliance":{"mean":0.6012003170426649,"std":0.06682758195997639,"min":0.3735282117819363,"max":0.8870074855345484},"contrarian_tendency":{"mean":0.7574894367950961,"std":0.06324514551731951,"min":0.5851857280287529,"max":1.0},"empathy":{"mean":0.8740991005050466,"std":0.09758837654184177,"min":0.5133367957525449,"max":1.0},"financial_optimism":{"mean":0.8079195936674738,"std":0.07437465561335319,"min":0.6083398206805177,"max":1.0},"loss_aversion":{"mean":0.3830494636434665,"std":0.08006351524394464,"min":0.044323211974296346,"max":0.6859553784280153},"fomo_susceptibility":{"mean":0.4999898892876929,"std":0.03411141993476238,"min":0.37226093028897417,"max":0.6295751494781674},"communication_assertiveness":{"mean":0.7336441582559727,"std":0.08677369325375393,"min":0.4672256965112504,"max":1.0},"persuasion_skill":{"mean":0.912781929811348,"std":0.06305343919832045,"min":0.6941795089861609,"max":1.0},"information_sharing":{"mean":0.724742899349227,"std":0.07830169878452874,"min":0.57425,"max":1.0},"political_spectrum":{"mean":0.5,"std":0.0,"min":0.5,"max":0.5},"tradition_vs_progress":{"mean":0.6127628421923498,"std":0.0354022979461514,"min":0.5047551958936445,"max":0.7827116951499892},"individualism":{"mean":0.7177995277946142,"std":0.08433354947194706,"min":0.5276,"max":1.0},"spirituality":{"mean":0.6587982088024184,"std":0.060855492585338566,"min":0.5439618489562855,"max":0.8726058373879794}}},"drift_summary":{"n":10000,"mean_magnitude":0.0796806961833928,"std_magnitude":0.02926226209192609,"max_magnitude":0.20143045758088804,"mean_event_count":10.6037,"max_event_count":22,"agents_with_drift":10000},"activity":[{"tick":0,"posts":1559,"engagements":1868,"lurk":6573,"seconds":20.682716500014067},{"tick":1,"posts":1658,"engagements":1993,"lurk":6349,"seconds":25.208500800014008},{"tick":2,"posts":1597,"engagements":1888,"lurk":6515,"seconds":28.757771900010994},{"tick":3,"posts":1578,"engagements":1851,"lurk":6571,"seconds":32.671303100010846},{"tick":4,"posts":1599,"engagements":1916,"lurk":6485,"seconds":36.341444399993634},{"tick":5,"posts":1647,"engagements":1973,"lurk":6380,"seconds":73.71421600002213},{"tick":6,"posts":1645,"engagements":1888,"lurk":6467,"seconds":76.79120750000584},{"tick":7,"posts":1617,"engagements":1898,"lurk":6485,"seconds":55.93880840000929},{"tick":8,"posts":1590,"engagements":1952,"lurk":6458,"seconds":54.28813220001757},{"tick":9,"posts":1662,"engagements":1909,"lurk":6429,"seconds":36.90189670000109},{"tick":10,"posts":1638,"engagements":1896,"lurk":6466,"seconds":37.47326489997795},{"tick":11,"posts":1642,"engagements":1933,"lurk":6425,"seconds":36.58851820000564},{"tick":12,"posts":1656,"engagements":1918,"lurk":6426,"seconds":36.34932609999669},{"tick":13,"posts":1571,"engagements":1906,"lurk":6523,"seconds":38.74637799998163},{"tick":14,"posts":1639,"engagements":1915,"lurk":6446,"seconds":39.1412298999785},{"tick":15,"posts":1616,"engagements":1907,"lurk":6477,"seconds":38.0923877999885},{"tick":16,"posts":1653,"engagements":1903,"lurk":6444,"seconds":36.90685240001767},{"tick":17,"posts":1634,"engagements":1938,"lurk":6428,"seconds":38.36497969998163},{"tick":18,"posts":1638,"engagements":1928,"lurk":6434,"seconds":35.93814469999052},{"tick":19,"posts":1570,"engagements":1900,"lurk":6530,"seconds":35.899875100003555},{"tick":20,"posts":1701,"engagements":1890,"lurk":6409,"seconds":36.19101640000008},{"tick":21,"posts":1604,"engagements":1858,"lurk":6538,"seconds":35.103493600006914},{"tick":22,"posts":1569,"engagements":1945,"lurk":6486,"seconds":34.81014050001977},{"tick":23,"posts":1670,"engagements":1925,"lurk":6405,"seconds":34.256964100000914},{"tick":24,"posts":1675,"engagements":1849,"lurk":6476,"seconds":34.12482799999998},{"tick":25,"posts":1650,"engagements":1879,"lurk":6471,"seconds":33.46857930000988},{"tick":26,"posts":1587,"engagements":1905,"lurk":6508,"seconds":34.77715939999325},{"tick":27,"posts":1683,"engagements":1885,"lurk":6432,"seconds":35.495209299988346},{"tick":28,"posts":1588,"engagements":1913,"lurk":6499,"seconds":35.32981229998404},{"tick":29,"posts":1617,"engagements":1955,"lurk":6428,"seconds":35.77998549997574}],"validity":{"da":{"overall":0.7183673469387755,"hits":352,"n_classified":490},"cw_da":{"da":0.7790697674418605,"hits":201,"n_classified":258},"extreme":{"da":0.7990654205607477,"hits":171,"n_classified":214},"correlation":{"overall_pearson":0.3087787510805675,"overall_spearman":0.24407649355951508,"n_pairs":506},"per_trait":[{"trait":"openness","n_figures":22,"n_classified":20,"da":0.95,"pearson":0.18990271559120842,"spearman":0.1414384667642303,"expected_mean":0.7854545454545454,"actual_mean":0.8253091030807621,"actual_std":0.049302972284250436,"is_fallback":false},{"trait":"conscientiousness","n_figures":22,"n_classified":22,"da":0.9090909090909091,"pearson":0.021306914561303795,"spearman":-0.005147695308530975,"expected_mean":0.7386363636363636,"actual_mean":0.8378115561897422,"actual_std":0.060579205669202794,"is_fallback":false},{"trait":"extraversion","n_figures":22,"n_classified":22,"da":0.7727272727272727,"pearson":-0.14922156246915452,"spearman":-0.1960826196060008,"expected_mean":0.6477272727272727,"actual_mean":0.8854508033574128,"actual_std":0.08009519769365064,"is_fallback":false},{"trait":"agreeableness","n_figures":22,"n_classified":21,"da":0.5714285714285714,"pearson":0.19707563699741426,"spearman":0.18218668027350204,"expected_mean":0.5431818181818182,"actual_mean":0.8724579280604325,"actual_std":0.0577234054751794,"is_fallback":false},{"trait":"neuroticism","n_figures":22,"n_classified":21,"da":0.5714285714285714,"pearson":0.2206042246813434,"spearman":0.13208720779579078,"expected_mean":0.5590909090909091,"actual_mean":0.8044639694752446,"actual_std":0.05437408478330103,"is_fallback":false},{"trait":"risk_appetite","n_figures":22,"n_classified":22,"da":0.9545454545454546,"pearson":0.18995762478465852,"spearman":-0.010265695168371555,"expected_mean":0.7727272727272727,"actual_mean":0.8108843104700078,"actual_std":0.10603397287446027,"is_fallback":false},{"trait":"analytical_depth","n_figures":22,"n_classified":22,"da":0.8181818181818182,"pearson":-0.06368695922358991,"spearman":0.09459082568397432,"expected_mean":0.7345454545454545,"actual_mean":0.617827436002357,"actual_std":0.07324465934724451,"is_fallback":false},{"trait":"impulsivity","n_figures":22,"n_classified":21,"da":0.42857142857142855,"pearson":0.2134827730250928,"spearman":0.1398154331103658,"expected_mean":0.43863636363636366,"actual_mean":0.7430117797731784,"actual_std":0.08417862439069625,"is_fallback":false},{"trait":"patience","n_figures":22,"n_classified":22,"da":0.5909090909090909,"pearson":0.3528251824499793,"spearman":0.28417762796389356,"expected_mean":0.6004545454545455,"actual_mean":0.5727194782055315,"actual_std":0.06663705948598397,"is_fallback":false},{"trait":"social_dominance","n_figures":22,"n_classified":21,"da":0.9047619047619048,"pearson":-0.01201993395061273,"spearman":-0.11778441372391926,"expected_mean":0.7363636363636363,"actual_mean":0.7243870116300407,"actual_std":0.07555591148868818,"is_fallback":false},{"trait":"herd_susceptibility","n_figures":22,"n_classified":22,"da":0.09090909090909091,"pearson":-0.0024583838747731274,"spearman":-0.0017673322304303481,"expected_mean":0.20681818181818182,"actual_mean":0.8158286060655742,"actual_std":0.07076587832809833,"is_fallback":true},{"trait":"authority_compliance","n_figures":22,"n_classified":22,"da":0.22727272727272727,"pearson":0.3464369228670357,"spearman":0.3667991447350544,"expected_mean":0.3340909090909091,"actual_mean":0.580337831448963,"actual_std":0.040031105327751386,"is_fallback":false},{"trait":"contrarian_tendency","n_figures":22,"n_classified":21,"da":0.9047619047619048,"pearson":-0.12206885975691502,"spearman":-0.05192871371404214,"expected_mean":0.7113636363636364,"actual_mean":0.7498507623095018,"actual_std":0.05547351334947296,"is_fallback":false},{"trait":"empathy","n_figures":22,"n_classified":22,"da":0.7272727272727273,"pearson":0.04135122075959111,"spearman":-0.0777750030152732,"expected_mean":0.6272727272727273,"actual_mean":0.8561306209890326,"actual_std":0.10031035510045272,"is_fallback":false},{"trait":"financial_optimism","n_figures":22,"n_classified":19,"da":0.7894736842105263,"pearson":-0.16039932560975198,"spearman":-0.1757727240070846,"expected_mean":0.6363636363636364,"actual_mean":0.8304979409405749,"actual_std":0.0453620175767958,"is_fallback":false},{"trait":"loss_aversion","n_figures":22,"n_classified":21,"da":1.0,"pearson":0.38100347162421366,"spearman":0.024050462710301056,"expected_mean":0.325,"actual_mean":0.37831741073610625,"actual_std":0.0707543759400951,"is_fallback":false},{"trait":"fomo_susceptibility","n_figures":22,"n_classified":21,"da":0.23809523809523808,"pearson":0.4108283403196535,"spearman":0.35924936016431186,"expected_mean":0.2727272727272727,"actual_mean":0.5124473842463498,"actual_std":0.017574176670053666,"is_fallback":true},{"trait":"communication_assertiveness","n_figures":22,"n_classified":21,"da":1.0,"pearson":-0.1390514619287179,"spearman":-0.17002176880211078,"expected_mean":0.8004545454545454,"actual_mean":0.7355474009589271,"actual_std":0.05941334684666949,"is_fallback":false},{"trait":"persuasion_skill","n_figures":22,"n_classified":22,"da":1.0,"pearson":-0.18638672580139495,"spearman":-0.2349831048014349,"expected_mean":0.8172727272727273,"actual_mean":0.9136097912017874,"actual_std":0.04433063411122838,"is_fallback":false},{"trait":"information_sharing","n_figures":22,"n_classified":22,"da":0.8181818181818182,"pearson":-0.09178757735598207,"spearman":-0.2478044171411062,"expected_mean":0.6681818181818182,"actual_mean":0.7188566404035448,"actual_std":0.04929156165660484,"is_fallback":false},{"trait":"tradition_vs_progress","n_figures":22,"n_classified":21,"da":0.8095238095238095,"pearson":0.016968775688857334,"spearman":0.12489537298577406,"expected_mean":0.6977272727272728,"actual_mean":0.597544289072387,"actual_std":0.026584147588370487,"is_fallback":true},{"trait":"individualism","n_figures":22,"n_classified":22,"da":0.8181818181818182,"pearson":0.31390351458480725,"spearman":0.2359487709711371,"expected_mean":0.7363636363636363,"actual_mean":0.7303713758636905,"actual_std":0.0628394979443226,"is_fallback":true},{"trait":"spirituality","n_figures":22,"n_classified":20,"da":0.65,"pearson":0.1434510939138289,"spearman":0.21574265405455895,"expected_mean":0.5868181818181818,"actual_mean":0.6581607380249496,"actual_std":0.03740604058093578,"is_fallback":true}],"per_person":[{"figure_id":"steve_jobs","name":"Steve Jobs","era":"modern","occupation":"business","sun_sign":"Pisces","asc_sign":"Virgo","n_classified":23,"da":0.7391304347826086,"cw_da":0.7647058823529411,"pearson":0.4661725254456026,"spearman":0.37460643390983717,"confidence_counts":{"high":17,"medium":6,"low":0},"low_ratio":0.0},{"figure_id":"albert_einstein","name":"Albert Einstein","era":"historical","occupation":"science","sun_sign":"Pisces","asc_sign":"Cancer","n_classified":22,"da":0.6818181818181818,"cw_da":0.75,"pearson":0.23910721227595422,"spearman":0.10654160075501162,"confidence_counts":{"high":12,"medium":9,"low":2},"low_ratio":0.08695652173913043},{"figure_id":"nikola_tesla","name":"Nikola Tesla","era":"historical","occupation":"science","sun_sign":"Cancer","asc_sign":"Aries","n_classified":23,"da":0.6956521739130435,"cw_da":0.7777777777777778,"pearson":0.07008105632602633,"spearman":-0.05101551057299879,"confidence_counts":{"high":9,"medium":12,"low":2},"low_ratio":0.08695652173913043},{"figure_id":"elon_musk","name":"Elon Musk","era":"modern","occupation":"business","sun_sign":"Cancer","asc_sign":"Cancer","n_classified":23,"da":0.6956521739130435,"cw_da":0.7647058823529411,"pearson":0.4514551768162823,"spearman":0.31765944683048425,"confidence_counts":{"high":17,"medium":5,"low":1},"low_ratio":0.043478260869565216},{"figure_id":"oprah_winfrey","name":"Oprah Winfrey","era":"modern","occupation":"business","sun_sign":"Aquarius","asc_sign":"Sagittarius","n_classified":22,"da":0.8181818181818182,"cw_da":1.0,"pearson":0.31727073633569014,"spearman":0.2288039644629398,"confidence_counts":{"high":10,"medium":9,"low":4},"low_ratio":0.17391304347826086},{"figure_id":"marie_curie","name":"Marie Curie","era":"historical","occupation":"science","sun_sign":"Scorpio","asc_sign":"Capricorn","n_classified":21,"da":0.6666666666666666,"cw_da":0.6,"pearson":-0.022995765225844754,"spearman":0.005449611511042573,"confidence_counts":{"high":10,"medium":10,"low":3},"low_ratio":0.13043478260869565},{"figure_id":"winston_churchill","name":"Winston Churchill","era":"historical","occupation":"politics","sun_sign":"Sagittarius","asc_sign":"Libra","n_classified":23,"da":0.6521739130434783,"cw_da":0.7857142857142857,"pearson":0.3278394500383036,"spearman":0.341954392169644,"confidence_counts":{"high":14,"medium":8,"low":1},"low_ratio":0.043478260869565216},{"figure_id":"frida_kahlo","name":"Frida Kahlo","era":"historical","occupation":"art","sun_sign":"Cancer","asc_sign":"Leo","n_classified":23,"da":0.7391304347826086,"cw_da":0.75,"pearson":0.3453691898109932,"spearman":0.1932950813296634,"confidence_counts":{"high":8,"medium":9,"low":6},"low_ratio":0.2608695652173913},{"figure_id":"muhammad_ali","name":"Muhammad Ali","era":"historical","occupation":"sport","sun_sign":"Capricorn","asc_sign":"Leo","n_classified":23,"da":0.8260869565217391,"cw_da":0.8181818181818182,"pearson":0.36497608472377446,"spearman":0.2263503721539849,"confidence_counts":{"high":11,"medium":11,"low":1},"low_ratio":0.043478260869565216},{"figure_id":"princess_diana","name":"Princess Diana","era":"historical","occupation":"monarchy","sun_sign":"Cancer","asc_sign":"Sagittarius","n_classified":21,"da":0.8571428571428571,"cw_da":0.8333333333333334,"pearson":0.6053440922578608,"spearman":0.5668224208433039,"confidence_counts":{"high":6,"medium":10,"low":7},"low_ratio":0.30434782608695654},{"figure_id":"mahatma_gandhi","name":"Mahatma Gandhi","era":"historical","occupation":"politics","sun_sign":"Libra","asc_sign":"Libra","n_classified":22,"da":0.6363636363636364,"cw_da":0.7142857142857143,"pearson":0.29538737234419365,"spearman":0.19290983913041956,"confidence_counts":{"high":14,"medium":9,"low":0},"low_ratio":0.0},{"figure_id":"theodore_roosevelt","name":"Theodore Roosevelt","era":"historical","occupation":"politics","sun_sign":"Scorpio","asc_sign":"Gemini","n_classified":22,"da":0.7727272727272727,"cw_da":0.8666666666666667,"pearson":0.29529196499103183,"spearman":0.2407415626088323,"confidence_counts":{"high":15,"medium":7,"low":1},"low_ratio":0.043478260869565216},{"figure_id":"marilyn_monroe","name":"Marilyn Monroe","era":"historical","occupation":"art","sun_sign":"Gemini","asc_sign":"Leo","n_classified":20,"da":0.8,"cw_da":1.0,"pearson":0.4855863539543109,"spearman":0.5530268635315436,"confidence_counts":{"high":3,"medium":14,"low":6},"low_ratio":0.2608695652173913},{"figure_id":"thomas_edison","name":"Thomas Edison","era":"historical","occupation":"science","sun_sign":"Aquarius","asc_sign":"Sagittarius","n_classified":23,"da":0.6956521739130435,"cw_da":0.9166666666666666,"pearson":0.06075981857145012,"spearman":-0.09084240997285467,"confidence_counts":{"high":12,"medium":10,"low":1},"low_ratio":0.043478260869565216},{"figure_id":"martin_luther_king_jr","name":"Martin Luther King Jr","era":"historical","occupation":"activism","sun_sign":"Capricorn","asc_sign":"Aries","n_classified":23,"da":0.7391304347826086,"cw_da":0.875,"pearson":0.4078770098050618,"spearman":0.39304989545440555,"confidence_counts":{"high":16,"medium":6,"low":1},"low_ratio":0.043478260869565216},{"figure_id":"margaret_thatcher","name":"Margaret Thatcher","era":"historical","occupation":"politics","sun_sign":"Libra","asc_sign":"Scorpio","n_classified":23,"da":0.6086956521739131,"cw_da":0.6153846153846154,"pearson":-0.17448814316349245,"spearman":-0.08296199374658146,"confidence_counts":{"high":13,"medium":10,"low":0},"low_ratio":0.0},{"figure_id":"freddie_mercury","name":"Freddie Mercury","era":"historical","occupation":"art","sun_sign":"Virgo","asc_sign":"Virgo","n_classified":23,"da":0.7391304347826086,"cw_da":1.0,"pearson":0.5233545706792531,"spearman":0.3891616615434001,"confidence_counts":{"high":8,"medium":10,"low":5},"low_ratio":0.21739130434782608},{"figure_id":"mother_teresa","name":"Mother Teresa","era":"historical","occupation":"activism","sun_sign":"Virgo","asc_sign":"Sagittarius","n_classified":22,"da":0.5909090909090909,"cw_da":0.75,"pearson":0.32183354614413523,"spearman":0.27651261963393714,"confidence_counts":{"high":8,"medium":13,"low":2},"low_ratio":0.08695652173913043},{"figure_id":"warren_buffett","name":"Warren Buffett","era":"modern","occupation":"business","sun_sign":"Virgo","asc_sign":"Sagittarius","n_classified":22,"da":0.7272727272727273,"cw_da":0.6666666666666666,"pearson":0.3542047396135912,"spearman":0.2582417368154662,"confidence_counts":{"high":15,"medium":8,"low":0},"low_ratio":0.0},{"figure_id":"nelson_mandela","name":"Nelson Mandela","era":"historical","occupation":"politics","sun_sign":"Cancer","asc_sign":"Sagittarius","n_classified":22,"da":0.7272727272727273,"cw_da":0.7142857142857143,"pearson":0.5571712311965443,"spearman":0.45186545867187633,"confidence_counts":{"high":14,"medium":8,"low":1},"low_ratio":0.043478260869565216},{"figure_id":"napoleon_bonaparte","name":"Napoleon Bonaparte","era":"historical","occupation":"politics","sun_sign":"Leo","asc_sign":"Libra","n_classified":22,"da":0.7727272727272727,"cw_da":0.75,"pearson":0.6025857213926716,"spearman":0.6014935743389168,"confidence_counts":{"high":16,"medium":7,"low":0},"low_ratio":0.0},{"figure_id":"leonardo_da_vinci","name":"Leonardo da Vinci","era":"historical","occupation":"science","sun_sign":"Aries","asc_sign":"Scorpio","n_classified":22,"da":0.6363636363636364,"cw_da":0.7,"pearson":0.2310860298273825,"spearman":0.25873740233718495,"confidence_counts":{"high":10,"medium":13,"low":0},"low_ratio":0.0}],"confidence_coverage":{"overall_counts":{"high":258,"medium":204,"low":44},"overall_ratios":{"high":0.5098814229249012,"medium":0.4031620553359684,"low":0.08695652173913043},"per_figure":{"steve_jobs":{"high":17,"medium":6,"low":0},"albert_einstein":{"high":12,"medium":9,"low":2},"nikola_tesla":{"high":9,"medium":12,"low":2},"elon_musk":{"high":17,"medium":5,"low":1},"oprah_winfrey":{"high":10,"medium":9,"low":4},"marie_curie":{"high":10,"medium":10,"low":3},"winston_churchill":{"high":14,"medium":8,"low":1},"frida_kahlo":{"high":8,"medium":9,"low":6},"muhammad_ali":{"high":11,"medium":11,"low":1},"princess_diana":{"high":6,"medium":10,"low":7},"mahatma_gandhi":{"high":14,"medium":9,"low":0},"theodore_roosevelt":{"high":15,"medium":7,"low":1},"marilyn_monroe":{"high":3,"medium":14,"low":6},"thomas_edison":{"high":12,"medium":10,"low":1},"martin_luther_king_jr":{"high":16,"medium":6,"low":1},"margaret_thatcher":{"high":13,"medium":10,"low":0},"freddie_mercury":{"high":8,"medium":10,"low":5},"mother_teresa":{"high":8,"medium":13,"low":2},"warren_buffett":{"high":15,"medium":8,"low":0},"nelson_mandela":{"high":14,"medium":8,"low":1},"napoleon_bonaparte":{"high":16,"medium":7,"low":0},"leonardo_da_vinci":{"high":10,"medium":13,"low":0}},"warn_low_heavy":false,"figures_low_heavy":[]},"thresholds":{"da_overall":0.6,"correlation_overall":0.2,"extreme":0.55,"cw_da":0.6,"warn_low_ratio":0.4}},"sample_agent":{"name":"Steve Jobs","occupation":"business","birth_utc":"1955-02-25T03:15:00+00:00","sun_sign":"Pisces","moon_sign":"Aries","asc_sign":"Virgo","traits":{"openness":0.8819608374629595,"conscientiousness":0.8483382288958816,"extraversion":0.9828674296163994,"agreeableness":0.8616000908139069,"neuroticism":0.7786555281983443,"risk_appetite":1.0,"analytical_depth":0.5482653719649194,"impulsivity":1.0,"patience":0.4384446586909081,"social_dominance":0.7089126674772238,"herd_susceptibility":0.7939380860352148,"authority_compliance":0.5872428801085315,"contrarian_tendency":0.8588642330694379,"empathy":0.6851302210746163,"financial_optimism":0.8845348476493723,"loss_aversion":0.2681687775238999,"fomo_susceptibility":0.5002474475013985,"communication_assertiveness":0.7956747335443866,"persuasion_skill":0.9127940050689596,"information_sharing":0.6485000000000001,"political_spectrum":0.5,"tradition_vs_progress":0.6073785605819828,"individualism":0.7194548088296466,"spirituality":0.6730341458295168}},"countries":{"CN":{"iso2":"CN","iso3":"CHN","name":"China","lat":35.0,"lon":103.0,"population_m":1412,"region":"asia_east","n_agents":2190,"traits":{"openness":0.8465564423158515,"conscientiousness":0.8685640204760433,"extraversion":0.8810297991022771,"agreeableness":0.8469034500070194,"neuroticism":0.8146322256988787,"risk_appetite":0.839723634825462,"analytical_depth":0.6604551720851802,"impulsivity":0.6835104050857501,"patience":0.6448955241838232,"social_dominance":0.7726836249122543,"herd_susceptibility":0.8472920715751535,"authority_compliance":0.6184209035590091,"contrarian_tendency":0.7358696426090026,"empathy":0.8398796072568049,"financial_optimism":0.8159973243395776,"loss_aversion":0.3622195821039716,"fomo_susceptibility":0.48097099680398425,"communication_assertiveness":0.7347227897749998,"persuasion_skill":0.9211765338959549,"information_sharing":0.7218955828478828,"political_spectrum":0.5,"tradition_vs_progress":0.6365083845346261,"individualism":0.6898145951490477,"spirituality":0.6644519798264144}},"IN":{"iso2":"IN","iso3":"IND","name":"India","lat":20.0,"lon":78.0,"population_m":1438,"region":"asia_south","n_agents":2145,"traits":{"openness":0.8258509960855037,"conscientiousness":0.8481450349633703,"extraversion":0.8807987736142203,"agreeableness":0.8522285959876612,"neuroticism":0.8094233379066114,"risk_appetite":0.8130211603671166,"analytical_depth":0.6387356232594771,"impulsivity":0.7109443059531244,"patience":0.5938859628111517,"social_dominance":0.7651820401811484,"herd_susceptibility":0.8119245937298822,"authority_compliance":0.5974902117217059,"contrarian_tendency":0.7458926371229541,"empathy":0.8346842243540401,"financial_optimism":0.7985995120364753,"loss_aversion":0.3798327185683457,"fomo_susceptibility":0.5024113909001254,"communication_assertiveness":0.7285358726279838,"persuasion_skill":0.9099834964908674,"information_sharing":0.7258553387156584,"political_spectrum":0.5,"tradition_vs_progress":0.6140951686786372,"individualism":0.7322382530962581,"spirituality":0.6617562493134191}},"US":{"iso2":"US","iso3":"USA","name":"United States","lat":37.0,"lon":-95.0,"population_m":335,"region":"america_north","n_agents":481,"traits":{"openness":0.8569277741415358,"conscientiousness":0.8306887389883151,"extraversion":0.9092613552480328,"agreeableness":0.8651695652460666,"neuroticism":0.8167885741668363,"risk_appetite":0.8283061909683307,"analytical_depth":0.6127282389726738,"impulsivity":0.7756583005210926,"patience":0.5271070607034993,"social_dominance":0.7504952443621848,"herd_susceptibility":0.7656111039109792,"authority_compliance":0.5344704419479346,"contrarian_tendency":0.7988577115409004,"empathy":0.8418271090886351,"financial_optimism":0.8352239915032115,"loss_aversion":0.347258478156812,"fomo_susceptibility":0.5207470368862066,"communication_assertiveness":0.7599821525018958,"persuasion_skill":0.9172036786104097,"information_sharing":0.7174870602281402,"political_spectrum":0.5,"tradition_vs_progress":0.622532937727419,"individualism":0.8189185847498925,"spirituality":0.6685283464979634}},"ID":{"iso2":"ID","iso3":"IDN","name":"Indonesia","lat":-2.0,"lon":118.0,"population_m":279,"region":"asia_southeast","n_agents":427,"traits":{"openness":0.8289515131506703,"conscientiousness":0.8606299747051719,"extraversion":0.8894660070440658,"agreeableness":0.8752373717171507,"neuroticism":0.806911602471008,"risk_appetite":0.8052413749320152,"analytical_depth":0.640943562943881,"impulsivity":0.7121383528657863,"patience":0.5985690639871541,"social_dominance":0.7570429236219487,"herd_susceptibility":0.8366951563475615,"authority_compliance":0.630915766564105,"contrarian_tendency":0.7357112641253057,"empathy":0.8462603610313698,"financial_optimism":0.8014891973617201,"loss_aversion":0.3785789451939121,"fomo_susceptibility":0.49657054622258057,"communication_assertiveness":0.7210956946888197,"persuasion_skill":0.9095106638638604,"information_sharing":0.7199757909198644,"political_spectrum":0.5,"tradition_vs_progress":0.6082093289496269,"individualism":0.6812995639467863,"spirituality":0.6549851633753151}},"PK":{"iso2":"PK","iso3":"PAK","name":"Pakistan","lat":30.0,"lon":70.0,"population_m":243,"region":"asia_south","n_agents":372,"traits":{"openness":0.7812927468725536,"conscientiousness":0.8715648213036742,"extraversion":0.8749354036235183,"agreeableness":0.8583336539809917,"neuroticism":0.8073593557399077,"risk_appetite":0.7727510969506411,"analytical_depth":0.6376126473940917,"impulsivity":0.6917566477513453,"patience":0.598995652631615,"social_dominance":0.7617333009251002,"herd_susceptibility":0.8441775491083046,"authority_compliance":0.6047337546860032,"contrarian_tendency":0.7427688692207408,"empathy":0.8439615010947346,"financial_optimism":0.7711620009808966,"loss_aversion":0.4308979429059271,"fomo_susceptibility":0.5009850514391736,"communication_assertiveness":0.7379599426461162,"persuasion_skill":0.9041319702917316,"information_sharing":0.7267590152283971,"political_spectrum":0.5,"tradition_vs_progress":0.5888230689000798,"individualism":0.6986538015969027,"spirituality":0.6498803801865828}},"BR":{"iso2":"BR","iso3":"BRA","name":"Brazil","lat":-10.0,"lon":-55.0,"population_m":216,"region":"america_south","n_agents":340,"traits":{"openness":0.8299855663804455,"conscientiousness":0.8659043582130725,"extraversion":0.9025951754475282,"agreeableness":0.8747373986192706,"neuroticism":0.8099984780773438,"risk_appetite":0.7729588349058047,"analytical_depth":0.6371667367499354,"impulsivity":0.7402129101174537,"patience":0.567290230059709,"social_dominance":0.753606778680193,"herd_susceptibility":0.8163564535142668,"authority_compliance":0.5922585206725086,"contrarian_tendency":0.7475773982335175,"empathy":0.8558571802625135,"financial_optimism":0.8139338847137368,"loss_aversion":0.39494890599076904,"fomo_susceptibility":0.5056316256483933,"communication_assertiveness":0.7315024461858793,"persuasion_skill":0.913554545860908,"information_sharing":0.7282664110983914,"political_spectrum":0.5,"tradition_vs_progress":0.6032793202094892,"individualism":0.7185682806339887,"spirituality":0.6545378020854016}},"NG":{"iso2":"NG","iso3":"NGA","name":"Nigeria","lat":9.0,"lon":8.0,"population_m":223,"region":"africa_west","n_agents":316,"traits":{"openness":0.8379446283290992,"conscientiousness":0.8396709875854835,"extraversion":0.9171166262453817,"agreeableness":0.8595947590914712,"neuroticism":0.7999706585014827,"risk_appetite":0.7732673235775969,"analytical_depth":0.6383269025292201,"impulsivity":0.7772692287967253,"patience":0.5167101088188875,"social_dominance":0.7570640106418848,"herd_susceptibility":0.8209845737472881,"authority_compliance":0.6112309041272387,"contrarian_tendency":0.7207393033401579,"empathy":0.8368243785500079,"financial_optimism":0.8073465862327994,"loss_aversion":0.3716969669030652,"fomo_susceptibility":0.5230601056951298,"communication_assertiveness":0.7316306283713032,"persuasion_skill":0.9003011506789994,"information_sharing":0.7390364774043993,"political_spectrum":0.5,"tradition_vs_progress":0.6012637269852944,"individualism":0.6886517214341332,"spirituality":0.6240183101074706}},"BD":{"iso2":"BD","iso3":"BGD","name":"Bangladesh","lat":24.0,"lon":90.0,"population_m":173,"region":"asia_south","n_agents":243,"traits":{"openness":0.8042459369833579,"conscientiousness":0.8557822909939081,"extraversion":0.8639994092291371,"agreeableness":0.8463662336277323,"neuroticism":0.8061095883478219,"risk_appetite":0.7858974856020786,"analytical_depth":0.6336233594249209,"impulsivity":0.7040504640471508,"patience":0.586204076726502,"social_dominance":0.7640667774860128,"herd_susceptibility":0.8357667703622297,"authority_compliance":0.6335187051980719,"contrarian_tendency":0.7272770634169837,"empathy":0.8321170292613338,"financial_optimism":0.7834080694859774,"loss_aversion":0.40922408323780585,"fomo_susceptibility":0.5000699959956172,"communication_assertiveness":0.7224969003123868,"persuasion_skill":0.9028960903999559,"information_sharing":0.7229317929526773,"political_spectrum":0.5,"tradition_vs_progress":0.596325608092227,"individualism":0.6824029090352302,"spirituality":0.6548018810806778}},"ET":{"iso2":"ET","iso3":"ETH","name":"Ethiopia","lat":8.0,"lon":38.0,"population_m":126,"region":"africa_east","n_agents":200,"traits":{"openness":0.8103614577290708,"conscientiousness":0.8543697407388618,"extraversion":0.8804867673766991,"agreeableness":0.8626732554809341,"neuroticism":0.795531557524433,"risk_appetite":0.7805522939424803,"analytical_depth":0.6470507212993283,"impulsivity":0.7294348105758975,"patience":0.5624331428637431,"social_dominance":0.7462255369498118,"herd_susceptibility":0.8187074497196227,"authority_compliance":0.5924445109416565,"contrarian_tendency":0.7374586479450811,"empathy":0.8519913404162646,"financial_optimism":0.781712526989641,"loss_aversion":0.39316561017964863,"fomo_susceptibility":0.5058442560768064,"communication_assertiveness":0.7332103810386932,"persuasion_skill":0.8939743553154169,"information_sharing":0.733115969346462,"political_spectrum":0.5,"tradition_vs_progress":0.6187529078727908,"individualism":0.6986136131154903,"spirituality":0.6130254301529705}},"RU":{"iso2":"RU","iso3":"RUS","name":"Russia","lat":60.0,"lon":100.0,"population_m":144,"region":"europe_east","n_agents":199,"traits":{"openness":0.8113030142008343,"conscientiousness":0.90443792627766,"extraversion":0.8658759885784912,"agreeableness":0.8772653146081674,"neuroticism":0.8172958315975601,"risk_appetite":0.7604778127906127,"analytical_depth":0.6577170214788998,"impulsivity":0.6917003621221998,"patience":0.6325079127003529,"social_dominance":0.737331030308309,"herd_susceptibility":0.8244804837636139,"authority_compliance":0.6330812950203496,"contrarian_tendency":0.7449458398635932,"empathy":0.8553966842659116,"financial_optimism":0.8041991344894442,"loss_aversion":0.4410221686562696,"fomo_susceptibility":0.4849966208407863,"communication_assertiveness":0.715555197948797,"persuasion_skill":0.9226964147829693,"information_sharing":0.7307770791268493,"political_spectrum":0.5,"tradition_vs_progress":0.5710626336760288,"individualism":0.7032950611748685,"spirituality":0.6794431244614543}},"EG":{"iso2":"EG","iso3":"EGY","name":"Egypt","lat":27.0,"lon":30.0,"population_m":111,"region":"mena","n_agents":188,"traits":{"openness":0.7879724108519066,"conscientiousness":0.8566975651203314,"extraversion":0.8687066877192227,"agreeableness":0.8628984157599725,"neuroticism":0.811712392013923,"risk_appetite":0.756219929091676,"analytical_depth":0.628852674350636,"impulsivity":0.7236675136685826,"patience":0.5681217893171359,"social_dominance":0.7625873351105436,"herd_susceptibility":0.826013796767466,"authority_compliance":0.6357213169626886,"contrarian_tendency":0.734725994206812,"empathy":0.847296678071657,"financial_optimism":0.7817233369209197,"loss_aversion":0.4479753795116984,"fomo_susceptibility":0.526723461649839,"communication_assertiveness":0.729800377551318,"persuasion_skill":0.916271475990591,"information_sharing":0.7341621910783213,"political_spectrum":0.5,"tradition_vs_progress":0.5680483107096117,"individualism":0.7027318888201736,"spirituality":0.6598822871648131}},"MX":{"iso2":"MX","iso3":"MEX","name":"Mexico","lat":23.0,"lon":-102.0,"population_m":129,"region":"america_north","n_agents":186,"traits":{"openness":0.8509758580222373,"conscientiousness":0.8587323303262786,"extraversion":0.9133323357835923,"agreeableness":0.8608713539019537,"neuroticism":0.8079340827168909,"risk_appetite":0.7729866260172463,"analytical_depth":0.6287628384073537,"impulsivity":0.7850118063583467,"patience":0.5354546425309216,"social_dominance":0.7666298940285878,"herd_susceptibility":0.8218323339603723,"authority_compliance":0.6106174626254927,"contrarian_tendency":0.7388341287867675,"empathy":0.8479335696480966,"financial_optimism":0.84432169032611,"loss_aversion":0.38239319247774617,"fomo_susceptibility":0.5208832065864767,"communication_assertiveness":0.7470831635995824,"persuasion_skill":0.9066734558113613,"information_sharing":0.7294632063919932,"political_spectrum":0.5,"tradition_vs_progress":0.6019658472790255,"individualism":0.7106234064444094,"spirituality":0.6445412006344287}},"PH":{"iso2":"PH","iso3":"PHL","name":"Philippines","lat":13.0,"lon":122.0,"population_m":117,"region":"asia_southeast","n_agents":183,"traits":{"openness":0.8189309137148513,"conscientiousness":0.841192758888288,"extraversion":0.89003903288576,"agreeableness":0.8637429324533861,"neuroticism":0.8026782557659394,"risk_appetite":0.8081414940980765,"analytical_depth":0.6419855629349426,"impulsivity":0.7457289536739197,"patience":0.5546137639363565,"social_dominance":0.7817807527466846,"herd_susceptibility":0.813487822910904,"authority_compliance":0.6267153153472741,"contrarian_tendency":0.7256419166309784,"empathy":0.8391852078461195,"financial_optimism":0.792948892494804,"loss_aversion":0.3809563204993582,"fomo_susceptibility":0.5160928948027609,"communication_assertiveness":0.7381552749173317,"persuasion_skill":0.9004015301454174,"information_sharing":0.7376303395395787,"political_spectrum":0.5,"tradition_vs_progress":0.6268391607466897,"individualism":0.7045473159920062,"spirituality":0.6291470177078425}},"JP":{"iso2":"JP","iso3":"JPN","name":"Japan","lat":36.0,"lon":138.0,"population_m":123,"region":"asia_east","n_agents":162,"traits":{"openness":0.8103484245877094,"conscientiousness":0.9242788836700696,"extraversion":0.8976445478412516,"agreeableness":0.8216253499217583,"neuroticism":0.8219737510935364,"risk_appetite":0.780784735848346,"analytical_depth":0.6453093097843137,"impulsivity":0.6915215399561192,"patience":0.6682178144815752,"social_dominance":0.7780665924649525,"herd_susceptibility":0.8286011851118876,"authority_compliance":0.5789804750685537,"contrarian_tendency":0.7603397426139537,"empathy":0.833514096870899,"financial_optimism":0.8297239588090217,"loss_aversion":0.42463111558727473,"fomo_susceptibility":0.4771289495112035,"communication_assertiveness":0.7585220598912613,"persuasion_skill":0.9176322254135236,"information_sharing":0.7132665781094187,"political_spectrum":0.5,"tradition_vs_progress":0.5860013988211272,"individualism":0.7445297234055149,"spirituality":0.6772207447414447}},"CD":{"iso2":"CD","iso3":"COD","name":"DR Congo","lat":0.0,"lon":25.0,"population_m":102,"region":"africa_central","n_agents":159,"traits":{"openness":0.8108276492454443,"conscientiousness":0.852316488264592,"extraversion":0.8863578291982417,"agreeableness":0.8681402369117877,"neuroticism":0.7979755087802718,"risk_appetite":0.7796516026473573,"analytical_depth":0.6452562403091268,"impulsivity":0.7339891238522395,"patience":0.5566768336659992,"social_dominance":0.7389850954342513,"herd_susceptibility":0.8230256490368405,"authority_compliance":0.5907568422574399,"contrarian_tendency":0.7366486447473866,"empathy":0.8579379454251358,"financial_optimism":0.7840802789596082,"loss_aversion":0.38949967498993465,"fomo_susceptibility":0.5064761712881708,"communication_assertiveness":0.733923209338835,"persuasion_skill":0.8920314025052366,"information_sharing":0.7366363867220244,"political_spectrum":0.5,"tradition_vs_progress":0.6182496205023384,"individualism":0.6991612213729964,"spirituality":0.6167050245850464}},"VN":{"iso2":"VN","iso3":"VNM","name":"Vietnam","lat":16.0,"lon":108.0,"population_m":99,"region":"asia_southeast","n_agents":141,"traits":{"openness":0.8459274821572272,"conscientiousness":0.8424549401512943,"extraversion":0.8891776074245508,"agreeableness":0.870844959933828,"neuroticism":0.8166122439892499,"risk_appetite":0.8243353010538549,"analytical_depth":0.6363276371681815,"impulsivity":0.7160379756423194,"patience":0.5989141168372022,"social_dominance":0.7502731787237368,"herd_susceptibility":0.8477376074025602,"authority_compliance":0.6009434376307026,"contrarian_tendency":0.744921873837368,"empathy":0.855517489104521,"financial_optimism":0.7991247212002525,"loss_aversion":0.3559295767554489,"fomo_susceptibility":0.4979916178130681,"communication_assertiveness":0.7192395122835853,"persuasion_skill":0.9139649619664998,"information_sharing":0.7231949252094803,"political_spectrum":0.5,"tradition_vs_progress":0.639407757616182,"individualism":0.6963546727223985,"spirituality":0.6456006848074464}},"TR":{"iso2":"TR","iso3":"TUR","name":"T\u00fcrkiye","lat":39.0,"lon":35.0,"population_m":85,"region":"mena","n_agents":122,"traits":{"openness":0.8185616640717283,"conscientiousness":0.8761055225204668,"extraversion":0.8919187946097074,"agreeableness":0.8736160295001049,"neuroticism":0.8075840006985516,"risk_appetite":0.7616945915770879,"analytical_depth":0.6318830090036637,"impulsivity":0.7400631062378952,"patience":0.5772472798124724,"social_dominance":0.7373271086559883,"herd_susceptibility":0.8160714013436533,"authority_compliance":0.6142810804632685,"contrarian_tendency":0.7608794722048364,"empathy":0.8413768835627853,"financial_optimism":0.8099630327463038,"loss_aversion":0.4096266436106482,"fomo_susceptibility":0.5064984599202818,"communication_assertiveness":0.7281827361662883,"persuasion_skill":0.9073081958083328,"information_sharing":0.7236855284182153,"political_spectrum":0.5,"tradition_vs_progress":0.5687081120032248,"individualism":0.7145024331441078,"spirituality":0.666865178908538}},"DE":{"iso2":"DE","iso3":"DEU","name":"Germany","lat":51.0,"lon":10.0,"population_m":84,"region":"europe_west","n_agents":119,"traits":{"openness":0.8388103477275136,"conscientiousness":0.8970699308059839,"extraversion":0.9018014891195166,"agreeableness":0.8604201711366957,"neuroticism":0.8172965078517329,"risk_appetite":0.8108315611882615,"analytical_depth":0.6474632668215203,"impulsivity":0.7099939410903191,"patience":0.6258497905296884,"social_dominance":0.7488040208904498,"herd_susceptibility":0.7965679995150035,"authority_compliance":0.5528198473970033,"contrarian_tendency":0.7902435207728552,"empathy":0.8414314072174828,"financial_optimism":0.8334205452165051,"loss_aversion":0.39124941173376887,"fomo_susceptibility":0.48258148668201706,"communication_assertiveness":0.7595653734429474,"persuasion_skill":0.9226810762079943,"information_sharing":0.7152821548748702,"political_spectrum":0.5,"tradition_vs_progress":0.6053473094844537,"individualism":0.7766571793173618,"spirituality":0.6902512664786643}},"IR":{"iso2":"IR","iso3":"IRN","name":"Iran","lat":32.0,"lon":53.0,"population_m":89,"region":"mena","n_agents":116,"traits":{"openness":0.8312330307847011,"conscientiousness":0.8388717694065082,"extraversion":0.8849288883220318,"agreeableness":0.8727834761632882,"neuroticism":0.8186015570686325,"risk_appetite":0.7936619037457574,"analytical_depth":0.6204733170898841,"impulsivity":0.7578482366947492,"patience":0.5406099523402783,"social_dominance":0.7278817318835854,"herd_susceptibility":0.8151286086883844,"authority_compliance":0.6133022815913031,"contrarian_tendency":0.7564453767454323,"empathy":0.8520439288341267,"financial_optimism":0.8123514359176509,"loss_aversion":0.389641462790874,"fomo_susceptibility":0.5237537575723237,"communication_assertiveness":0.7348526718989425,"persuasion_skill":0.9138329237265563,"information_sharing":0.729686224399293,"political_spectrum":0.5,"tradition_vs_progress":0.5803212233094437,"individualism":0.717236061079885,"spirituality":0.665605097996049}},"GB":{"iso2":"GB","iso3":"GBR","name":"United Kingdom","lat":54.0,"lon":-2.0,"population_m":67,"region":"europe_west","n_agents":111,"traits":{"openness":0.866447408004888,"conscientiousness":0.8555047759398886,"extraversion":0.9121159573194672,"agreeableness":0.8603215765419023,"neuroticism":0.812106531983721,"risk_appetite":0.8324845478188031,"analytical_depth":0.6556755144821348,"impulsivity":0.7444695626925002,"patience":0.5586514028819876,"social_dominance":0.7641106801649573,"herd_susceptibility":0.7620991191251327,"authority_compliance":0.5295922387179552,"contrarian_tendency":0.7999828704087351,"empathy":0.8323350733302697,"financial_optimism":0.8342256562208383,"loss_aversion":0.34397140942859616,"fomo_susceptibility":0.5048300035044325,"communication_assertiveness":0.7580754396456989,"persuasion_skill":0.9240336613189203,"information_sharing":0.7286253287853025,"political_spectrum":0.5,"tradition_vs_progress":0.634511912417729,"individualism":0.81124123462309,"spirituality":0.6688564256327442}},"TH":{"iso2":"TH","iso3":"THA","name":"Thailand","lat":15.0,"lon":100.0,"population_m":71,"region":"asia_southeast","n_agents":106,"traits":{"openness":0.8466053752605004,"conscientiousness":0.8547826448779294,"extraversion":0.9013104187672256,"agreeableness":0.8810289684243691,"neuroticism":0.8211631594730076,"risk_appetite":0.7935019419760055,"analytical_depth":0.6263875908120448,"impulsivity":0.7338935750789962,"patience":0.6027731586205676,"social_dominance":0.7412185040194679,"herd_susceptibility":0.8450557637338351,"authority_compliance":0.6004416047247045,"contrarian_tendency":0.7505597986642916,"empathy":0.8795096229159196,"financial_optimism":0.8157218740296102,"loss_aversion":0.38816066623904594,"fomo_susceptibility":0.512213618818868,"communication_assertiveness":0.7256267360142922,"persuasion_skill":0.9250205359419027,"information_sharing":0.728287276694175,"political_spectrum":0.5,"tradition_vs_progress":0.6132995291917267,"individualism":0.6997955111908858,"spirituality":0.6716072941797786}},"TZ":{"iso2":"TZ","iso3":"TZA","name":"Tanzania","lat":-6.0,"lon":35.0,"population_m":67,"region":"africa_east","n_agents":101,"traits":{"openness":0.8103297208801149,"conscientiousness":0.8433399152402056,"extraversion":0.8798377625247119,"agreeableness":0.8557710455544175,"neuroticism":0.8055240499469228,"risk_appetite":0.7727449069714613,"analytical_depth":0.6398321155986542,"impulsivity":0.7269176069882639,"patience":0.5564521914546376,"social_dominance":0.7351288623457868,"herd_susceptibility":0.831305316581143,"authority_compliance":0.587698084341366,"contrarian_tendency":0.7367806475660086,"empathy":0.8549506811482332,"financial_optimism":0.7762842575129792,"loss_aversion":0.39052370982760987,"fomo_susceptibility":0.5043325937355851,"communication_assertiveness":0.7254308641725884,"persuasion_skill":0.8961992884950019,"information_sharing":0.7363082452543851,"political_spectrum":0.5,"tradition_vs_progress":0.6051874064461292,"individualism":0.6910703265996092,"spirituality":0.6181743035919005}},"IT":{"iso2":"IT","iso3":"ITA","name":"Italy","lat":42.0,"lon":12.0,"population_m":59,"region":"europe_west","n_agents":94,"traits":{"openness":0.8239891138528799,"conscientiousness":0.8871991340301311,"extraversion":0.8869427089982429,"agreeableness":0.8581842172018187,"neuroticism":0.8130846959372076,"risk_appetite":0.7991149445291543,"analytical_depth":0.6458545564798158,"impulsivity":0.7171260205809098,"patience":0.6051818572548459,"social_dominance":0.7578097988474186,"herd_susceptibility":0.7792164507169,"authority_compliance":0.564359148140225,"contrarian_tendency":0.7786557902341499,"empathy":0.8338910643128602,"financial_optimism":0.8297466816728131,"loss_aversion":0.40531618757157073,"fomo_susceptibility":0.49852292076395716,"communication_assertiveness":0.7481133154895797,"persuasion_skill":0.920307195154556,"information_sharing":0.716614172523199,"political_spectrum":0.5,"tradition_vs_progress":0.5980779385890937,"individualism":0.7813086508471607,"spirituality":0.6906927990085729}},"FR":{"iso2":"FR","iso3":"FRA","name":"France","lat":46.0,"lon":2.0,"population_m":65,"region":"europe_west","n_agents":93,"traits":{"openness":0.8236887146621388,"conscientiousness":0.8903419118676535,"extraversion":0.8928936297784665,"agreeableness":0.8800673862100146,"neuroticism":0.8218971867519063,"risk_appetite":0.7818776819004464,"analytical_depth":0.6259256702466535,"impulsivity":0.7409456497970636,"patience":0.5906219821885685,"social_dominance":0.7281201342571965,"herd_susceptibility":0.7990992291556954,"authority_compliance":0.5805842865266296,"contrarian_tendency":0.7793150460530175,"empathy":0.861290387884966,"financial_optimism":0.8139239655584042,"loss_aversion":0.39948850817981424,"fomo_susceptibility":0.49490052751746405,"communication_assertiveness":0.7214918582698803,"persuasion_skill":0.9052024603542561,"information_sharing":0.7088953736836917,"political_spectrum":0.5,"tradition_vs_progress":0.5976226232238094,"individualism":0.7646078860078371,"spirituality":0.6756145018126362}},"KE":{"iso2":"KE","iso3":"KEN","name":"Kenya","lat":0.0,"lon":38.0,"population_m":55,"region":"africa_east","n_agents":88,"traits":{"openness":0.8055443167784455,"conscientiousness":0.8639139864880905,"extraversion":0.9053453865241604,"agreeableness":0.8712459157197276,"neuroticism":0.7986764377447709,"risk_appetite":0.7741580448981187,"analytical_depth":0.6578965188103189,"impulsivity":0.7302484089473433,"patience":0.5651730573608378,"social_dominance":0.7700007073350633,"herd_susceptibility":0.8221221805359394,"authority_compliance":0.5942568435808712,"contrarian_tendency":0.734378627625848,"empathy":0.8678181648212019,"financial_optimism":0.7862684338388901,"loss_aversion":0.39406558001687214,"fomo_susceptibility":0.5102022253342975,"communication_assertiveness":0.7407994467500311,"persuasion_skill":0.9010390925445295,"information_sharing":0.7460260766788033,"political_spectrum":0.5,"tradition_vs_progress":0.616801837242506,"individualism":0.7187383018856375,"spirituality":0.6118495323359062}},"MM":{"iso2":"MM","iso3":"MMR","name":"Myanmar","lat":22.0,"lon":96.0,"population_m":54,"region":"asia_southeast","n_agents":87,"traits":{"openness":0.8381413636017242,"conscientiousness":0.8465405587223059,"extraversion":0.8857118446330714,"agreeableness":0.8624832386179391,"neuroticism":0.8018371859493696,"risk_appetite":0.7966358514246173,"analytical_depth":0.6393065152844057,"impulsivity":0.7163699554667244,"patience":0.5949618467869767,"social_dominance":0.77038302725585,"herd_susceptibility":0.8217510684528195,"authority_compliance":0.617047678041941,"contrarian_tendency":0.7310261805190993,"empathy":0.8484548035874149,"financial_optimism":0.8107942697747877,"loss_aversion":0.3852527470333557,"fomo_susceptibility":0.5135922791260829,"communication_assertiveness":0.7222508618114957,"persuasion_skill":0.9202206387310741,"information_sharing":0.7290135451829942,"political_spectrum":0.5,"tradition_vs_progress":0.6239216985891772,"individualism":0.6908248654150237,"spirituality":0.6495602152824944}},"ZA":{"iso2":"ZA","iso3":"ZAF","name":"South Africa","lat":-29.0,"lon":24.0,"population_m":60,"region":"africa_south","n_agents":85,"traits":{"openness":0.843225561636896,"conscientiousness":0.8429503818561498,"extraversion":0.8973206345991445,"agreeableness":0.8542819463402846,"neuroticism":0.8035723937356773,"risk_appetite":0.8059145343683258,"analytical_depth":0.6183996835625724,"impulsivity":0.7480950379329746,"patience":0.5439897061035567,"social_dominance":0.761657150612615,"herd_susceptibility":0.774650992290707,"authority_compliance":0.5521699514129912,"contrarian_tendency":0.7693223349340358,"empathy":0.8264635995628546,"financial_optimism":0.824124252485225,"loss_aversion":0.3655880410871569,"fomo_susceptibility":0.5124114967778525,"communication_assertiveness":0.7357905922706663,"persuasion_skill":0.9066757398591456,"information_sharing":0.7132755141888745,"political_spectrum":0.5,"tradition_vs_progress":0.6206958915105873,"individualism":0.7721903614609525,"spirituality":0.6464944889017936}},"AR":{"iso2":"AR","iso3":"ARG","name":"Argentina","lat":-34.0,"lon":-64.0,"population_m":46,"region":"america_south","n_agents":78,"traits":{"openness":0.8248627484436464,"conscientiousness":0.8546053009784659,"extraversion":0.9013705355250506,"agreeableness":0.8752747042475616,"neuroticism":0.812505444486778,"risk_appetite":0.782042683262066,"analytical_depth":0.6115153708496708,"impulsivity":0.7746889404256273,"patience":0.5450857426687907,"social_dominance":0.7445716828236157,"herd_susceptibility":0.806868786297973,"authority_compliance":0.5634457467954506,"contrarian_tendency":0.7830868257118024,"empathy":0.8544907840170074,"financial_optimism":0.821710883290414,"loss_aversion":0.4011757455461437,"fomo_susceptibility":0.5240789214474187,"communication_assertiveness":0.735220752706593,"persuasion_skill":0.9013161875943482,"information_sharing":0.7148651780632679,"political_spectrum":0.5,"tradition_vs_progress":0.6033752203023541,"individualism":0.7267907375667161,"spirituality":0.6478043815132402}},"CA":{"iso2":"CA","iso3":"CAN","name":"Canada","lat":60.0,"lon":-106.0,"population_m":40,"region":"america_north","n_agents":75,"traits":{"openness":0.8628668796897321,"conscientiousness":0.8522032220411339,"extraversion":0.9016471868125513,"agreeableness":0.8686142043144922,"neuroticism":0.8180993933339105,"risk_appetite":0.8153882211104088,"analytical_depth":0.6173871119638382,"impulsivity":0.7622330995859833,"patience":0.5587877091799304,"social_dominance":0.7264022667640694,"herd_susceptibility":0.7792883583856965,"authority_compliance":0.5501599418787193,"contrarian_tendency":0.793079452993583,"empathy":0.842700449898315,"financial_optimism":0.834538195152368,"loss_aversion":0.36241115180750805,"fomo_susceptibility":0.508279030454052,"communication_assertiveness":0.7560287327748487,"persuasion_skill":0.9178215471397143,"information_sharing":0.7164379652529819,"political_spectrum":0.5,"tradition_vs_progress":0.6220001960332711,"individualism":0.798094217670323,"spirituality":0.6770760062219223}},"KR":{"iso2":"KR","iso3":"KOR","name":"South Korea","lat":36.0,"lon":128.0,"population_m":51,"region":"asia_east","n_agents":70,"traits":{"openness":0.806921183741315,"conscientiousness":0.9087125790788224,"extraversion":0.8892912022457555,"agreeableness":0.8702498044265524,"neuroticism":0.8280802195189444,"risk_appetite":0.7830792174586964,"analytical_depth":0.6671348180016204,"impulsivity":0.6853276558325896,"patience":0.6595237374483861,"social_dominance":0.7337470308921341,"herd_susceptibility":0.8557602428444521,"authority_compliance":0.597179680049132,"contrarian_tendency":0.7493611498993596,"empathy":0.8755860818044858,"financial_optimism":0.8009914835161853,"loss_aversion":0.4186860462880173,"fomo_susceptibility":0.47564742285182526,"communication_assertiveness":0.7364927402477071,"persuasion_skill":0.9218118898028763,"information_sharing":0.7286923121231729,"political_spectrum":0.5,"tradition_vs_progress":0.5938001488791186,"individualism":0.6939699410703487,"spirituality":0.6722970796016268}}},"sprint_timeline":[{"sprint":1,"label":"Phase 1-4 foundation","tests":0,"note":"core types + astro"},{"sprint":2,"label":"Phase 5 behaviour","tests":0,"note":"SimulationEngine + Decision"},{"sprint":3,"label":"Phase 6 adapters","tests":346,"note":"BigFive + Demographic"},{"sprint":4,"label":"Phase 6b validity","tests":464,"note":"real-data BF"},{"sprint":5,"label":"Blended + 66 countries","tests":566,"note":"facet foundation"},{"sprint":6,"label":"Facets real BF 8/8","tests":575,"note":"Johnson 612K"},{"sprint":7,"label":"Astro validity N=20","tests":598,"note":"4/4 PASS"},{"sprint":8,"label":"loss_aversion + dash","tests":598,"note":"DA 0.05\u21921.00"},{"sprint":9,"label":"Drift + 10K sim","tests":620,"note":"38.4 min 10K\u00d730"},{"sprint":10,"label":"Cache + dash + bridge","tests":654,"note":"20.4 min 10K\u00d730"}],"performance":{"sprint9_minutes":38.4,"sprint10_minutes":20.4,"sprint9_tick_s":75.06,"sprint10_tick_s":39.1,"sprint9_aspect_share":0.63,"sprint10_aspect_share":0.24,"peak_mb":202.8,"source_dir":"sim_10k_sprint10"},"totals":{"lurk":193963,"post":48753,"engage":57284},"sim_meta":{"n_agents":10000,"n_ticks":30,"seed":42}}</script>
+<script>
+const DATA = JSON.parse(document.getElementById('payload').textContent);
+
+// --------------------------------------------------------------------
+// Shared helpers
+// --------------------------------------------------------------------
+const fmt   = d3.format(",.0f");
+const fmt3  = d3.format(".3f");
+const fmt2  = d3.format(".2f");
+const pct   = d => (d * 100).toFixed(1) + '%';
+
+// DA color scale — keyed to interpretable tiers.
+function daColor(d) {
+  if (d >= 0.8) return '#4ade80';
+  if (d >= 0.6) return '#4dd3ff';
+  if (d >= 0.5) return '#b794f4';
+  if (d >= 0.4) return '#fbbf24';
+  return '#ef4444';
+}
+
+// --------------------------------------------------------------------
+// KPIs + top metrics
+// --------------------------------------------------------------------
+document.getElementById('kpi-traits').textContent = DATA.trait_names.length;
+document.getElementById('kpi-agents').textContent = DATA.sim_meta.n_agents.toLocaleString();
+document.getElementById('kpi-tests').textContent  = '654';
+if (DATA.performance) {
+  const p = DATA.performance;
+  document.getElementById('perf-runtime').textContent = p.sprint10_minutes.toFixed(1) + ' min';
+  document.getElementById('perf-runtime-sub').innerHTML =
+    `Sprint 9 baseline ${p.sprint9_minutes.toFixed(1)} min &rarr; <b>${(p.sprint9_minutes / p.sprint10_minutes).toFixed(2)}× faster</b> after WP1 &middot; <span class="mono">${p.source_dir}</span>`;
+  document.getElementById('perf-aspect').textContent =
+    Math.round(p.sprint9_aspect_share * 100) + '% → ' + Math.round(p.sprint10_aspect_share * 100) + '%';
+}
+
+document.getElementById('val-da').textContent  = fmt3(DATA.validity.da.overall);
+document.getElementById('val-ext').textContent = fmt3(DATA.validity.extreme.da);
+document.getElementById('val-cw').textContent  = fmt3(DATA.validity.cw_da.da);
+
+document.getElementById('sim-posts').textContent   = fmt(DATA.totals.post);
+document.getElementById('sim-posts-sub').textContent = 'across ' + DATA.sim_meta.n_ticks + ' ticks · ' + (DATA.totals.post / DATA.sim_meta.n_ticks).toFixed(0) + '/tick';
+document.getElementById('sim-eng').textContent     = fmt(DATA.totals.engage);
+document.getElementById('sim-drift-agents').textContent = fmt(DATA.drift_summary.agents_with_drift);
+document.getElementById('sim-drift-sub').textContent    = 'mean magnitude ' + fmt3(DATA.drift_summary.mean_magnitude);
+document.getElementById('sim-events').textContent  = fmt2(DATA.drift_summary.mean_event_count);
+document.getElementById('sim-events-max').textContent = DATA.drift_summary.max_event_count;
+
+// --------------------------------------------------------------------
+// Panel 2 — Pipeline diagram
+// --------------------------------------------------------------------
+(function renderPipeline() {
+  const svg = d3.select('#pipeline-svg');
+  svg.append('defs').html(`
+    <marker id="arrowhead" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L8,4 L0,8 z" fill="#5c6372"/>
+    </marker>
+  `);
+  const boxes = [
+    {x: 20,  y: 20,  w: 140, h: 50,  t: 'Birth data',         s: 'UTC + lat/lon + TZ'},
+    {x: 20,  y: 160, w: 140, h: 50,  t: 'OCEAN scores',        s: 'Big-Five IPIP-NEO'},
+    {x: 20,  y: 300, w: 140, h: 50,  t: 'Demographic',         s: 'country · age · job'},
+
+    {x: 200, y: 20,  w: 140, h: 50,  t: 'NatalChart',          s: 'planets + houses + asp.'},
+    {x: 200, y: 90,  w: 140, h: 50,  t: 'AstrologicalAdapter', s: '23 traits · conf: high', active: true},
+    {x: 200, y: 160, w: 140, h: 50,  t: 'BigFiveAdapter',      s: '5 OCEAN + 13 facets'},
+    {x: 200, y: 300, w: 140, h: 50,  t: 'DemographicAdapter',  s: '6 culture traits'},
+
+    {x: 380, y: 140, w: 120, h: 90,  t: 'BlendedAdapter',      s: 'weighted merge\n+ noise', active: true},
+    {x: 380, y: 280, w: 120, h: 70,  t: '24-trait TraitVector', s: 'agent.traits (frozen)', active: true},
+  ];
+  const g = svg.append('g');
+  for (const b of boxes) {
+    g.append('rect')
+      .attr('x', b.x).attr('y', b.y).attr('width', b.w).attr('height', b.h)
+      .attr('rx', 6).attr('class', 'pipe-box' + (b.active ? ' pipe-box-active' : ''));
+    const lines = b.s.split('\n');
+    g.append('text').attr('x', b.x + b.w/2).attr('y', b.y + 20)
+      .attr('text-anchor', 'middle').attr('class', 'pipe-label').text(b.t);
+    lines.forEach((line, i) => {
+      g.append('text').attr('x', b.x + b.w/2).attr('y', b.y + 36 + i*11)
+        .attr('text-anchor', 'middle').attr('class', 'pipe-sub').text(line);
+    });
+  }
+  // Arrows: birth -> natal -> astro -> blended
+  const arrows = [
+    [160,45,200,45], [340,45,380,160],   // birth -> natal -> blended
+    [160,45,200,115], [340,115,380,170], // natal-like path
+    [160,185,200,185], [340,185,380,180],// OCEAN -> BigFive -> Blended
+    [160,325,200,325], [340,325,380,220],// Demo -> Blended
+    [440,230,440,280],                   // Blended -> TraitVector
+  ];
+  arrows.forEach(a => g.append('path').attr('class', 'pipe-arrow')
+    .attr('d', `M${a[0]},${a[1]} L${a[2]},${a[3]}`));
+})();
+
+// --------------------------------------------------------------------
+// Panel 2 — Sample agent radar
+// --------------------------------------------------------------------
+(function renderSampleRadar() {
+  const traits = Object.entries(DATA.sample_agent.traits);
+  document.getElementById('radar-title').textContent =
+    `${DATA.sample_agent.name} — ${DATA.sample_agent.occupation} (Sun ${DATA.sample_agent.sun_sign})`;
+  document.getElementById('radar-sub').textContent =
+    `${DATA.sample_agent.birth_utc} · Moon ${DATA.sample_agent.moon_sign} · Asc ${DATA.sample_agent.asc_sign}`;
+
+  const svg = d3.select('#sample-radar');
+  const R = 150;
+  const N = traits.length;
+  const angle = i => (i / N) * Math.PI * 2 - Math.PI / 2;
+  // axes
+  for (let r = 0.25; r <= 1; r += 0.25) {
+    svg.append('circle').attr('class', 'radar-axis').attr('r', R * r).attr('fill', 'none');
+  }
+  traits.forEach((t, i) => {
+    const [name, val] = t;
+    const a = angle(i);
+    svg.append('line').attr('class', 'radar-axis')
+      .attr('x1', 0).attr('y1', 0)
+      .attr('x2', Math.cos(a) * R).attr('y2', Math.sin(a) * R);
+    const lx = Math.cos(a) * (R + 14);
+    const ly = Math.sin(a) * (R + 14);
+    svg.append('text').attr('class', 'radar-axis-label')
+      .attr('x', lx).attr('y', ly)
+      .attr('text-anchor', Math.abs(lx) < 5 ? 'middle' : (lx > 0 ? 'start' : 'end'))
+      .attr('dy', '0.3em')
+      .text(name.length > 14 ? name.slice(0, 12) + '…' : name);
+  });
+  const poly = traits.map((t, i) => {
+    const a = angle(i);
+    return [Math.cos(a) * R * t[1], Math.sin(a) * R * t[1]];
+  });
+  svg.append('polygon').attr('class', 'radar-poly')
+    .attr('points', poly.map(p => p.join(',')).join(' '));
+  poly.forEach(p => svg.append('circle').attr('class', 'radar-dot')
+    .attr('cx', p[0]).attr('cy', p[1]).attr('r', 2));
+})();
+
+// --------------------------------------------------------------------
+// Panel 3 — Per-trait DA bars
+// --------------------------------------------------------------------
+(function renderPerTraitBars() {
+  const svg = d3.select('#per-trait-bars');
+  const entries = Object.entries(DATA.validity.per_trait)
+    .filter(([_, v]) => v && typeof v.da === 'number')
+    .sort((a, b) => b[1].da - a[1].da);
+  const W = 900, H = 520;
+  const M = { t: 8, r: 60, b: 20, l: 170 };
+  const barH = Math.max(12, Math.floor((H - M.t - M.b) / entries.length));
+  const x = d3.scaleLinear().domain([0, 1]).range([0, W - M.l - M.r]);
+  const g = svg.append('g').attr('transform', `translate(${M.l},${M.t})`);
+
+  // chance line at 0.5
+  g.append('line').attr('x1', x(0.5)).attr('x2', x(0.5))
+    .attr('y1', 0).attr('y2', entries.length * barH)
+    .attr('stroke', 'rgba(255,255,255,0.1)').attr('stroke-dasharray', '2 3');
+  g.append('text').attr('x', x(0.5)).attr('y', -2).attr('text-anchor', 'middle')
+    .attr('class', 'bar-label').attr('font-size', '9px').text('0.50 chance');
+
+  entries.forEach((e, i) => {
+    const [name, v] = e;
+    g.append('rect').attr('class', 'bar')
+      .attr('x', 0).attr('y', i * barH + 2)
+      .attr('width', x(v.da)).attr('height', barH - 4)
+      .attr('fill', daColor(v.da));
+    g.append('text').attr('class', 'bar-label')
+      .attr('x', -8).attr('y', i * barH + barH / 2 + 3).attr('text-anchor', 'end')
+      .text(name);
+    g.append('text').attr('class', 'bar-value')
+      .attr('x', x(v.da) + 4).attr('y', i * barH + barH / 2 + 3)
+      .text(fmt3(v.da) + '  n=' + v.n_classified);
+  });
+})();
+
+// --------------------------------------------------------------------
+// Panel 4 — Trait histogram
+// --------------------------------------------------------------------
+(function setupHistogram() {
+  const sel = document.getElementById('trait-select');
+  DATA.trait_names.forEach(t => {
+    const o = document.createElement('option');
+    o.value = t; o.textContent = t;
+    sel.appendChild(o);
+  });
+  sel.value = 'empathy';
+  sel.addEventListener('change', () => renderHistogram(sel.value));
+  renderHistogram(sel.value);
+})();
+
+function renderHistogram(trait) {
+  const svg = d3.select('#hist-svg'); svg.selectAll('*').remove();
+  const t0 = DATA.trait_dist.tick_0[trait];
+  const tN = DATA.trait_dist.tick_N[trait];
+  const W = 520, H = 280, M = { t: 10, r: 20, b: 30, l: 40 };
+  const x = d3.scaleLinear().domain([0, 1]).range([M.l, W - M.r]);
+  const bins = 30;
+  const binW = (W - M.l - M.r) / bins;
+  const normalPDF = (x, mu, sigma) => Math.exp(-((x - mu) ** 2) / (2 * sigma * sigma)) / (sigma * Math.sqrt(2 * Math.PI));
+  const peakRef = Math.max(
+    normalPDF(t0.mean, t0.mean, Math.max(t0.std, 0.01)),
+    normalPDF(tN.mean, tN.mean, Math.max(tN.std, 0.01)),
+  );
+  const y = d3.scaleLinear().domain([0, peakRef * 1.05]).range([H - M.b, M.t]);
+
+  const bars0 = [], barsN = [];
+  for (let i = 0; i < bins; i++) {
+    const cx = (i + 0.5) / bins;
+    bars0.push({ x: cx, y: normalPDF(cx, t0.mean, Math.max(t0.std, 0.01)) });
+    barsN.push({ x: cx, y: normalPDF(cx, tN.mean, Math.max(tN.std, 0.01)) });
+  }
+
+  const gridg = svg.append('g');
+  [0, 0.25, 0.5, 0.75, 1].forEach(v => {
+    gridg.append('line').attr('x1', x(v)).attr('x2', x(v))
+      .attr('y1', M.t).attr('y2', H - M.b)
+      .attr('stroke', 'rgba(255,255,255,0.04)');
+    gridg.append('text').attr('x', x(v)).attr('y', H - 10)
+      .attr('text-anchor', 'middle').attr('class', 'bar-label').text(v.toFixed(2));
+  });
+  // Tick-0
+  svg.append('path').attr('class', 'hist-tick0')
+    .attr('d', d3.area()
+      .x(d => x(d.x)).y0(y(0)).y1(d => y(d.y))(bars0));
+  // Tick-N
+  svg.append('path').attr('class', 'hist-tickN')
+    .attr('d', d3.area()
+      .x(d => x(d.x)).y0(y(0)).y1(d => y(d.y))(barsN));
+  // Mean markers
+  svg.append('line').attr('x1', x(t0.mean)).attr('x2', x(t0.mean))
+    .attr('y1', M.t).attr('y2', H - M.b)
+    .attr('stroke', 'var(--accent-2)').attr('stroke-dasharray', '2 3');
+  svg.append('line').attr('x1', x(tN.mean)).attr('x2', x(tN.mean))
+    .attr('y1', M.t).attr('y2', H - M.b)
+    .attr('stroke', 'var(--accent)').attr('stroke-dasharray', '2 3');
+
+  document.getElementById('hist-stats').innerHTML =
+    `<span style="color:var(--accent-2);">tick 0</span>&nbsp;μ=${fmt3(t0.mean)}&nbsp;σ=${fmt3(t0.std)}&nbsp;·&nbsp;` +
+    `<span style="color:var(--accent);">tick 30</span>&nbsp;μ=${fmt3(tN.mean)}&nbsp;σ=${fmt3(tN.std)}&nbsp;·&nbsp;` +
+    `Δμ=${(tN.mean - t0.mean >= 0 ? '+' : '') + fmt3(tN.mean - t0.mean)}`;
+}
+
+// --------------------------------------------------------------------
+// Panel 4 — Drift per trait bar chart
+// --------------------------------------------------------------------
+(function renderDriftBars() {
+  const svg = d3.select('#drift-bars');
+  const t0 = DATA.trait_dist.tick_0;
+  const tN = DATA.trait_dist.tick_N;
+  const entries = DATA.trait_names.map(t => ({
+    name: t,
+    delta: tN[t].mean - t0[t].mean,
+    abs:   Math.abs(tN[t].mean - t0[t].mean),
+  })).sort((a, b) => b.abs - a.abs);
+
+  const W = 520, H = 520;
+  const M = { t: 8, r: 60, b: 8, l: 160 };
+  const barH = (H - M.t - M.b) / entries.length;
+  const maxAbs = Math.max(0.01, d3.max(entries, d => d.abs));
+  const x = d3.scaleLinear().domain([-maxAbs, maxAbs]).range([0, W - M.l - M.r]);
+  const g = svg.append('g').attr('transform', `translate(${M.l},${M.t})`);
+  // zero axis
+  g.append('line').attr('x1', x(0)).attr('x2', x(0))
+    .attr('y1', 0).attr('y2', entries.length * barH)
+    .attr('stroke', 'rgba(255,255,255,0.2)');
+  entries.forEach((e, i) => {
+    const isPos = e.delta >= 0;
+    const bx = isPos ? x(0) : x(e.delta);
+    const bw = Math.abs(x(e.delta) - x(0));
+    g.append('rect').attr('class', 'bar')
+      .attr('x', bx).attr('y', i * barH + 2)
+      .attr('width', Math.max(bw, 0.5)).attr('height', Math.max(4, barH - 4))
+      .attr('fill', isPos ? '#4dd3ff' : '#ef4444')
+      .attr('opacity', e.abs > 0 ? 0.85 : 0.25);
+    g.append('text').attr('class', 'bar-label')
+      .attr('x', -8).attr('y', i * barH + barH / 2 + 3).attr('text-anchor', 'end')
+      .text(e.name);
+    if (e.abs > 0.0005) {
+      g.append('text').attr('class', 'bar-value')
+        .attr('x', isPos ? x(e.delta) + 4 : x(e.delta) - 4)
+        .attr('y', i * barH + barH / 2 + 3)
+        .attr('text-anchor', isPos ? 'start' : 'end')
+        .text((isPos ? '+' : '') + fmt3(e.delta));
+    }
+  });
+})();
+
+// --------------------------------------------------------------------
+// Panel 4 — Action pie
+// --------------------------------------------------------------------
+(function renderActionPie() {
+  const svg = d3.select('#action-pie');
+  const data = [
+    { key: 'lurk',    val: DATA.totals.lurk,   color: '#5c6372' },
+    { key: 'post',    val: DATA.totals.post,   color: '#4dd3ff' },
+    { key: 'engage',  val: DATA.totals.engage, color: '#b794f4' },
+  ];
+  const total = d3.sum(data, d => d.val);
+  const pie = d3.pie().value(d => d.val).sort(null);
+  const arc = d3.arc().innerRadius(50).outerRadius(90);
+  svg.selectAll('path').data(pie(data)).enter().append('path')
+    .attr('d', arc).attr('fill', d => d.data.color)
+    .attr('stroke', 'var(--panel)').attr('stroke-width', 2);
+  svg.append('text').attr('text-anchor', 'middle').attr('dy', 3)
+    .attr('class', 'mono').attr('fill', 'var(--ink)').attr('font-size', '15px')
+    .attr('font-weight', 700).text(fmt(total));
+  svg.append('text').attr('text-anchor', 'middle').attr('dy', 20)
+    .attr('class', 'mono').attr('fill', 'var(--ink-faint)').attr('font-size', '9px')
+    .text('actions');
+  document.getElementById('action-legend').innerHTML = data.map(d =>
+    `<div style="display:flex;align-items:center;gap:8px;font-size:12px;margin-bottom:4px;">
+      <span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:${d.color};"></span>
+      <span class="mono" style="color:var(--ink);">${d.key}</span>
+      <span class="mono" style="color:var(--ink-dim);">${fmt(d.val)} · ${pct(d.val / total)}</span>
+    </div>`
+  ).join('');
+})();
+
+// --------------------------------------------------------------------
+// Panel 4 — World map (per-country mean trait)
+// --------------------------------------------------------------------
+(function setupMap() {
+  const sel = document.getElementById('map-trait-select');
+  // Only traits that exist in country summary
+  const any = Object.values(DATA.countries)[0];
+  if (!any) return;
+  const available = Object.keys(any.traits);
+  DATA.trait_names.filter(t => available.includes(t)).forEach(t => {
+    const o = document.createElement('option'); o.value = t; o.textContent = t;
+    sel.appendChild(o);
+  });
+  sel.value = 'openness';
+  sel.addEventListener('change', () => renderMap(sel.value));
+  renderMap(sel.value);
+})();
+
+async function renderMap(trait) {
+  const svg = d3.select('#map-svg');
+  svg.selectAll('*').remove();
+  const width = 960, height = 480;
+  const proj = d3.geoNaturalEarth1().scale(165).translate([width / 2, height / 2]);
+  const path = d3.geoPath(proj);
+
+  // Color scale from the 30 sim countries
+  const values = Object.values(DATA.countries).map(c => c.traits[trait]).filter(v => v != null);
+  const ext = d3.extent(values);
+  const color = d3.scaleSequential().domain([ext[0] || 0, ext[1] || 1]).interpolator(d3.interpolateViridis);
+
+  document.getElementById('map-legend').textContent =
+    `${trait} range across sample: ${fmt3(ext[0])} — ${fmt3(ext[1])}`;
+
+  // Load world map (topojson) from unpkg — if it fails, we degrade to just dots
+  let world;
+  try {
+    world = await d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json');
+  } catch (e) {
+    // Offline fallback: draw dots per country coordinate
+    renderMapDots(trait, color);
+    return;
+  }
+  const countries = topojson.feature(world, world.objects.countries).features;
+  // Build iso3 -> trait lookup
+  const iso3Map = {};
+  Object.values(DATA.countries).forEach(c => { if (c.iso3) iso3Map[c.iso3] = c; });
+
+  svg.append('g').selectAll('path').data(countries).enter().append('path')
+    .attr('class', 'country')
+    .attr('d', path)
+    .attr('fill', d => {
+      const name = d.properties && d.properties.name;
+      // countries-110m uses numeric ISO codes; try 3-letter match via name
+      const match = Object.values(DATA.countries).find(c => c.name === name);
+      if (!match || match.traits[trait] == null) return '#1a1d25';
+      return color(match.traits[trait]);
+    })
+    .on('mousemove', (ev, d) => {
+      const name = d.properties && d.properties.name;
+      const match = Object.values(DATA.countries).find(c => c.name === name);
+      const tooltip = document.getElementById('map-tooltip');
+      if (!match) { tooltip.textContent = name ? `${name} — outside sample` : ''; return; }
+      tooltip.innerHTML = `<b>${match.name}</b> · n=${match.n_agents.toLocaleString()} · ${trait} μ=${fmt3(match.traits[trait])} · pop ${match.population_m}M`;
+    })
+    .on('mouseout', () => { document.getElementById('map-tooltip').textContent = ''; });
+}
+
+function renderMapDots(trait, color) {
+  const svg = d3.select('#map-svg');
+  const proj = d3.geoNaturalEarth1().scale(165).translate([480, 240]);
+  Object.values(DATA.countries).forEach(c => {
+    const pt = proj([c.lon, c.lat]); if (!pt) return;
+    svg.append('circle').attr('cx', pt[0]).attr('cy', pt[1]).attr('r', 5)
+      .attr('fill', c.traits[trait] != null ? color(c.traits[trait]) : '#333')
+      .attr('stroke', 'var(--bg)').attr('stroke-width', 1)
+      .on('mousemove', () => {
+        document.getElementById('map-tooltip').innerHTML =
+          `<b>${c.name}</b> · n=${c.n_agents.toLocaleString()} · ${trait} μ=${fmt3(c.traits[trait])}`;
+      })
+      .on('mouseout', () => { document.getElementById('map-tooltip').textContent = ''; });
+  });
+}
+
+// --------------------------------------------------------------------
+// Panel 4 — Country trait-similarity network
+// --------------------------------------------------------------------
+(function renderCountryNetwork() {
+  const svg = d3.select('#country-net');
+  const width = 480, height = 320;
+  const nodes = Object.values(DATA.countries).map(c => ({
+    id: c.iso2,
+    label: c.iso2,
+    name: c.name,
+    n: c.n_agents,
+    pop: c.population_m,
+    traits: c.traits,
+  }));
+
+  // Build top-k nearest links by cosine similarity
+  const traitKeys = Object.keys(nodes[0].traits);
+  function cosine(a, b) {
+    let dot = 0, na = 0, nb = 0;
+    for (const k of traitKeys) {
+      const xa = a[k] || 0, xb = b[k] || 0;
+      dot += xa * xb; na += xa * xa; nb += xb * xb;
+    }
+    return dot / (Math.sqrt(na) * Math.sqrt(nb) + 1e-9);
+  }
+  const links = [];
+  for (let i = 0; i < nodes.length; i++) {
+    const sims = [];
+    for (let j = 0; j < nodes.length; j++) {
+      if (i === j) continue;
+      sims.push({ j, s: cosine(nodes[i].traits, nodes[j].traits) });
+    }
+    sims.sort((a, b) => b.s - a.s);
+    sims.slice(0, 3).forEach(x => {
+      links.push({ source: nodes[i].id, target: nodes[x.j].id, s: x.s });
+    });
+  }
+
+  const sim = d3.forceSimulation(nodes)
+    .force('charge', d3.forceManyBody().strength(-60))
+    .force('link',   d3.forceLink(links).id(d => d.id).distance(d => 80 * (1 - d.s) + 30).strength(0.3))
+    .force('center', d3.forceCenter(width / 2, height / 2))
+    .force('collide', d3.forceCollide(16))
+    .stop();
+  for (let i = 0; i < 220; i++) sim.tick();
+
+  const g = svg.append('g');
+  g.selectAll('line').data(links).enter().append('line').attr('class', 'link')
+    .attr('x1', d => d.source.x).attr('y1', d => d.source.y)
+    .attr('x2', d => d.target.x).attr('y2', d => d.target.y)
+    .attr('stroke-opacity', d => Math.max(0.05, d.s * 0.4));
+  const node = g.selectAll('g.node').data(nodes).enter().append('g')
+    .attr('class', 'node').attr('transform', d => `translate(${d.x},${d.y})`);
+  node.append('circle')
+    .attr('r', d => 4 + Math.sqrt(d.pop) * 0.4)
+    .attr('fill', '#4dd3ff').attr('fill-opacity', 0.75);
+  node.append('text').attr('class', 'node-label')
+    .attr('dy', -10).attr('text-anchor', 'middle').text(d => d.label);
+  node.append('title').text(d => `${d.name} · n=${d.n.toLocaleString()} · ${d.pop}M pop`);
+})();
+
+// --------------------------------------------------------------------
+// Panel 5 — Sprint timeline
+// --------------------------------------------------------------------
+(function renderSprintTimeline() {
+  const svg = d3.select('#sprint-svg');
+  const W = 900, H = 160;
+  const M = { t: 20, r: 20, b: 30, l: 20 };
+  const xs = DATA.sprint_timeline;
+  const colW = (W - M.l - M.r) / xs.length;
+  xs.forEach((s, i) => {
+    const isCurrent = s.sprint === 10;
+    const x = M.l + i * colW + 6;
+    const w = colW - 12;
+    svg.append('rect').attr('class', isCurrent ? 'sprint-box-current' : 'sprint-box')
+      .attr('x', x).attr('y', M.t).attr('width', w).attr('height', H - M.t - M.b)
+      .attr('rx', 6).attr('stroke-width', 1);
+    svg.append('text').attr('class', 'sprint-label')
+      .attr('x', x + w / 2).attr('y', M.t + 16).attr('text-anchor', 'middle')
+      .text('S' + s.sprint);
+    svg.append('text').attr('class', 'sprint-sub')
+      .attr('x', x + w / 2).attr('y', M.t + 32).attr('text-anchor', 'middle')
+      .text(s.label);
+    svg.append('text').attr('class', 'sprint-sub')
+      .attr('x', x + w / 2).attr('y', M.t + 48).attr('text-anchor', 'middle')
+      .attr('fill', 'var(--ink-faint)')
+      .text(s.tests > 0 ? s.tests + ' tests' : '—');
+    svg.append('text').attr('class', 'sprint-sub')
+      .attr('x', x + w / 2).attr('y', M.t + 64).attr('text-anchor', 'middle')
+      .attr('fill', 'var(--ink-faint)').attr('font-size', '9px')
+      .text(s.note);
+  });
+})();
+
+// Nav active link highlight
+(function initNavActive() {
+  const links = document.querySelectorAll('nav a');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const id = e.target.id;
+        links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + id));
+      }
+    });
+  }, { rootMargin: '-40% 0px -55% 0px' });
+  document.querySelectorAll('section').forEach(s => obs.observe(s));
+})();
+</script>
+</body>
+</html>

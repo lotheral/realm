@@ -1,0 +1,41 @@
+{
+  "_comment": "Sprint 14 WP5 — pre-configured RSS feed sources surfaced by the dashboard's scenario panel via GET /api/feeds. Each entry must declare an id, url, and a category_hint that maps to a prediction_categories.json id (used as a routing fallback when keyword matching is ambiguous). refresh_minutes is informational only — the dashboard fetches on demand, no scheduler in v0.14.",
+  "schema_version": 1,
+  "feeds": [
+    {
+      "id": "reuters_world",
+      "label": "Reuters World News",
+      "url": "https://feeds.reuters.com/reuters/worldNews",
+      "category_hint": "geopolitics",
+      "refresh_minutes": 15
+    },
+    {
+      "id": "coindesk",
+      "label": "CoinDesk Markets",
+      "url": "https://www.coindesk.com/arc/outboundfeeds/rss/",
+      "category_hint": "crypto",
+      "refresh_minutes": 10
+    },
+    {
+      "id": "fed_press",
+      "label": "Federal Reserve Press Releases",
+      "url": "https://www.federalreserve.gov/feeds/press_all.xml",
+      "category_hint": "economics",
+      "refresh_minutes": 60
+    },
+    {
+      "id": "ap_top",
+      "label": "AP Top News",
+      "url": "https://feeds.apnews.com/apf-topnews",
+      "category_hint": "balanced",
+      "refresh_minutes": 15
+    },
+    {
+      "id": "nature_news",
+      "label": "Nature News",
+      "url": "https://www.nature.com/nature.rss",
+      "category_hint": "science",
+      "refresh_minutes": 60
+    }
+  ]
+}

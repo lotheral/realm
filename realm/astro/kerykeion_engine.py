@@ -217,6 +217,12 @@ class KerykeionEngine(IAstroEngine):
                 hour=local_dt.hour, minute=local_dt.minute,
                 lat=latitude, lng=longitude, tz_str=timezone,
                 houses_system_identifier=self._house_system,
+                # online=False suppresses Kerykeion's GeoNames API lookup —
+                # we already have lat/lng/tz_str from our own dataset, so no
+                # network call is needed. Eliminates the "NO GEONAMES USERNAME"
+                # warning, removes a shared-rate-limit dependency, and keeps
+                # the hot path deterministic / offline.
+                online=False,
             )
         except Exception as e:
             raise AstroCalculationError(f"Kerykeion subject creation failed: {e}") from e

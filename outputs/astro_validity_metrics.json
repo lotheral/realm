@@ -1,0 +1,878 @@
+{
+  "validated_traits": [
+    "openness",
+    "conscientiousness",
+    "extraversion",
+    "agreeableness",
+    "neuroticism",
+    "risk_appetite",
+    "analytical_depth",
+    "impulsivity",
+    "patience",
+    "social_dominance",
+    "herd_susceptibility",
+    "authority_compliance",
+    "contrarian_tendency",
+    "empathy",
+    "financial_optimism",
+    "loss_aversion",
+    "fomo_susceptibility",
+    "communication_assertiveness",
+    "persuasion_skill",
+    "information_sharing",
+    "tradition_vs_progress",
+    "individualism",
+    "spirituality"
+  ],
+  "da": {
+    "overall": 0.7183673469387755,
+    "hits": 352,
+    "n_classified": 490
+  },
+  "cw_da": {
+    "da": 0.7790697674418605,
+    "hits": 201,
+    "n_classified": 258
+  },
+  "extreme": {
+    "da": 0.7990654205607477,
+    "hits": 171,
+    "n_classified": 214
+  },
+  "correlation": {
+    "overall_pearson": 0.3087787510805675,
+    "overall_spearman": 0.24407649355951508,
+    "n_pairs": 506
+  },
+  "per_trait": [
+    {
+      "trait": "openness",
+      "n_figures": 22,
+      "n_classified": 20,
+      "da": 0.95,
+      "pearson": 0.18990271559120842,
+      "spearman": 0.1414384667642303,
+      "expected_mean": 0.7854545454545454,
+      "actual_mean": 0.8253091030807621,
+      "actual_std": 0.049302972284250436,
+      "is_fallback": false
+    },
+    {
+      "trait": "conscientiousness",
+      "n_figures": 22,
+      "n_classified": 22,
+      "da": 0.9090909090909091,
+      "pearson": 0.021306914561303795,
+      "spearman": -0.005147695308530975,
+      "expected_mean": 0.7386363636363636,
+      "actual_mean": 0.8378115561897422,
+      "actual_std": 0.060579205669202794,
+      "is_fallback": false
+    },
+    {
+      "trait": "extraversion",
+      "n_figures": 22,
+      "n_classified": 22,
+      "da": 0.7727272727272727,
+      "pearson": -0.14922156246915452,
+      "spearman": -0.1960826196060008,
+      "expected_mean": 0.6477272727272727,
+      "actual_mean": 0.8854508033574128,
+      "actual_std": 0.08009519769365064,
+      "is_fallback": false
+    },
+    {
+      "trait": "agreeableness",
+      "n_figures": 22,
+      "n_classified": 21,
+      "da": 0.5714285714285714,
+      "pearson": 0.19707563699741426,
+      "spearman": 0.18218668027350204,
+      "expected_mean": 0.5431818181818182,
+      "actual_mean": 0.8724579280604325,
+      "actual_std": 0.0577234054751794,
+      "is_fallback": false
+    },
+    {
+      "trait": "neuroticism",
+      "n_figures": 22,
+      "n_classified": 21,
+      "da": 0.5714285714285714,
+      "pearson": 0.2206042246813434,
+      "spearman": 0.13208720779579078,
+      "expected_mean": 0.5590909090909091,
+      "actual_mean": 0.8044639694752446,
+      "actual_std": 0.05437408478330103,
+      "is_fallback": false
+    },
+    {
+      "trait": "risk_appetite",
+      "n_figures": 22,
+      "n_classified": 22,
+      "da": 0.9545454545454546,
+      "pearson": 0.18995762478465852,
+      "spearman": -0.010265695168371555,
+      "expected_mean": 0.7727272727272727,
+      "actual_mean": 0.8108843104700078,
+      "actual_std": 0.10603397287446027,
+      "is_fallback": false
+    },
+    {
+      "trait": "analytical_depth",
+      "n_figures": 22,
+      "n_classified": 22,
+      "da": 0.8181818181818182,
+      "pearson": -0.06368695922358991,
+      "spearman": 0.09459082568397432,
+      "expected_mean": 0.7345454545454545,
+      "actual_mean": 0.617827436002357,
+      "actual_std": 0.07324465934724451,
+      "is_fallback": false
+    },
+    {
+      "trait": "impulsivity",
+      "n_figures": 22,
+      "n_classified": 21,
+      "da": 0.42857142857142855,
+      "pearson": 0.2134827730250928,
+      "spearman": 0.1398154331103658,
+      "expected_mean": 0.43863636363636366,
+      "actual_mean": 0.7430117797731784,
+      "actual_std": 0.08417862439069625,
+      "is_fallback": false
+    },
+    {
+      "trait": "patience",
+      "n_figures": 22,
+      "n_classified": 22,
+      "da": 0.5909090909090909,
+      "pearson": 0.3528251824499793,
+      "spearman": 0.28417762796389356,
+      "expected_mean": 0.6004545454545455,
+      "actual_mean": 0.5727194782055315,
+      "actual_std": 0.06663705948598397,
+      "is_fallback": false
+    },
+    {
+      "trait": "social_dominance",
+      "n_figures": 22,
+      "n_classified": 21,
+      "da": 0.9047619047619048,
+      "pearson": -0.01201993395061273,
+      "spearman": -0.11778441372391926,
+      "expected_mean": 0.7363636363636363,
+      "actual_mean": 0.7243870116300407,
+      "actual_std": 0.07555591148868818,
+      "is_fallback": false
+    },
+    {
+      "trait": "herd_susceptibility",
+      "n_figures": 22,
+      "n_classified": 22,
+      "da": 0.09090909090909091,
+      "pearson": -0.0024583838747731274,
+      "spearman": -0.0017673322304303481,
+      "expected_mean": 0.20681818181818182,
+      "actual_mean": 0.8158286060655742,
+      "actual_std": 0.07076587832809833,
+      "is_fallback": true
+    },
+    {
+      "trait": "authority_compliance",
+      "n_figures": 22,
+      "n_classified": 22,
+      "da": 0.22727272727272727,
+      "pearson": 0.3464369228670357,
+      "spearman": 0.3667991447350544,
+      "expected_mean": 0.3340909090909091,
+      "actual_mean": 0.580337831448963,
+      "actual_std": 0.040031105327751386,
+      "is_fallback": false
+    },
+    {
+      "trait": "contrarian_tendency",
+      "n_figures": 22,
+      "n_classified": 21,
+      "da": 0.9047619047619048,
+      "pearson": -0.12206885975691502,
+      "spearman": -0.05192871371404214,
+      "expected_mean": 0.7113636363636364,
+      "actual_mean": 0.7498507623095018,
+      "actual_std": 0.05547351334947296,
+      "is_fallback": false
+    },
+    {
+      "trait": "empathy",
+      "n_figures": 22,
+      "n_classified": 22,
+      "da": 0.7272727272727273,
+      "pearson": 0.04135122075959111,
+      "spearman": -0.0777750030152732,
+      "expected_mean": 0.6272727272727273,
+      "actual_mean": 0.8561306209890326,
+      "actual_std": 0.10031035510045272,
+      "is_fallback": false
+    },
+    {
+      "trait": "financial_optimism",
+      "n_figures": 22,
+      "n_classified": 19,
+      "da": 0.7894736842105263,
+      "pearson": -0.16039932560975198,
+      "spearman": -0.1757727240070846,
+      "expected_mean": 0.6363636363636364,
+      "actual_mean": 0.8304979409405749,
+      "actual_std": 0.0453620175767958,
+      "is_fallback": false
+    },
+    {
+      "trait": "loss_aversion",
+      "n_figures": 22,
+      "n_classified": 21,
+      "da": 1.0,
+      "pearson": 0.38100347162421366,
+      "spearman": 0.024050462710301056,
+      "expected_mean": 0.325,
+      "actual_mean": 0.37831741073610625,
+      "actual_std": 0.0707543759400951,
+      "is_fallback": false
+    },
+    {
+      "trait": "fomo_susceptibility",
+      "n_figures": 22,
+      "n_classified": 21,
+      "da": 0.23809523809523808,
+      "pearson": 0.4108283403196535,
+      "spearman": 0.35924936016431186,
+      "expected_mean": 0.2727272727272727,
+      "actual_mean": 0.5124473842463498,
+      "actual_std": 0.017574176670053666,
+      "is_fallback": true
+    },
+    {
+      "trait": "communication_assertiveness",
+      "n_figures": 22,
+      "n_classified": 21,
+      "da": 1.0,
+      "pearson": -0.1390514619287179,
+      "spearman": -0.17002176880211078,
+      "expected_mean": 0.8004545454545454,
+      "actual_mean": 0.7355474009589271,
+      "actual_std": 0.05941334684666949,
+      "is_fallback": false
+    },
+    {
+      "trait": "persuasion_skill",
+      "n_figures": 22,
+      "n_classified": 22,
+      "da": 1.0,
+      "pearson": -0.18638672580139495,
+      "spearman": -0.2349831048014349,
+      "expected_mean": 0.8172727272727273,
+      "actual_mean": 0.9136097912017874,
+      "actual_std": 0.04433063411122838,
+      "is_fallback": false
+    },
+    {
+      "trait": "information_sharing",
+      "n_figures": 22,
+      "n_classified": 22,
+      "da": 0.8181818181818182,
+      "pearson": -0.09178757735598207,
+      "spearman": -0.2478044171411062,
+      "expected_mean": 0.6681818181818182,
+      "actual_mean": 0.7188566404035448,
+      "actual_std": 0.04929156165660484,
+      "is_fallback": false
+    },
+    {
+      "trait": "tradition_vs_progress",
+      "n_figures": 22,
+      "n_classified": 21,
+      "da": 0.8095238095238095,
+      "pearson": 0.016968775688857334,
+      "spearman": 0.12489537298577406,
+      "expected_mean": 0.6977272727272728,
+      "actual_mean": 0.597544289072387,
+      "actual_std": 0.026584147588370487,
+      "is_fallback": true
+    },
+    {
+      "trait": "individualism",
+      "n_figures": 22,
+      "n_classified": 22,
+      "da": 0.8181818181818182,
+      "pearson": 0.31390351458480725,
+      "spearman": 0.2359487709711371,
+      "expected_mean": 0.7363636363636363,
+      "actual_mean": 0.7303713758636905,
+      "actual_std": 0.0628394979443226,
+      "is_fallback": true
+    },
+    {
+      "trait": "spirituality",
+      "n_figures": 22,
+      "n_classified": 20,
+      "da": 0.65,
+      "pearson": 0.1434510939138289,
+      "spearman": 0.21574265405455895,
+      "expected_mean": 0.5868181818181818,
+      "actual_mean": 0.6581607380249496,
+      "actual_std": 0.03740604058093578,
+      "is_fallback": true
+    }
+  ],
+  "per_person": [
+    {
+      "figure_id": "steve_jobs",
+      "name": "Steve Jobs",
+      "era": "modern",
+      "occupation": "business",
+      "sun_sign": "Pisces",
+      "asc_sign": "Virgo",
+      "n_classified": 23,
+      "da": 0.7391304347826086,
+      "cw_da": 0.7647058823529411,
+      "pearson": 0.4661725254456026,
+      "spearman": 0.37460643390983717,
+      "confidence_counts": {
+        "high": 17,
+        "medium": 6,
+        "low": 0
+      },
+      "low_ratio": 0.0
+    },
+    {
+      "figure_id": "albert_einstein",
+      "name": "Albert Einstein",
+      "era": "historical",
+      "occupation": "science",
+      "sun_sign": "Pisces",
+      "asc_sign": "Cancer",
+      "n_classified": 22,
+      "da": 0.6818181818181818,
+      "cw_da": 0.75,
+      "pearson": 0.23910721227595422,
+      "spearman": 0.10654160075501162,
+      "confidence_counts": {
+        "high": 12,
+        "medium": 9,
+        "low": 2
+      },
+      "low_ratio": 0.08695652173913043
+    },
+    {
+      "figure_id": "nikola_tesla",
+      "name": "Nikola Tesla",
+      "era": "historical",
+      "occupation": "science",
+      "sun_sign": "Cancer",
+      "asc_sign": "Aries",
+      "n_classified": 23,
+      "da": 0.6956521739130435,
+      "cw_da": 0.7777777777777778,
+      "pearson": 0.07008105632602633,
+      "spearman": -0.05101551057299879,
+      "confidence_counts": {
+        "high": 9,
+        "medium": 12,
+        "low": 2
+      },
+      "low_ratio": 0.08695652173913043
+    },
+    {
+      "figure_id": "elon_musk",
+      "name": "Elon Musk",
+      "era": "modern",
+      "occupation": "business",
+      "sun_sign": "Cancer",
+      "asc_sign": "Cancer",
+      "n_classified": 23,
+      "da": 0.6956521739130435,
+      "cw_da": 0.7647058823529411,
+      "pearson": 0.4514551768162823,
+      "spearman": 0.31765944683048425,
+      "confidence_counts": {
+        "high": 17,
+        "medium": 5,
+        "low": 1
+      },
+      "low_ratio": 0.043478260869565216
+    },
+    {
+      "figure_id": "oprah_winfrey",
+      "name": "Oprah Winfrey",
+      "era": "modern",
+      "occupation": "business",
+      "sun_sign": "Aquarius",
+      "asc_sign": "Sagittarius",
+      "n_classified": 22,
+      "da": 0.8181818181818182,
+      "cw_da": 1.0,
+      "pearson": 0.31727073633569014,
+      "spearman": 0.2288039644629398,
+      "confidence_counts": {
+        "high": 10,
+        "medium": 9,
+        "low": 4
+      },
+      "low_ratio": 0.17391304347826086
+    },
+    {
+      "figure_id": "marie_curie",
+      "name": "Marie Curie",
+      "era": "historical",
+      "occupation": "science",
+      "sun_sign": "Scorpio",
+      "asc_sign": "Capricorn",
+      "n_classified": 21,
+      "da": 0.6666666666666666,
+      "cw_da": 0.6,
+      "pearson": -0.022995765225844754,
+      "spearman": 0.005449611511042573,
+      "confidence_counts": {
+        "high": 10,
+        "medium": 10,
+        "low": 3
+      },
+      "low_ratio": 0.13043478260869565
+    },
+    {
+      "figure_id": "winston_churchill",
+      "name": "Winston Churchill",
+      "era": "historical",
+      "occupation": "politics",
+      "sun_sign": "Sagittarius",
+      "asc_sign": "Libra",
+      "n_classified": 23,
+      "da": 0.6521739130434783,
+      "cw_da": 0.7857142857142857,
+      "pearson": 0.3278394500383036,
+      "spearman": 0.341954392169644,
+      "confidence_counts": {
+        "high": 14,
+        "medium": 8,
+        "low": 1
+      },
+      "low_ratio": 0.043478260869565216
+    },
+    {
+      "figure_id": "frida_kahlo",
+      "name": "Frida Kahlo",
+      "era": "historical",
+      "occupation": "art",
+      "sun_sign": "Cancer",
+      "asc_sign": "Leo",
+      "n_classified": 23,
+      "da": 0.7391304347826086,
+      "cw_da": 0.75,
+      "pearson": 0.3453691898109932,
+      "spearman": 0.1932950813296634,
+      "confidence_counts": {
+        "high": 8,
+        "medium": 9,
+        "low": 6
+      },
+      "low_ratio": 0.2608695652173913
+    },
+    {
+      "figure_id": "muhammad_ali",
+      "name": "Muhammad Ali",
+      "era": "historical",
+      "occupation": "sport",
+      "sun_sign": "Capricorn",
+      "asc_sign": "Leo",
+      "n_classified": 23,
+      "da": 0.8260869565217391,
+      "cw_da": 0.8181818181818182,
+      "pearson": 0.36497608472377446,
+      "spearman": 0.2263503721539849,
+      "confidence_counts": {
+        "high": 11,
+        "medium": 11,
+        "low": 1
+      },
+      "low_ratio": 0.043478260869565216
+    },
+    {
+      "figure_id": "princess_diana",
+      "name": "Princess Diana",
+      "era": "historical",
+      "occupation": "monarchy",
+      "sun_sign": "Cancer",
+      "asc_sign": "Sagittarius",
+      "n_classified": 21,
+      "da": 0.8571428571428571,
+      "cw_da": 0.8333333333333334,
+      "pearson": 0.6053440922578608,
+      "spearman": 0.5668224208433039,
+      "confidence_counts": {
+        "high": 6,
+        "medium": 10,
+        "low": 7
+      },
+      "low_ratio": 0.30434782608695654
+    },
+    {
+      "figure_id": "mahatma_gandhi",
+      "name": "Mahatma Gandhi",
+      "era": "historical",
+      "occupation": "politics",
+      "sun_sign": "Libra",
+      "asc_sign": "Libra",
+      "n_classified": 22,
+      "da": 0.6363636363636364,
+      "cw_da": 0.7142857142857143,
+      "pearson": 0.29538737234419365,
+      "spearman": 0.19290983913041956,
+      "confidence_counts": {
+        "high": 14,
+        "medium": 9,
+        "low": 0
+      },
+      "low_ratio": 0.0
+    },
+    {
+      "figure_id": "theodore_roosevelt",
+      "name": "Theodore Roosevelt",
+      "era": "historical",
+      "occupation": "politics",
+      "sun_sign": "Scorpio",
+      "asc_sign": "Gemini",
+      "n_classified": 22,
+      "da": 0.7727272727272727,
+      "cw_da": 0.8666666666666667,
+      "pearson": 0.29529196499103183,
+      "spearman": 0.2407415626088323,
+      "confidence_counts": {
+        "high": 15,
+        "medium": 7,
+        "low": 1
+      },
+      "low_ratio": 0.043478260869565216
+    },
+    {
+      "figure_id": "marilyn_monroe",
+      "name": "Marilyn Monroe",
+      "era": "historical",
+      "occupation": "art",
+      "sun_sign": "Gemini",
+      "asc_sign": "Leo",
+      "n_classified": 20,
+      "da": 0.8,
+      "cw_da": 1.0,
+      "pearson": 0.4855863539543109,
+      "spearman": 0.5530268635315436,
+      "confidence_counts": {
+        "high": 3,
+        "medium": 14,
+        "low": 6
+      },
+      "low_ratio": 0.2608695652173913
+    },
+    {
+      "figure_id": "thomas_edison",
+      "name": "Thomas Edison",
+      "era": "historical",
+      "occupation": "science",
+      "sun_sign": "Aquarius",
+      "asc_sign": "Sagittarius",
+      "n_classified": 23,
+      "da": 0.6956521739130435,
+      "cw_da": 0.9166666666666666,
+      "pearson": 0.06075981857145012,
+      "spearman": -0.09084240997285467,
+      "confidence_counts": {
+        "high": 12,
+        "medium": 10,
+        "low": 1
+      },
+      "low_ratio": 0.043478260869565216
+    },
+    {
+      "figure_id": "martin_luther_king_jr",
+      "name": "Martin Luther King Jr",
+      "era": "historical",
+      "occupation": "activism",
+      "sun_sign": "Capricorn",
+      "asc_sign": "Aries",
+      "n_classified": 23,
+      "da": 0.7391304347826086,
+      "cw_da": 0.875,
+      "pearson": 0.4078770098050618,
+      "spearman": 0.39304989545440555,
+      "confidence_counts": {
+        "high": 16,
+        "medium": 6,
+        "low": 1
+      },
+      "low_ratio": 0.043478260869565216
+    },
+    {
+      "figure_id": "margaret_thatcher",
+      "name": "Margaret Thatcher",
+      "era": "historical",
+      "occupation": "politics",
+      "sun_sign": "Libra",
+      "asc_sign": "Scorpio",
+      "n_classified": 23,
+      "da": 0.6086956521739131,
+      "cw_da": 0.6153846153846154,
+      "pearson": -0.17448814316349245,
+      "spearman": -0.08296199374658146,
+      "confidence_counts": {
+        "high": 13,
+        "medium": 10,
+        "low": 0
+      },
+      "low_ratio": 0.0
+    },
+    {
+      "figure_id": "freddie_mercury",
+      "name": "Freddie Mercury",
+      "era": "historical",
+      "occupation": "art",
+      "sun_sign": "Virgo",
+      "asc_sign": "Virgo",
+      "n_classified": 23,
+      "da": 0.7391304347826086,
+      "cw_da": 1.0,
+      "pearson": 0.5233545706792531,
+      "spearman": 0.3891616615434001,
+      "confidence_counts": {
+        "high": 8,
+        "medium": 10,
+        "low": 5
+      },
+      "low_ratio": 0.21739130434782608
+    },
+    {
+      "figure_id": "mother_teresa",
+      "name": "Mother Teresa",
+      "era": "historical",
+      "occupation": "activism",
+      "sun_sign": "Virgo",
+      "asc_sign": "Sagittarius",
+      "n_classified": 22,
+      "da": 0.5909090909090909,
+      "cw_da": 0.75,
+      "pearson": 0.32183354614413523,
+      "spearman": 0.27651261963393714,
+      "confidence_counts": {
+        "high": 8,
+        "medium": 13,
+        "low": 2
+      },
+      "low_ratio": 0.08695652173913043
+    },
+    {
+      "figure_id": "warren_buffett",
+      "name": "Warren Buffett",
+      "era": "modern",
+      "occupation": "business",
+      "sun_sign": "Virgo",
+      "asc_sign": "Sagittarius",
+      "n_classified": 22,
+      "da": 0.7272727272727273,
+      "cw_da": 0.6666666666666666,
+      "pearson": 0.3542047396135912,
+      "spearman": 0.2582417368154662,
+      "confidence_counts": {
+        "high": 15,
+        "medium": 8,
+        "low": 0
+      },
+      "low_ratio": 0.0
+    },
+    {
+      "figure_id": "nelson_mandela",
+      "name": "Nelson Mandela",
+      "era": "historical",
+      "occupation": "politics",
+      "sun_sign": "Cancer",
+      "asc_sign": "Sagittarius",
+      "n_classified": 22,
+      "da": 0.7272727272727273,
+      "cw_da": 0.7142857142857143,
+      "pearson": 0.5571712311965443,
+      "spearman": 0.45186545867187633,
+      "confidence_counts": {
+        "high": 14,
+        "medium": 8,
+        "low": 1
+      },
+      "low_ratio": 0.043478260869565216
+    },
+    {
+      "figure_id": "napoleon_bonaparte",
+      "name": "Napoleon Bonaparte",
+      "era": "historical",
+      "occupation": "politics",
+      "sun_sign": "Leo",
+      "asc_sign": "Libra",
+      "n_classified": 22,
+      "da": 0.7727272727272727,
+      "cw_da": 0.75,
+      "pearson": 0.6025857213926716,
+      "spearman": 0.6014935743389168,
+      "confidence_counts": {
+        "high": 16,
+        "medium": 7,
+        "low": 0
+      },
+      "low_ratio": 0.0
+    },
+    {
+      "figure_id": "leonardo_da_vinci",
+      "name": "Leonardo da Vinci",
+      "era": "historical",
+      "occupation": "science",
+      "sun_sign": "Aries",
+      "asc_sign": "Scorpio",
+      "n_classified": 22,
+      "da": 0.6363636363636364,
+      "cw_da": 0.7,
+      "pearson": 0.2310860298273825,
+      "spearman": 0.25873740233718495,
+      "confidence_counts": {
+        "high": 10,
+        "medium": 13,
+        "low": 0
+      },
+      "low_ratio": 0.0
+    }
+  ],
+  "confidence_coverage": {
+    "overall_counts": {
+      "high": 258,
+      "medium": 204,
+      "low": 44
+    },
+    "overall_ratios": {
+      "high": 0.5098814229249012,
+      "medium": 0.4031620553359684,
+      "low": 0.08695652173913043
+    },
+    "per_figure": {
+      "steve_jobs": {
+        "high": 17,
+        "medium": 6,
+        "low": 0
+      },
+      "albert_einstein": {
+        "high": 12,
+        "medium": 9,
+        "low": 2
+      },
+      "nikola_tesla": {
+        "high": 9,
+        "medium": 12,
+        "low": 2
+      },
+      "elon_musk": {
+        "high": 17,
+        "medium": 5,
+        "low": 1
+      },
+      "oprah_winfrey": {
+        "high": 10,
+        "medium": 9,
+        "low": 4
+      },
+      "marie_curie": {
+        "high": 10,
+        "medium": 10,
+        "low": 3
+      },
+      "winston_churchill": {
+        "high": 14,
+        "medium": 8,
+        "low": 1
+      },
+      "frida_kahlo": {
+        "high": 8,
+        "medium": 9,
+        "low": 6
+      },
+      "muhammad_ali": {
+        "high": 11,
+        "medium": 11,
+        "low": 1
+      },
+      "princess_diana": {
+        "high": 6,
+        "medium": 10,
+        "low": 7
+      },
+      "mahatma_gandhi": {
+        "high": 14,
+        "medium": 9,
+        "low": 0
+      },
+      "theodore_roosevelt": {
+        "high": 15,
+        "medium": 7,
+        "low": 1
+      },
+      "marilyn_monroe": {
+        "high": 3,
+        "medium": 14,
+        "low": 6
+      },
+      "thomas_edison": {
+        "high": 12,
+        "medium": 10,
+        "low": 1
+      },
+      "martin_luther_king_jr": {
+        "high": 16,
+        "medium": 6,
+        "low": 1
+      },
+      "margaret_thatcher": {
+        "high": 13,
+        "medium": 10,
+        "low": 0
+      },
+      "freddie_mercury": {
+        "high": 8,
+        "medium": 10,
+        "low": 5
+      },
+      "mother_teresa": {
+        "high": 8,
+        "medium": 13,
+        "low": 2
+      },
+      "warren_buffett": {
+        "high": 15,
+        "medium": 8,
+        "low": 0
+      },
+      "nelson_mandela": {
+        "high": 14,
+        "medium": 8,
+        "low": 1
+      },
+      "napoleon_bonaparte": {
+        "high": 16,
+        "medium": 7,
+        "low": 0
+      },
+      "leonardo_da_vinci": {
+        "high": 10,
+        "medium": 13,
+        "low": 0
+      }
+    },
+    "warn_low_heavy": false,
+    "figures_low_heavy": []
+  },
+  "thresholds": {
+    "da_overall": 0.6,
+    "correlation_overall": 0.2,
+    "extreme": 0.55,
+    "cw_da": 0.6,
+    "warn_low_ratio": 0.4
+  }
+}

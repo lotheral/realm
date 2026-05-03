@@ -54,6 +54,33 @@ to (re)fetch them locally.
 - **Purpose**: source for item→facet mapping in
   `data/personality/ipip_neo_120_scoring_key.json`.
 
+## vdem_scores.json (Sprint 14 WP3 — committed)
+
+Unlike the other entries above, this file IS committed to the repo. It is a
+small (~6 KB) JSON of curated indicative country-level scores aligned with
+the V-Dem v13 (2023) Country-Year dataset rankings. **The values are not raw
+CSV extracts** from V-Dem; they are hand-curated representations on the
+`[0, 1]` scale that match the directional ordering published by V-Dem (e.g.
+Scandinavian countries near the liberal pole, Gulf states / one-party
+regimes near the authoritarian pole).
+
+- **Source reference**: <https://v-dem.net/data/the-v-dem-dataset/>
+- **License**: V-Dem data is CC-BY 4.0; this curated representation inherits
+  that license.
+- **Retrieved**: 2026-04-25 (curated — actual extraction script TBD)
+- **Schema**: ISO2-keyed mapping → `{libdem, partipdem, polyarchy, eqdr}` ∈ [0, 1]
+- **Coverage**: 66 countries (matching `data/hofstede_scores.json`)
+- **Consumers**:
+  - `realm/demographics/country_data.py:load_vdem` / `get_vdem`
+  - `realm/personality/adapters/demographic.py:_political_spectrum_for_country` (60% Hofstede + 40% V-Dem blend)
+
+**Production replacement**: download the V-Dem v13 Country-Year CSV from the
+source URL above and run a one-shot extraction script that pulls the latest
+year's `v2x_libdem`, `v2x_partipdem`, `v2x_polyarchy`, `v2xeg_eqdr` columns
+for each ISO2 in `data/hofstede_scores.json`. The curated values shipped
+here are sufficient for the validity ordering (Scandinavia > continental EU
+> Latin America > MENA / one-party) the v0.14.0 article relies on.
+
 ## Citation
 
 When reporting on this data, cite both the packaged repo and the underlying

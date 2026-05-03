@@ -45,6 +45,8 @@ class AgentFactory(IAgentFactory):
         cultural_modifier: ICulturalModifier | None = None,
         calibrator: TraitCalibrator | None = None,
         adapter: IInputAdapter | None = None,
+        *,
+        seed_offsets: dict[str, float] | None = None,
     ) -> None:
         self._astro = astro_engine or get_astro_engine("auto")
         self._embedder = embedder or get_personality_embedder("rule_based")
@@ -60,6 +62,11 @@ class AgentFactory(IAgentFactory):
             from realm.personality.calibration import TraitCalibrator
             calibrator = TraitCalibrator(adapter_type=self._adapter.adapter_type)
         self._calibrator = calibrator
+        # Sprint 14 WP2: optional category-aware trait nudges applied after
+        # the political_spectrum override. Validation of zero-sum + magnitude
+        # is enforced at config-load time by CategoryRouter._validate_categories;
+        # we still clamp per-trait to [0, 1] here as a runtime safety net.
+        self._seed_offsets: dict[str, float] = dict(seed_offsets or {})
 
     def build(self, profile: DemographicProfile) -> Agent:
         from realm.core.exceptions import PersonalityEmbeddingError
@@ -125,7 +132,33 @@ class AgentFactory(IAgentFactory):
             if self._adapter.applies_cultural_modifier
             else raw
         )
-        final_traits = self._calibrator.apply(cultured)
+        calibrated = self._calibrator.apply(cultured)
+        # Sprint 12: country-level political_spectrum override fires LAST so
+        # every adapter path (astrological / big_five / blended / demographic)
+        # exhibits Hofstede pdi+idv proxy variance instead of the TraitVector
+        # default 0.5. The production default adapter is AstrologicalAdapter,
+        # which leaves political_spectrum at 0.5 by design. This override is
+        # the single source of truth for the trait once an Agent is built.
+        from dataclasses import replace as _replace_dc
+
+        from realm.personality.adapters.demographic import (
+            _political_spectrum_from_hofstede,
+        )
+        final_traits = _replace_dc(
+            calibrated,
+            political_spectrum=_political_spectrum_from_hofstede(profile.country),
+        )
+        # Sprint 14 WP2: category-aware seed offsets, applied AFTER the
+        # political_spectrum override so the per-country variance is
+        # preserved. Each offset is added to the current trait value and
+        # clamped to [0, 1].
+        if self._seed_offsets:
+            updates: dict[str, float] = {}
+            for trait, offset in self._seed_offsets.items():
+                current = float(getattr(final_traits, trait, 0.5))
+                updates[trait] = max(0.0, min(1.0, current + float(offset)))
+            if updates:
+                final_traits = _replace_dc(final_traits, **updates)
         return Agent(profile=profile, natal_chart=chart, traits=final_traits)
 
     def build_batch(

@@ -1,0 +1,768 @@
+{
+  "schema_version": 4,
+  "_comment": "Sprint 16: schema_version=4 adds baseline_probability_offset (per-category last-mile probability shift, range [-0.05, +0.05], applied after sigmoid + clamp in realm/api/predict.py) and three new drift event weights (regime_consolidation, diplomatic_stalemate, sanctions_pressure) for all 9 categories. Sprint 15 schema (drift_volatility, drift_asymmetry, sigmoid_sensitivity_multiplier) is preserved unchanged.",
+  "categories": [
+    {
+      "id": "politics",
+      "label": "Politics & Elections",
+      "description": "Election outcomes, policy decisions, geopolitical events",
+      "trait_weights": {
+        "primary": [
+          "political_spectrum",
+          "authority_compliance",
+          "herd_susceptibility",
+          "contrarian_tendency",
+          "social_dominance"
+        ],
+        "secondary": [
+          "tradition_vs_progress",
+          "individualism",
+          "empathy"
+        ],
+        "suppressed": [
+          "financial_optimism",
+          "loss_aversion"
+        ]
+      },
+      "drift_event_weights": {
+        "positive_social": 1.5,
+        "negative_social": 1.5,
+        "successful_risk": 0.5,
+        "failed_risk": 0.5,
+        "knowledge_acquisition": 0.6,
+        "stress_crisis": 2.5,
+        "leadership_act": 3.0,
+        "group_conformity": 2.5,
+        "group_dissent": 2.5,
+        "financial_loss": 0.3,
+        "financial_gain": 0.3,
+        "cultural_experience": 0.5,
+        "regime_consolidation": 2.0,
+        "diplomatic_stalemate": 1.5,
+        "sanctions_pressure": 1.0
+      },
+      "trait_seed_offsets": {
+        "authority_compliance": 0.04,
+        "social_dominance": 0.03,
+        "contrarian_tendency": 0.02,
+        "empathy": -0.03,
+        "openness": -0.03,
+        "financial_optimism": -0.03
+      },
+      "keywords": [
+        "election",
+        "elected",
+        "president",
+        "presidential",
+        "vote",
+        "voter",
+        "ballot",
+        "congress",
+        "senate",
+        "senator",
+        "governor",
+        "parliament",
+        "polling",
+        "policy",
+        "law",
+        "regulation",
+        "government",
+        "party",
+        "democrat",
+        "republican",
+        "conservative",
+        "liberal",
+        "referendum",
+        "sanctions",
+        "diplomacy",
+        "treaty",
+        "campaign",
+        "case",
+        "court",
+        "lawsuit",
+        "trial",
+        "judge",
+        "verdict",
+        "sue",
+        "legal",
+        "ruling",
+        "attorney",
+        "prosecutor",
+        "indictment",
+        "appeal",
+        "settlement",
+        "antitrust",
+        "ban",
+        "mandate"
+      ],
+      "default_horizon_ticks": 30,
+      "subcategories": [
+        "elections",
+        "legislation",
+        "geopolitics",
+        "executive_orders"
+      ],
+      "drift_volatility": 0.5,
+      "drift_asymmetry": {
+        "positive_multiplier": 0.5,
+        "negative_multiplier": 1.5
+      },
+      "sigmoid_sensitivity_multiplier": 0.5,
+      "baseline_probability_offset": 0.0,
+      "llm_blend_weight": 0.90,
+      "scenario_llm_blend_weight": 0.40
+    },
+    {
+      "id": "economics",
+      "label": "Economics & Macro",
+      "description": "Interest rates, inflation, GDP, recession probability",
+      "trait_weights": {
+        "primary": [
+          "financial_optimism",
+          "loss_aversion",
+          "risk_appetite",
+          "analytical_depth",
+          "patience"
+        ],
+        "secondary": [
+          "herd_susceptibility",
+          "authority_compliance",
+          "contrarian_tendency"
+        ],
+        "suppressed": [
+          "spirituality",
+          "empathy"
+        ]
+      },
+      "drift_event_weights": {
+        "positive_social": 0.7,
+        "negative_social": 0.7,
+        "successful_risk": 1.5,
+        "failed_risk": 1.5,
+        "knowledge_acquisition": 1.8,
+        "stress_crisis": 2.0,
+        "leadership_act": 0.4,
+        "group_conformity": 0.5,
+        "group_dissent": 0.5,
+        "financial_loss": 3.0,
+        "financial_gain": 3.0,
+        "cultural_experience": 0.2,
+        "regime_consolidation": 0.5,
+        "diplomatic_stalemate": 1.0,
+        "sanctions_pressure": 2.5
+      },
+      "trait_seed_offsets": {
+        "analytical_depth": 0.04,
+        "loss_aversion": 0.03,
+        "patience": 0.02,
+        "spirituality": -0.03,
+        "fomo_susceptibility": -0.03,
+        "impulsivity": -0.03
+      },
+      "keywords": [
+        "fed",
+        "interest rate",
+        "inflation",
+        "cpi",
+        "gdp",
+        "recession",
+        "unemployment",
+        "jobs",
+        "housing",
+        "mortgage",
+        "fiscal",
+        "monetary",
+        "central bank",
+        "stimulus",
+        "taper",
+        "quantitative"
+      ],
+      "default_horizon_ticks": 30,
+      "subcategories": [
+        "monetary_policy",
+        "labor_market",
+        "housing",
+        "fiscal_policy"
+      ],
+      "drift_volatility": 0.7,
+      "drift_asymmetry": {
+        "positive_multiplier": 0.5,
+        "negative_multiplier": 1.5
+      },
+      "sigmoid_sensitivity_multiplier": 0.7,
+      "baseline_probability_offset": 0.0,
+      "llm_blend_weight": 0.90,
+      "scenario_llm_blend_weight": 0.40
+    },
+    {
+      "id": "crypto",
+      "label": "Crypto & Digital Assets",
+      "description": "Price movements, protocol events, regulatory actions",
+      "trait_weights": {
+        "primary": [
+          "risk_appetite",
+          "fomo_susceptibility",
+          "financial_optimism",
+          "herd_susceptibility",
+          "impulsivity"
+        ],
+        "secondary": [
+          "contrarian_tendency",
+          "loss_aversion",
+          "analytical_depth"
+        ],
+        "suppressed": [
+          "tradition_vs_progress",
+          "authority_compliance"
+        ]
+      },
+      "drift_event_weights": {
+        "positive_social": 0.8,
+        "negative_social": 0.8,
+        "successful_risk": 2.5,
+        "failed_risk": 2.5,
+        "knowledge_acquisition": 0.7,
+        "stress_crisis": 1.0,
+        "leadership_act": 0.3,
+        "group_conformity": 2.0,
+        "group_dissent": 0.7,
+        "financial_loss": 3.0,
+        "financial_gain": 3.0,
+        "cultural_experience": 0.2,
+        "regime_consolidation": 0.3,
+        "diplomatic_stalemate": 0.3,
+        "sanctions_pressure": 0.3
+      },
+      "trait_seed_offsets": {
+        "risk_appetite": 0.04,
+        "fomo_susceptibility": 0.03,
+        "impulsivity": 0.02,
+        "patience": -0.03,
+        "loss_aversion": -0.03,
+        "authority_compliance": -0.03
+      },
+      "keywords": [
+        "bitcoin",
+        "btc",
+        "ethereum",
+        "eth",
+        "crypto",
+        "blockchain",
+        "defi",
+        "nft",
+        "token",
+        "altcoin",
+        "exchange",
+        "wallet",
+        "mining",
+        "halving",
+        "staking"
+      ],
+      "default_horizon_ticks": 10,
+      "subcategories": [
+        "price_action",
+        "protocol_events",
+        "regulatory",
+        "adoption"
+      ],
+      "drift_volatility": 1.6,
+      "drift_asymmetry": {
+        "positive_multiplier": 1.0,
+        "negative_multiplier": 1.0
+      },
+      "sigmoid_sensitivity_multiplier": 1.6,
+      "baseline_probability_offset": 0.0,
+      "llm_blend_weight": 0.85,
+      "scenario_llm_blend_weight": 0.40
+    },
+    {
+      "id": "sports",
+      "label": "Sports & Competition",
+      "description": "Game outcomes, championships, player performance",
+      "trait_weights": {
+        "primary": [
+          "herd_susceptibility",
+          "risk_appetite",
+          "fomo_susceptibility",
+          "impulsivity",
+          "social_dominance"
+        ],
+        "secondary": [
+          "contrarian_tendency",
+          "analytical_depth",
+          "patience"
+        ],
+        "suppressed": [
+          "spirituality",
+          "political_spectrum",
+          "tradition_vs_progress"
+        ]
+      },
+      "drift_event_weights": {
+        "positive_social": 2.5,
+        "negative_social": 1.5,
+        "successful_risk": 2.0,
+        "failed_risk": 1.5,
+        "knowledge_acquisition": 0.5,
+        "stress_crisis": 0.7,
+        "leadership_act": 1.5,
+        "group_conformity": 3.0,
+        "group_dissent": 0.5,
+        "financial_loss": 0.3,
+        "financial_gain": 0.5,
+        "cultural_experience": 0.5,
+        "regime_consolidation": 0.3,
+        "diplomatic_stalemate": 0.3,
+        "sanctions_pressure": 0.3
+      },
+      "trait_seed_offsets": {
+        "herd_susceptibility": 0.04,
+        "social_dominance": 0.03,
+        "extraversion": 0.02,
+        "patience": -0.03,
+        "analytical_depth": -0.03,
+        "individualism": -0.03
+      },
+      "keywords": [
+        "game",
+        "match",
+        "championship",
+        "playoff",
+        "final",
+        "score",
+        "win",
+        "team",
+        "player",
+        "coach",
+        "season",
+        "tournament",
+        "league",
+        "cup",
+        "medal",
+        "olympic"
+      ],
+      "default_horizon_ticks": 10,
+      "subcategories": [
+        "game_outcomes",
+        "championships",
+        "player_performance",
+        "transfers"
+      ],
+      "drift_volatility": 1.4,
+      "drift_asymmetry": {
+        "positive_multiplier": 1.0,
+        "negative_multiplier": 1.0
+      },
+      "sigmoid_sensitivity_multiplier": 1.4,
+      "baseline_probability_offset": 0.0,
+      "llm_blend_weight": 0.85,
+      "scenario_llm_blend_weight": 0.40
+    },
+    {
+      "id": "markets",
+      "label": "Financial Markets",
+      "description": "Stock indices, commodities, forex movements",
+      "trait_weights": {
+        "primary": [
+          "financial_optimism",
+          "loss_aversion",
+          "risk_appetite",
+          "analytical_depth",
+          "herd_susceptibility"
+        ],
+        "secondary": [
+          "patience",
+          "impulsivity",
+          "contrarian_tendency",
+          "fomo_susceptibility"
+        ],
+        "suppressed": [
+          "spirituality",
+          "empathy"
+        ]
+      },
+      "drift_event_weights": {
+        "positive_social": 0.7,
+        "negative_social": 0.7,
+        "successful_risk": 2.0,
+        "failed_risk": 2.0,
+        "knowledge_acquisition": 1.5,
+        "stress_crisis": 2.5,
+        "leadership_act": 0.5,
+        "group_conformity": 1.2,
+        "group_dissent": 0.7,
+        "financial_loss": 3.0,
+        "financial_gain": 3.0,
+        "cultural_experience": 0.2,
+        "regime_consolidation": 0.3,
+        "diplomatic_stalemate": 0.3,
+        "sanctions_pressure": 0.3
+      },
+      "trait_seed_offsets": {
+        "analytical_depth": 0.03,
+        "loss_aversion": 0.03,
+        "financial_optimism": 0.02,
+        "spirituality": -0.03,
+        "impulsivity": -0.03,
+        "fomo_susceptibility": -0.02
+      },
+      "keywords": [
+        "s&p",
+        "nasdaq",
+        "dow",
+        "stock",
+        "market",
+        "rally",
+        "crash",
+        "bull",
+        "bear",
+        "correction",
+        "earnings",
+        "ipo",
+        "merger",
+        "acquisition",
+        "oil",
+        "gold",
+        "commodity",
+        "forex"
+      ],
+      "default_horizon_ticks": 10,
+      "subcategories": [
+        "indices",
+        "commodities",
+        "forex",
+        "corporate_events"
+      ],
+      "drift_volatility": 1.4,
+      "drift_asymmetry": {
+        "positive_multiplier": 1.3,
+        "negative_multiplier": 0.7
+      },
+      "sigmoid_sensitivity_multiplier": 1.4,
+      "baseline_probability_offset": 0.0,
+      "llm_blend_weight": 0.85,
+      "scenario_llm_blend_weight": 0.40
+    },
+    {
+      "id": "culture",
+      "label": "Culture & Society",
+      "description": "Entertainment, social trends, public opinion shifts",
+      "trait_weights": {
+        "primary": [
+          "openness",
+          "extraversion",
+          "herd_susceptibility",
+          "fomo_susceptibility",
+          "communication_assertiveness"
+        ],
+        "secondary": [
+          "empathy",
+          "individualism",
+          "tradition_vs_progress"
+        ],
+        "suppressed": [
+          "analytical_depth",
+          "loss_aversion"
+        ]
+      },
+      "drift_event_weights": {
+        "positive_social": 3.0,
+        "negative_social": 2.0,
+        "successful_risk": 0.7,
+        "failed_risk": 0.7,
+        "knowledge_acquisition": 1.0,
+        "stress_crisis": 0.5,
+        "leadership_act": 1.0,
+        "group_conformity": 1.5,
+        "group_dissent": 1.0,
+        "financial_loss": 0.3,
+        "financial_gain": 0.3,
+        "cultural_experience": 3.0,
+        "regime_consolidation": 0.3,
+        "diplomatic_stalemate": 0.3,
+        "sanctions_pressure": 0.3
+      },
+      "trait_seed_offsets": {
+        "openness": 0.04,
+        "extraversion": 0.03,
+        "communication_assertiveness": 0.02,
+        "analytical_depth": -0.03,
+        "loss_aversion": -0.03,
+        "conscientiousness": -0.03
+      },
+      "keywords": [
+        "oscar",
+        "grammy",
+        "emmy",
+        "billboard",
+        "movie",
+        "album",
+        "viral",
+        "trend",
+        "celebrity",
+        "social media",
+        "tiktok",
+        "youtube",
+        "streaming",
+        "cancel",
+        "controversy"
+      ],
+      "default_horizon_ticks": 30,
+      "subcategories": [
+        "entertainment",
+        "social_trends",
+        "public_opinion",
+        "viral_events"
+      ],
+      "drift_volatility": 1.3,
+      "drift_asymmetry": {
+        "positive_multiplier": 1.4,
+        "negative_multiplier": 0.6
+      },
+      "sigmoid_sensitivity_multiplier": 1.3,
+      "baseline_probability_offset": 0.0,
+      "llm_blend_weight": 0.85,
+      "scenario_llm_blend_weight": 0.40
+    },
+    {
+      "id": "science",
+      "label": "Science & Technology",
+      "description": "AI developments, space events, health & FDA, discoveries",
+      "trait_weights": {
+        "primary": [
+          "analytical_depth",
+          "openness",
+          "patience",
+          "risk_appetite",
+          "information_sharing"
+        ],
+        "secondary": [
+          "authority_compliance",
+          "tradition_vs_progress",
+          "contrarian_tendency"
+        ],
+        "suppressed": [
+          "fomo_susceptibility",
+          "impulsivity"
+        ]
+      },
+      "drift_event_weights": {
+        "positive_social": 1.0,
+        "negative_social": 0.5,
+        "successful_risk": 1.2,
+        "failed_risk": 1.0,
+        "knowledge_acquisition": 3.5,
+        "stress_crisis": 0.5,
+        "leadership_act": 0.7,
+        "group_conformity": 0.5,
+        "group_dissent": 1.0,
+        "financial_loss": 0.3,
+        "financial_gain": 0.3,
+        "cultural_experience": 1.5,
+        "regime_consolidation": 0.3,
+        "diplomatic_stalemate": 0.3,
+        "sanctions_pressure": 0.3
+      },
+      "trait_seed_offsets": {
+        "analytical_depth": 0.04,
+        "openness": 0.03,
+        "patience": 0.02,
+        "impulsivity": -0.03,
+        "fomo_susceptibility": -0.03,
+        "herd_susceptibility": -0.03
+      },
+      "keywords": [
+        "ai",
+        "artificial intelligence",
+        "fda",
+        "drug",
+        "vaccine",
+        "space",
+        "launch",
+        "nasa",
+        "spacex",
+        "discovery",
+        "research",
+        "paper",
+        "study",
+        "climate",
+        "energy",
+        "quantum",
+        "breakthrough"
+      ],
+      "default_horizon_ticks": 50,
+      "subcategories": [
+        "ai_ml",
+        "space",
+        "health_fda",
+        "energy_climate",
+        "fundamental_research"
+      ],
+      "drift_volatility": 1.0,
+      "drift_asymmetry": {
+        "positive_multiplier": 1.5,
+        "negative_multiplier": 0.5
+      },
+      "sigmoid_sensitivity_multiplier": 1.5,
+      "baseline_probability_offset": 0.0,
+      "llm_blend_weight": 0.95,
+      "scenario_llm_blend_weight": 0.50
+    },
+    {
+      "id": "geopolitics",
+      "label": "Geopolitics & Conflict",
+      "description": "International relations, conflicts, sanctions, alliances",
+      "trait_weights": {
+        "primary": [
+          "authority_compliance",
+          "social_dominance",
+          "contrarian_tendency",
+          "empathy",
+          "risk_appetite"
+        ],
+        "secondary": [
+          "political_spectrum",
+          "tradition_vs_progress",
+          "herd_susceptibility"
+        ],
+        "suppressed": [
+          "fomo_susceptibility",
+          "financial_optimism"
+        ]
+      },
+      "drift_event_weights": {
+        "positive_social": 0.3,
+        "negative_social": 0.5,
+        "successful_risk": 0.4,
+        "failed_risk": 3.0,
+        "knowledge_acquisition": 0.5,
+        "stress_crisis": 0.8,
+        "leadership_act": 0.5,
+        "group_conformity": 3.0,
+        "group_dissent": 0.5,
+        "financial_loss": 3.0,
+        "financial_gain": 0.3,
+        "cultural_experience": 0.4,
+        "regime_consolidation": 3.5,
+        "diplomatic_stalemate": 3.0,
+        "sanctions_pressure": 2.5
+      },
+      "trait_seed_offsets": {
+        "risk_appetite": 0.04,
+        "loss_aversion": 0.04,
+        "contrarian_tendency": -0.04,
+        "empathy": -0.04
+      },
+      "keywords": [
+        "war",
+        "warfare",
+        "conflict",
+        "ceasefire",
+        "sanction",
+        "nato",
+        "u.n.",
+        "united nations",
+        "alliance",
+        "invade",
+        "invasion",
+        "nuclear",
+        "missile",
+        "troops",
+        "territory",
+        "coup",
+        "regime",
+        "border",
+        "refugee",
+        "putin",
+        "russia",
+        "ukraine",
+        "china",
+        "taiwan",
+        "iran",
+        "israel",
+        "gaza"
+      ],
+      "default_horizon_ticks": 30,
+      "subcategories": [
+        "conflicts",
+        "diplomacy",
+        "sanctions",
+        "alliances"
+      ],
+      "drift_volatility": 0.5,
+      "drift_asymmetry": {
+        "positive_multiplier": 0.3,
+        "negative_multiplier": 1.7
+      },
+      "sigmoid_sensitivity_multiplier": 0.5,
+      "baseline_probability_offset": -0.005,
+      "llm_blend_weight": 0.90,
+      "scenario_llm_blend_weight": 0.40
+    },
+    {
+      "id": "balanced",
+      "label": "General / Uncategorized",
+      "description": "Fallback when no category keywords match and no LLM is available",
+      "trait_weights": {
+        "primary": [],
+        "secondary": [
+          "openness",
+          "conscientiousness",
+          "extraversion",
+          "agreeableness",
+          "neuroticism",
+          "risk_appetite",
+          "analytical_depth",
+          "impulsivity",
+          "patience",
+          "social_dominance",
+          "herd_susceptibility",
+          "authority_compliance",
+          "contrarian_tendency",
+          "empathy",
+          "financial_optimism",
+          "loss_aversion",
+          "fomo_susceptibility",
+          "communication_assertiveness",
+          "persuasion_skill",
+          "information_sharing",
+          "political_spectrum",
+          "tradition_vs_progress",
+          "individualism",
+          "spirituality"
+        ],
+        "suppressed": []
+      },
+      "drift_event_weights": {
+        "positive_social": 1.0,
+        "negative_social": 1.0,
+        "successful_risk": 1.0,
+        "failed_risk": 1.0,
+        "knowledge_acquisition": 1.0,
+        "stress_crisis": 1.0,
+        "leadership_act": 1.0,
+        "group_conformity": 1.0,
+        "group_dissent": 1.0,
+        "financial_loss": 1.0,
+        "financial_gain": 1.0,
+        "cultural_experience": 1.0,
+        "regime_consolidation": 0.3,
+        "diplomatic_stalemate": 0.3,
+        "sanctions_pressure": 0.3
+      },
+      "trait_seed_offsets": {},
+      "keywords": [],
+      "default_horizon_ticks": 30,
+      "subcategories": [],
+      "drift_volatility": 1.0,
+      "drift_asymmetry": {
+        "positive_multiplier": 1.0,
+        "negative_multiplier": 1.0
+      },
+      "sigmoid_sensitivity_multiplier": 1.0,
+      "baseline_probability_offset": 0.0,
+      "llm_blend_weight": 0.90,
+      "scenario_llm_blend_weight": 0.40
+    }
+  ]
+}

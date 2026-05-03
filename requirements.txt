@@ -1,0 +1,39 @@
+# REALM v0.14.0 dependency surface (Sprint 14 freeze).
+#
+# This file pins the production-relevant Python packages REALM imports.
+# `pyproject.toml` is the source of truth for declared dependencies + extras;
+# requirements.txt is the reproducibility-pinned subset for `pip install -r`.
+#
+# Generated 2026-04-25 from `pip freeze` filtered to declared imports.
+# Update by re-running `.venv\Scripts\python.exe -m pip freeze | grep ...`
+# whenever pyproject.toml changes.
+
+# ---- core ----------------------------------------------------------------
+skyfield==1.54
+pydantic==2.13.3
+PyYAML==6.0.3
+python-dotenv==1.2.2
+numpy==2.4.4
+Faker==40.15.0
+
+# ---- web (optional dep, but realm_start.bat assumes it) -----------------
+fastapi==0.136.0
+uvicorn==0.45.0
+
+# ---- sim / ingestion ----------------------------------------------------
+networkx==3.6.1
+requests==2.33.1
+feedparser==6.0.12
+
+# ---- preferred ephemeris backend (Skyfield is fallback) -----------------
+kerykeion==5.12.8
+
+# ---- LLM (optional; used only when REALM_LLM_*_BACKEND is set) ----------
+# Uncomment whichever provider you have credentials for:
+# anthropic>=0.40
+openai==2.32.0
+# ollama>=0.4
+
+# ---- dev (optional) -----------------------------------------------------
+# pytest>=8.0
+# ruff

@@ -27,6 +27,7 @@ from realm.astro.factory import get_astro_engine
 from realm.core.config import load_realm_config
 from realm.core.logging import get_logger
 from realm.demographics.world_generator import WorldGenerator
+from realm.output.category_router import CategoryMatch
 from realm.simulation.climate import ClimateEngine
 from realm.simulation.clock import Clock
 from realm.simulation.engine import SimulationEngine
@@ -79,6 +80,7 @@ class PredictionOutcome:
     stddev_value: float
     confidence: float               # 1 - normalized stddev, clamped [0, 1]
     narrative: str = ""
+    category: CategoryMatch | None = None
 
 
 # ---- PredictionEngine -----------------------------------------------------
@@ -88,7 +90,13 @@ class PredictionEngine:
     master_seed: int
     branch_seed_offset: int = 1000
 
-    def run(self, spec: BranchSpec, question: str = "") -> PredictionOutcome:
+    def run(
+        self,
+        spec: BranchSpec,
+        question: str = "",
+        *,
+        category: CategoryMatch | None = None,
+    ) -> PredictionOutcome:
         values: list[float] = []
         for i in range(spec.n_branches):
             branch_seed = self.master_seed + self.branch_seed_offset * (i + 1)
@@ -118,6 +126,7 @@ class PredictionEngine:
             stddev_value=stdev,
             confidence=confidence,
             narrative=_build_narrative(spec, prob, mean, stdev, confidence),
+            category=category,
         )
 
 
@@ -139,6 +148,12 @@ def build_branch_sim(
     *,
     initial_events: tuple = (),
     agent_builder: Callable[[int, int], list] | None = None,
+    drift_event_weights: dict[str, float] | None = None,
+    seed_offsets: dict[str, float] | None = None,
+    drift_volatility: float = 1.0,
+    drift_asymmetry_positive: float = 1.0,
+    drift_asymmetry_negative: float = 1.0,
+    primary_traits: tuple[str, ...] = (),
 ) -> SimulationEngine:
     """Construct a fresh SimulationEngine for one branch.
 
@@ -150,11 +165,19 @@ def build_branch_sim(
     AgentFactory pipeline. Used by validity studies that need a custom
     population (e.g. BigFive-derived agents). The builder receives the branch
     seed and the requested agent count.
+
+    Sprint 14 WP1: ``drift_event_weights`` (dict event_type → relative weight)
+    causes the DriftEventBridge to weight-sample among matching rules; None
+    preserves first-match-wins. Sprint 14 WP2: ``seed_offsets`` (dict trait →
+    additive offset) is forwarded to the default AgentFactory so the starting
+    population reflects the question's domain. ``seed_offsets`` is ignored
+    when a custom ``agent_builder`` is supplied — that builder is responsible
+    for any offsets it wants to apply.
     """
     if agent_builder is not None:
         agents = agent_builder(seed, n_agents)
     else:
-        agents = AgentFactory().build_batch(
+        agents = AgentFactory(seed_offsets=seed_offsets).build_batch(
             WorldGenerator(master_seed=seed).generate(n_agents),
         )
     clock = Clock.from_config()
@@ -186,10 +209,51 @@ def build_branch_sim(
         platforms.append(news)
         pre_tick_hooks.append(lambda t, _mgr=mgr: _mgr.pull(t))
 
+    # Sprint 13 Bug-2 fix: wire ExperienceDriftEngine + DriftEventBridge by
+    # default so per-tick decisions actually move agent traits. Sprint 11
+    # observed the predictor pipeline running with engine=None, which meant
+    # zero true drift and the API's "trait_shifts" field was meaningless
+    # baseline distribution skew (mean - 0.5) instead of actual movement.
+    # The drift engine's cumulative cap (max_drift_ratio * original_value,
+    # default 0.10) bounds every trait per agent.
+    from realm.simulation.drift import DriftEventBridge, ExperienceDriftEngine
+
+    # Sprint 15: per-category baseline differentiation. drift_volatility
+    # scales BOTH the cumulative cap (max_drift_ratio × volatility) AND the
+    # per-event speed (intensity_scale = volatility). Compound effect lets
+    # high-volatility domains accumulate enough drift in 30 ticks for the
+    # asymmetry skew to actually move the population mean. Asymmetry
+    # multipliers control sign-based per-trait scaling. Defaults 1.0 each
+    # preserve Sprint 14 behavior bit-for-bit.
+    # Sprint 16: load the bridge first so we can pass its full event_map
+    # (15 events from config/drift_events.json) into the engine. The engine's
+    # built-in `_EVENT_TRAIT_MAP` default only contains the 6 Sprint 9 events;
+    # without explicit wiring, all Sprint 10 events (leadership_act,
+    # group_conformity, group_dissent, financial_loss, financial_gain,
+    # cultural_experience) and Sprint 16 events (regime_consolidation,
+    # diplomatic_stalemate, sanctions_pressure) were silently no-op'd by
+    # `engine.event_map.get(event_type)` returning None. Pre-Sprint 16
+    # calibrations were running on only the 6 Sprint 9 events — a latent
+    # bug since Sprint 10 that hid the value of category-conditioned weights
+    # for the Sprint 10/16 event pool.
+    drift_bridge = DriftEventBridge.default()
+    if drift_event_weights:
+        drift_bridge = drift_bridge.with_weights(drift_event_weights)
+    drift_engine = ExperienceDriftEngine(
+        max_drift_ratio=0.10 * float(drift_volatility),
+        intensity_scale=float(drift_volatility),
+        positive_multiplier=float(drift_asymmetry_positive),
+        negative_multiplier=float(drift_asymmetry_negative),
+        primary_trait_set=frozenset(primary_traits),
+        event_map=drift_bridge.event_map,
+    )
+
     return SimulationEngine(
         agents=agents, network=net, modulator=modulator,
         platforms=platforms, clock=clock, climate=climate,
         pre_tick_hooks=pre_tick_hooks,
+        drift_engine=drift_engine,
+        drift_bridge=drift_bridge,
     )
 
 
@@ -235,6 +299,54 @@ def observe_engagement_rate() -> Callable[[SimulationEngine], float]:
     return observer
 
 
+# Category-aware trait weights. The weighting must sit ACROSS multiple trait
+# dimensions because scaling every agent's contribution to a single trait by a
+# constant is mathematically inert (sum / N is unchanged). Multipliers below
+# combine multiple trait axes per the active prediction category.
+_CATEGORY_TRAIT_WEIGHT = {
+    "primary": 2.0,
+    "secondary": 1.0,
+    "suppressed": 0.25,
+}
+
+
+def observe_category_consensus(category: CategoryMatch) -> Callable[[SimulationEngine], float]:
+    """Per-branch metric = weighted population mean across the category's traits.
+
+    For each agent, compute a personal score
+        s_i = sum(w_t * agent.traits[t]   for t in primary U secondary U suppressed)
+              / sum(w_t                   for t in primary U secondary U suppressed)
+    where w_t = 2.0 (primary) / 1.0 (secondary) / 0.25 (suppressed) and traits not
+    listed are skipped entirely. The branch metric is the population mean of s_i.
+
+    Different categories produce DIFFERENT consensus numbers from the same
+    population because the trait set + weights differ — that is the entire point.
+    Falls back to overall mean of all 24 traits when the category has no
+    weighted traits at all (e.g. a malformed category record).
+    """
+    weighted: dict[str, float] = {}
+    for trait in category.primary_traits:
+        weighted[trait] = _CATEGORY_TRAIT_WEIGHT["primary"]
+    for trait in category.secondary_traits:
+        weighted.setdefault(trait, _CATEGORY_TRAIT_WEIGHT["secondary"])
+    for trait in category.suppressed_traits:
+        weighted.setdefault(trait, _CATEGORY_TRAIT_WEIGHT["suppressed"])
+    weight_sum = sum(weighted.values())
+
+    def observer(sim: SimulationEngine) -> float:
+        if not sim.agents or weight_sum <= 0.0:
+            return 0.5
+        scores: list[float] = []
+        for agent in sim.agents:
+            traits = agent.traits
+            agent_score = 0.0
+            for trait, w in weighted.items():
+                agent_score += w * float(getattr(traits, trait, 0.5))
+            scores.append(agent_score / weight_sum)
+        return statistics.mean(scores)
+    return observer
+
+
 # ---- Question parser -----------------------------------------------------
 
 _TOPICS = {"politics", "tech", "finance", "culture", "personal", "news"}
@@ -251,6 +363,7 @@ _TRAITS_LOWER = {
 class ParsedQuestion:
     spec: BranchSpec
     original: str
+    category: CategoryMatch | None = None
 
 
 class QuestionParser:
@@ -352,12 +465,41 @@ class QuestionParser:
 
 
 def predict(
-    question: str, *, master_seed: int | None = None,
+    question: str,
+    *,
+    master_seed: int | None = None,
+    route_category: bool = False,
 ) -> PredictionOutcome:
-    """One-shot helper: parse a question, run the multi-branch engine, return outcome."""
+    """One-shot helper: parse a question, run the multi-branch engine, return outcome.
+
+    When ``route_category`` is True, the question is also routed through
+    :class:`realm.output.category_router.CategoryRouter`. The matched category
+    is attached to the returned ``PredictionOutcome``. When the routed
+    category is non-balanced (i.e. has a non-empty primary trait list), the
+    branch metric is computed via :func:`observe_category_consensus` so the
+    weighted multi-trait population mean is the yes/no signal — overriding the
+    QuestionParser's default observer.
+    """
     if master_seed is None:
         cfg = load_realm_config()
         master_seed = int(cfg["realm"]["simulation"]["master_seed"])
     parsed = QuestionParser().parse(question)
+    category: CategoryMatch | None = None
+    spec = parsed.spec
+    if route_category:
+        from realm.output.category_router import default_router
+
+        category = default_router().route(question)
+        if category.primary_traits:
+            spec = BranchSpec(
+                name=f"category_{category.category_id}",
+                observe=observe_category_consensus(category),
+                threshold=0.55,
+                horizon_ticks=spec.horizon_ticks,
+                n_branches=spec.n_branches,
+                n_agents=spec.n_agents,
+                initial_events=spec.initial_events,
+                agent_builder=spec.agent_builder,
+            )
     engine = PredictionEngine(master_seed=master_seed)
-    return engine.run(parsed.spec, question=question)
+    return engine.run(spec, question=question, category=category)

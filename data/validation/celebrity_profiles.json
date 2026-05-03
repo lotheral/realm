@@ -1,0 +1,2969 @@
+{
+  "schema_version": "1.0",
+  "study": "Sprint 9 — 22-figure astrological validity (Napoleon + Leonardo added)",
+  "notes": {
+    "trait_scope": "23 validatable traits (political_spectrum excluded — astro layer does not populate it; see data/astro/planet_trait_map.json _excluded_by_design)",
+    "confidence_policy": "high = explicit + multiply-sourced biographical attestation; medium = reasonable single-source or inference; low = speculative or historically uncertain",
+    "circular_reasoning_guard": "All rationales drawn from biography / documented behavior. No astrological reasoning permitted.",
+    "cleopatra_substitution": "Cleopatra (69 BC) replaced with Nelson Mandela (1918): Python datetime lower bound is year >= 1, so BC dates cannot be passed to the astro engine. Substitution preserves the geographic diversity goal (Africa) and adds a strong compassion/persistence signal as counterpoint to Thatcher.",
+    "sprint9_cohort_expansion": "Sprint 9 added Napoleon Bonaparte (1769) and Leonardo da Vinci (1452) following the install of seas_12.se1 which extends Kerykeion's asteroid ephemeris coverage back to 1200 CE. Cleopatra (69 BC) remains excluded because Python datetime's minimum year is 1. Substitute figures (Theodore Roosevelt, Thomas Edison, Nelson Mandela) are retained to enable direct Sprint 7/8 vs Sprint 9 metric comparisons. Cohort size N=22."
+  },
+  "figures": {
+    "steve_jobs": {
+      "name": "Steve Jobs",
+      "birth": {
+        "local_iso": "1955-02-24T19:15:00",
+        "timezone": "America/Los_Angeles",
+        "latitude": 37.7749,
+        "longitude": -122.4194,
+        "birth_time_confidence": "a",
+        "astro_databank_rating": "A"
+      },
+      "era": "modern",
+      "occupation": "business",
+      "sources": [
+        "Walter Isaacson, Steve Jobs (2011)",
+        "numerous keynote transcripts and interviews"
+      ],
+      "expected_traits": {
+        "openness": {
+          "value": 0.85,
+          "confidence": "high",
+          "rationale": "Product design innovation across categories; aesthetics obsession"
+        },
+        "conscientiousness": {
+          "value": 0.75,
+          "confidence": "high",
+          "rationale": "Rigorous iteration cycles; notorious attention to internal component layout"
+        },
+        "extraversion": {
+          "value": 0.65,
+          "confidence": "medium",
+          "rationale": "Magnetic on stage but reportedly reserved in private"
+        },
+        "agreeableness": {
+          "value": 0.2,
+          "confidence": "high",
+          "rationale": "Widely attested abrasive management; 'assholes and angels' reputation"
+        },
+        "neuroticism": {
+          "value": 0.65,
+          "confidence": "high",
+          "rationale": "Emotional volatility; public crying episodes documented"
+        },
+        "risk_appetite": {
+          "value": 0.85,
+          "confidence": "high",
+          "rationale": "Bet-the-company decisions: iPhone, iPod cannibalization of iPod"
+        },
+        "analytical_depth": {
+          "value": 0.75,
+          "confidence": "high",
+          "rationale": "Internal-board-layout level design immersion"
+        },
+        "impulsivity": {
+          "value": 0.6,
+          "confidence": "medium",
+          "rationale": "Sudden firings and capricious meetings described by colleagues"
+        },
+        "patience": {
+          "value": 0.25,
+          "confidence": "high",
+          "rationale": "Intolerant of delay or mediocrity; famous deadline pressure"
+        },
+        "social_dominance": {
+          "value": 0.9,
+          "confidence": "high",
+          "rationale": "Reality distortion field; commanding presence across all accounts"
+        },
+        "herd_susceptibility": {
+          "value": 0.15,
+          "confidence": "high",
+          "rationale": "Dismissed market research; 'customers don't know what they want'"
+        },
+        "authority_compliance": {
+          "value": 0.15,
+          "confidence": "high",
+          "rationale": "Fired from own company; dismissed Xerox PARC cautions"
+        },
+        "contrarian_tendency": {
+          "value": 0.85,
+          "confidence": "high",
+          "rationale": "Self-identified as against conventional wisdom; 1984 ad philosophy"
+        },
+        "empathy": {
+          "value": 0.25,
+          "confidence": "medium",
+          "rationale": "Limited with employees per biography; stronger with Laurene and family"
+        },
+        "financial_optimism": {
+          "value": 0.75,
+          "confidence": "medium",
+          "rationale": "Committed Apple reserves to bold category bets"
+        },
+        "loss_aversion": {
+          "value": 0.3,
+          "confidence": "medium",
+          "rationale": "Willing to cannibalize successful products (iPod → iPhone)"
+        },
+        "fomo_susceptibility": {
+          "value": 0.2,
+          "confidence": "medium",
+          "rationale": "Trend-setter rather than trend-follower; rejected netbooks etc"
+        },
+        "communication_assertiveness": {
+          "value": 0.95,
+          "confidence": "high",
+          "rationale": "Keynote delivery, direct criticism style universally attested"
+        },
+        "persuasion_skill": {
+          "value": 0.95,
+          "confidence": "high",
+          "rationale": "Famously persuaded engineers, investors, and consumers alike"
+        },
+        "information_sharing": {
+          "value": 0.25,
+          "confidence": "high",
+          "rationale": "Extreme secrecy culture at Apple; NDAs and compartmentalization"
+        },
+        "tradition_vs_progress": {
+          "value": 0.85,
+          "confidence": "high",
+          "rationale": "Serial industry disruptor (music, phone, tablet, publishing)"
+        },
+        "individualism": {
+          "value": 0.85,
+          "confidence": "high",
+          "rationale": "Self-reliant vision; 'one person can change the world' ethos"
+        },
+        "spirituality": {
+          "value": 0.7,
+          "confidence": "high",
+          "rationale": "Zen Buddhist practice; India pilgrimage; spoke openly about mortality"
+        }
+      }
+    },
+    "albert_einstein": {
+      "name": "Albert Einstein",
+      "birth": {
+        "local_iso": "1879-03-14T11:30:00",
+        "timezone": "Europe/Berlin",
+        "latitude": 48.3984,
+        "longitude": 9.9916,
+        "birth_time_confidence": "a",
+        "astro_databank_rating": "A"
+      },
+      "era": "historical",
+      "occupation": "science",
+      "sources": [
+        "Walter Isaacson, Einstein: His Life and Universe (2007)",
+        "published letters and essays"
+      ],
+      "expected_traits": {
+        "openness": {
+          "value": 0.95,
+          "confidence": "high",
+          "rationale": "Revolutionary theoretical imagination; thought experiments as method"
+        },
+        "conscientiousness": {
+          "value": 0.55,
+          "confidence": "medium",
+          "rationale": "Devoted to physics but famously disorganized in daily life"
+        },
+        "extraversion": {
+          "value": 0.45,
+          "confidence": "medium",
+          "rationale": "Enjoyed public platform later in life but introverted by temperament"
+        },
+        "agreeableness": {
+          "value": 0.65,
+          "confidence": "medium",
+          "rationale": "Warm with colleagues, difficult as husband/father"
+        },
+        "neuroticism": {
+          "value": 0.4,
+          "confidence": "medium",
+          "rationale": "Stoic public persona; anxiety mostly around WWII/nuclear"
+        },
+        "risk_appetite": {
+          "value": 0.7,
+          "confidence": "high",
+          "rationale": "Bet career on unpublished special relativity while working as patent clerk"
+        },
+        "analytical_depth": {
+          "value": 0.98,
+          "confidence": "high",
+          "rationale": "Canonical example of analytical depth in 20th century science"
+        },
+        "impulsivity": {
+          "value": 0.25,
+          "confidence": "medium",
+          "rationale": "Slow deliberation on both physics and personal decisions"
+        },
+        "patience": {
+          "value": 0.75,
+          "confidence": "high",
+          "rationale": "Decade-long development of general relativity"
+        },
+        "social_dominance": {
+          "value": 0.55,
+          "confidence": "medium",
+          "rationale": "Intellectual authority without coercive dominance"
+        },
+        "herd_susceptibility": {
+          "value": 0.1,
+          "confidence": "high",
+          "rationale": "Lone-wolf theorist; rejected Copenhagen consensus on QM"
+        },
+        "authority_compliance": {
+          "value": 0.2,
+          "confidence": "high",
+          "rationale": "Rejected German militarism in WWI, refused Israeli presidency"
+        },
+        "contrarian_tendency": {
+          "value": 0.8,
+          "confidence": "high",
+          "rationale": "Classic lifelong contrarian on physics and politics"
+        },
+        "empathy": {
+          "value": 0.7,
+          "confidence": "medium",
+          "rationale": "Deep social concern (civil rights, nuclear disarmament)"
+        },
+        "financial_optimism": {
+          "value": 0.5,
+          "confidence": "low",
+          "rationale": "Limited financial record outside salary negotiations"
+        },
+        "loss_aversion": {
+          "value": 0.4,
+          "confidence": "low",
+          "rationale": "Willing to emigrate and lose German citizenship for principles"
+        },
+        "fomo_susceptibility": {
+          "value": 0.15,
+          "confidence": "medium",
+          "rationale": "Dismissed fashionable ideas (QM indeterminism) for decades"
+        },
+        "communication_assertiveness": {
+          "value": 0.75,
+          "confidence": "high",
+          "rationale": "Public letters, press statements, unequivocal opinions"
+        },
+        "persuasion_skill": {
+          "value": 0.7,
+          "confidence": "medium",
+          "rationale": "Convinced scientific community of general relativity; less in politics"
+        },
+        "information_sharing": {
+          "value": 0.8,
+          "confidence": "high",
+          "rationale": "Open publishing; popular science writing and correspondence"
+        },
+        "tradition_vs_progress": {
+          "value": 0.85,
+          "confidence": "high",
+          "rationale": "Overthrew Newtonian absolute time/space"
+        },
+        "individualism": {
+          "value": 0.8,
+          "confidence": "high",
+          "rationale": "'Do not listen to the voice of authority' self-description"
+        },
+        "spirituality": {
+          "value": 0.65,
+          "confidence": "high",
+          "rationale": "'Cosmic religious feeling'; Spinoza's God references"
+        }
+      }
+    },
+    "nikola_tesla": {
+      "name": "Nikola Tesla",
+      "birth": {
+        "local_iso": "1856-07-10T00:00:00",
+        "timezone": "Europe/Zagreb",
+        "latitude": 44.5478,
+        "longitude": 15.3211,
+        "birth_time_confidence": "c",
+        "astro_databank_rating": "C"
+      },
+      "era": "historical",
+      "occupation": "science",
+      "sources": [
+        "W. Bernard Carlson, Tesla: Inventor of the Electrical Age (2013)",
+        "Tesla autobiography My Inventions"
+      ],
+      "expected_traits": {
+        "openness": {
+          "value": 0.95,
+          "confidence": "high",
+          "rationale": "Prolific inventive imagination spanning AC power, radio, wireless"
+        },
+        "conscientiousness": {
+          "value": 0.65,
+          "confidence": "medium",
+          "rationale": "Meticulous experimentation with compulsive tendencies (OCD symptoms)"
+        },
+        "extraversion": {
+          "value": 0.3,
+          "confidence": "high",
+          "rationale": "Reclusive adult life; intense solitary work"
+        },
+        "agreeableness": {
+          "value": 0.45,
+          "confidence": "medium",
+          "rationale": "Gentle by temperament but rivalrous with Edison"
+        },
+        "neuroticism": {
+          "value": 0.8,
+          "confidence": "high",
+          "rationale": "Documented OCD, phobias, visual hallucinations"
+        },
+        "risk_appetite": {
+          "value": 0.75,
+          "confidence": "high",
+          "rationale": "Staked everything on Wardenclyffe wireless transmission tower"
+        },
+        "analytical_depth": {
+          "value": 0.95,
+          "confidence": "high",
+          "rationale": "Held full designs in visual imagination before building"
+        },
+        "impulsivity": {
+          "value": 0.35,
+          "confidence": "medium",
+          "rationale": "Late-career grandiose claims; periodic impulsive announcements"
+        },
+        "patience": {
+          "value": 0.6,
+          "confidence": "medium",
+          "rationale": "Years-long persistence on AC systems; less patient in business"
+        },
+        "social_dominance": {
+          "value": 0.4,
+          "confidence": "medium",
+          "rationale": "Charismatic in lectures but not a power broker"
+        },
+        "herd_susceptibility": {
+          "value": 0.1,
+          "confidence": "high",
+          "rationale": "Pursued AC against entrenched DC consensus; wireless against wires"
+        },
+        "authority_compliance": {
+          "value": 0.3,
+          "confidence": "medium",
+          "rationale": "Broke with Edison; independent operator throughout career"
+        },
+        "contrarian_tendency": {
+          "value": 0.8,
+          "confidence": "high",
+          "rationale": "Definitional contrarian inventor against establishment"
+        },
+        "empathy": {
+          "value": 0.55,
+          "confidence": "low",
+          "rationale": "Famous affection for pigeons; limited intimate human relationships"
+        },
+        "financial_optimism": {
+          "value": 0.7,
+          "confidence": "medium",
+          "rationale": "Repeatedly sought grand-scale funding despite setbacks"
+        },
+        "loss_aversion": {
+          "value": 0.2,
+          "confidence": "medium",
+          "rationale": "Tore up Westinghouse royalty contract costing millions"
+        },
+        "fomo_susceptibility": {
+          "value": 0.15,
+          "confidence": "low",
+          "rationale": "Disinterested in following technological fashions"
+        },
+        "communication_assertiveness": {
+          "value": 0.65,
+          "confidence": "medium",
+          "rationale": "Showy public demonstrations; wrote press pieces"
+        },
+        "persuasion_skill": {
+          "value": 0.55,
+          "confidence": "medium",
+          "rationale": "Persuaded Westinghouse but failed with J.P. Morgan long-term"
+        },
+        "information_sharing": {
+          "value": 0.55,
+          "confidence": "medium",
+          "rationale": "Published widely but kept key designs secret"
+        },
+        "tradition_vs_progress": {
+          "value": 0.9,
+          "confidence": "high",
+          "rationale": "Archetypal futurist inventor"
+        },
+        "individualism": {
+          "value": 0.9,
+          "confidence": "high",
+          "rationale": "Radically self-directed; lifelong solitary inventor"
+        },
+        "spirituality": {
+          "value": 0.7,
+          "confidence": "medium",
+          "rationale": "Mystical language in writings; Vedic references"
+        }
+      }
+    },
+    "elon_musk": {
+      "name": "Elon Musk",
+      "birth": {
+        "local_iso": "1971-06-28T07:30:00",
+        "timezone": "Africa/Johannesburg",
+        "latitude": -25.7479,
+        "longitude": 28.2293,
+        "birth_time_confidence": "c",
+        "astro_databank_rating": "C"
+      },
+      "era": "modern",
+      "occupation": "business",
+      "sources": [
+        "Walter Isaacson, Elon Musk (2023)",
+        "Ashlee Vance, Elon Musk (2015)",
+        "extensive public interviews"
+      ],
+      "expected_traits": {
+        "openness": {
+          "value": 0.9,
+          "confidence": "high",
+          "rationale": "Cross-domain ventures: rockets, EVs, brain-computer, AI, tunneling"
+        },
+        "conscientiousness": {
+          "value": 0.65,
+          "confidence": "medium",
+          "rationale": "Extreme work hours but chaotic org decisions"
+        },
+        "extraversion": {
+          "value": 0.6,
+          "confidence": "medium",
+          "rationale": "Heavy public/Twitter presence, self-described introvert"
+        },
+        "agreeableness": {
+          "value": 0.25,
+          "confidence": "high",
+          "rationale": "Widely documented harsh treatment of employees and critics"
+        },
+        "neuroticism": {
+          "value": 0.7,
+          "confidence": "high",
+          "rationale": "Public outbursts, mood volatility, documented breakdowns"
+        },
+        "risk_appetite": {
+          "value": 0.95,
+          "confidence": "high",
+          "rationale": "Staked entire fortune on SpaceX/Tesla when near bankruptcy"
+        },
+        "analytical_depth": {
+          "value": 0.8,
+          "confidence": "high",
+          "rationale": "First-principles rocket engineering breakdowns"
+        },
+        "impulsivity": {
+          "value": 0.75,
+          "confidence": "high",
+          "rationale": "Twitter acquisition, sudden firings, 420 tweets"
+        },
+        "patience": {
+          "value": 0.25,
+          "confidence": "high",
+          "rationale": "Dead-man's-handle deadlines; 'go f*** yourself' to ISS delays"
+        },
+        "social_dominance": {
+          "value": 0.85,
+          "confidence": "high",
+          "rationale": "Commands global attention and industry direction"
+        },
+        "herd_susceptibility": {
+          "value": 0.15,
+          "confidence": "high",
+          "rationale": "Consistent anti-consensus positions across domains"
+        },
+        "authority_compliance": {
+          "value": 0.15,
+          "confidence": "high",
+          "rationale": "SEC fights, FAA defiance, regulator hostility"
+        },
+        "contrarian_tendency": {
+          "value": 0.9,
+          "confidence": "high",
+          "rationale": "Explicitly contrarian branding; anti-WFH, anti-establishment"
+        },
+        "empathy": {
+          "value": 0.25,
+          "confidence": "medium",
+          "rationale": "Abstract humanitarian concern (Mars, species survival) vs individual harshness"
+        },
+        "financial_optimism": {
+          "value": 0.85,
+          "confidence": "high",
+          "rationale": "Leveraged personal net worth repeatedly on new ventures"
+        },
+        "loss_aversion": {
+          "value": 0.2,
+          "confidence": "high",
+          "rationale": "Risked bankruptcy multiple times; $44B Twitter loss tolerance"
+        },
+        "fomo_susceptibility": {
+          "value": 0.4,
+          "confidence": "medium",
+          "rationale": "Responsive to crypto/AI hype cycles at times"
+        },
+        "communication_assertiveness": {
+          "value": 0.9,
+          "confidence": "high",
+          "rationale": "Direct, often inflammatory public communication"
+        },
+        "persuasion_skill": {
+          "value": 0.85,
+          "confidence": "high",
+          "rationale": "Sold Tesla, SpaceX visions to investors and talent"
+        },
+        "information_sharing": {
+          "value": 0.6,
+          "confidence": "medium",
+          "rationale": "Open-source patents (Tesla), heavy public discourse, but secretive internally"
+        },
+        "tradition_vs_progress": {
+          "value": 0.9,
+          "confidence": "high",
+          "rationale": "Aggressive futurist across all ventures"
+        },
+        "individualism": {
+          "value": 0.9,
+          "confidence": "high",
+          "rationale": "Lone-founder mythology; rejects DEI, collective approaches"
+        },
+        "spirituality": {
+          "value": 0.4,
+          "confidence": "low",
+          "rationale": "Simulation-hypothesis musings; no structured practice"
+        }
+      }
+    },
+    "oprah_winfrey": {
+      "name": "Oprah Winfrey",
+      "birth": {
+        "local_iso": "1954-01-29T04:30:00",
+        "timezone": "America/Chicago",
+        "latitude": 33.0576,
+        "longitude": -89.5867,
+        "birth_time_confidence": "aa",
+        "astro_databank_rating": "AA"
+      },
+      "era": "modern",
+      "occupation": "business",
+      "sources": [
+        "Kitty Kelley, Oprah: A Biography (2010)",
+        "O Magazine interviews",
+        "25-year talk show archive"
+      ],
+      "expected_traits": {
+        "openness": {
+          "value": 0.8,
+          "confidence": "high",
+          "rationale": "Genre diversity: daytime TV, spiritual books, film production"
+        },
+        "conscientiousness": {
+          "value": 0.8,
+          "confidence": "high",
+          "rationale": "Disciplined work ethic, brand empire stewardship"
+        },
+        "extraversion": {
+          "value": 0.85,
+          "confidence": "high",
+          "rationale": "Talk-show persona; energized by large audiences"
+        },
+        "agreeableness": {
+          "value": 0.7,
+          "confidence": "high",
+          "rationale": "Warm public persona; mentorship patterns"
+        },
+        "neuroticism": {
+          "value": 0.5,
+          "confidence": "medium",
+          "rationale": "Public about weight/identity struggles but composed under pressure"
+        },
+        "risk_appetite": {
+          "value": 0.7,
+          "confidence": "medium",
+          "rationale": "Left network to build OWN; publishing ventures"
+        },
+        "analytical_depth": {
+          "value": 0.6,
+          "confidence": "medium",
+          "rationale": "Interview preparation and book club curation"
+        },
+        "impulsivity": {
+          "value": 0.35,
+          "confidence": "low",
+          "rationale": "Deliberative decision-making based on public record"
+        },
+        "patience": {
+          "value": 0.65,
+          "confidence": "medium",
+          "rationale": "Decades-long career building; mentorship horizons"
+        },
+        "social_dominance": {
+          "value": 0.8,
+          "confidence": "high",
+          "rationale": "The 'Oprah effect' — endorsement market power"
+        },
+        "herd_susceptibility": {
+          "value": 0.4,
+          "confidence": "low",
+          "rationale": "Shapes rather than follows trends but platforms mainstream voices"
+        },
+        "authority_compliance": {
+          "value": 0.55,
+          "confidence": "medium",
+          "rationale": "Works within systems while advocating reform"
+        },
+        "contrarian_tendency": {
+          "value": 0.45,
+          "confidence": "medium",
+          "rationale": "Sometimes dissenting but primarily consensus-building"
+        },
+        "empathy": {
+          "value": 0.9,
+          "confidence": "high",
+          "rationale": "Defining public trait; emotional-resonance interview style"
+        },
+        "financial_optimism": {
+          "value": 0.75,
+          "confidence": "medium",
+          "rationale": "Billionaire entrepreneur with long investment horizon"
+        },
+        "loss_aversion": {
+          "value": 0.45,
+          "confidence": "low",
+          "rationale": "Mixed — careful with core brand, willing to invest in new ventures"
+        },
+        "fomo_susceptibility": {
+          "value": 0.35,
+          "confidence": "low",
+          "rationale": "Creates cultural moments rather than chasing them"
+        },
+        "communication_assertiveness": {
+          "value": 0.85,
+          "confidence": "high",
+          "rationale": "Defining talk-show voice; direct interview style"
+        },
+        "persuasion_skill": {
+          "value": 0.9,
+          "confidence": "high",
+          "rationale": "Book-club endorsements move markets; audience loyalty"
+        },
+        "information_sharing": {
+          "value": 0.8,
+          "confidence": "high",
+          "rationale": "Disclosed own abuse and struggles publicly"
+        },
+        "tradition_vs_progress": {
+          "value": 0.7,
+          "confidence": "medium",
+          "rationale": "Progressive on social issues; traditional on spiritual themes"
+        },
+        "individualism": {
+          "value": 0.7,
+          "confidence": "medium",
+          "rationale": "Self-made narrative; also celebrates community"
+        },
+        "spirituality": {
+          "value": 0.9,
+          "confidence": "high",
+          "rationale": "Central public theme; New Age, Eckhart Tolle, 'Super Soul Sunday'"
+        }
+      }
+    },
+    "marie_curie": {
+      "name": "Marie Curie",
+      "birth": {
+        "local_iso": "1867-11-07T12:00:00",
+        "timezone": "Europe/Warsaw",
+        "latitude": 52.2297,
+        "longitude": 21.0122,
+        "birth_time_confidence": "c",
+        "astro_databank_rating": "C"
+      },
+      "era": "historical",
+      "occupation": "science",
+      "sources": [
+        "Susan Quinn, Marie Curie: A Life (1995)",
+        "Eve Curie, Madame Curie (1937)"
+      ],
+      "expected_traits": {
+        "openness": {
+          "value": 0.85,
+          "confidence": "high",
+          "rationale": "Pioneered radioactivity research; crossed physics-chemistry boundary"
+        },
+        "conscientiousness": {
+          "value": 0.9,
+          "confidence": "high",
+          "rationale": "Tons of pitchblende processed by hand; extreme lab discipline"
+        },
+        "extraversion": {
+          "value": 0.3,
+          "confidence": "high",
+          "rationale": "Famously reserved and austere in public"
+        },
+        "agreeableness": {
+          "value": 0.55,
+          "confidence": "medium",
+          "rationale": "Collaborative with Pierre, distant professionally"
+        },
+        "neuroticism": {
+          "value": 0.6,
+          "confidence": "medium",
+          "rationale": "Depression episodes after Pierre's death; resilient overall"
+        },
+        "risk_appetite": {
+          "value": 0.7,
+          "confidence": "high",
+          "rationale": "Career risk as woman in male science; physical risk of radiation"
+        },
+        "analytical_depth": {
+          "value": 0.95,
+          "confidence": "high",
+          "rationale": "Two Nobel Prizes, distinct disciplines; isolation of pure radium"
+        },
+        "impulsivity": {
+          "value": 0.15,
+          "confidence": "high",
+          "rationale": "Methodical to obsessive; years per experiment"
+        },
+        "patience": {
+          "value": 0.9,
+          "confidence": "high",
+          "rationale": "Years of pitchblende refinement for gram-scale radium"
+        },
+        "social_dominance": {
+          "value": 0.5,
+          "confidence": "low",
+          "rationale": "Prestige without assertive dominance"
+        },
+        "herd_susceptibility": {
+          "value": 0.15,
+          "confidence": "high",
+          "rationale": "Pursued novel phenomenon dismissed by peers"
+        },
+        "authority_compliance": {
+          "value": 0.45,
+          "confidence": "medium",
+          "rationale": "Worked within academy but broke gender barriers"
+        },
+        "contrarian_tendency": {
+          "value": 0.55,
+          "confidence": "medium",
+          "rationale": "Quiet contrarian — breaking gender norms methodically"
+        },
+        "empathy": {
+          "value": 0.6,
+          "confidence": "medium",
+          "rationale": "WWI mobile X-ray units for wounded soldiers"
+        },
+        "financial_optimism": {
+          "value": 0.35,
+          "confidence": "low",
+          "rationale": "Refused to patent radium isolation process; financially modest"
+        },
+        "loss_aversion": {
+          "value": 0.4,
+          "confidence": "low",
+          "rationale": "Risk-tolerant for science, loss-tolerant with finances"
+        },
+        "fomo_susceptibility": {
+          "value": 0.1,
+          "confidence": "medium",
+          "rationale": "Indifferent to fashion or celebrity"
+        },
+        "communication_assertiveness": {
+          "value": 0.5,
+          "confidence": "medium",
+          "rationale": "Published clearly; private and restrained in speech"
+        },
+        "persuasion_skill": {
+          "value": 0.55,
+          "confidence": "medium",
+          "rationale": "Scientific writing persuasive; not orator"
+        },
+        "information_sharing": {
+          "value": 0.85,
+          "confidence": "high",
+          "rationale": "Published research broadly; taught Parisian students"
+        },
+        "tradition_vs_progress": {
+          "value": 0.8,
+          "confidence": "high",
+          "rationale": "Broke tradition for women in science; progressive on education"
+        },
+        "individualism": {
+          "value": 0.7,
+          "confidence": "medium",
+          "rationale": "Self-directed career despite institutional barriers"
+        },
+        "spirituality": {
+          "value": 0.3,
+          "confidence": "medium",
+          "rationale": "Lost religious faith young; scientific humanist outlook"
+        }
+      }
+    },
+    "winston_churchill": {
+      "name": "Winston Churchill",
+      "birth": {
+        "local_iso": "1874-11-30T01:30:00",
+        "timezone": "Europe/London",
+        "latitude": 51.8417,
+        "longitude": -1.3615,
+        "birth_time_confidence": "aa",
+        "astro_databank_rating": "AA"
+      },
+      "era": "historical",
+      "occupation": "politics",
+      "sources": [
+        "Martin Gilbert, Churchill: A Life (1991)",
+        "Andrew Roberts, Churchill: Walking with Destiny (2018)"
+      ],
+      "expected_traits": {
+        "openness": {
+          "value": 0.8,
+          "confidence": "high",
+          "rationale": "Polymath: historian, painter, novelist, orator"
+        },
+        "conscientiousness": {
+          "value": 0.7,
+          "confidence": "medium",
+          "rationale": "Hugely productive writer; erratic in detail admin"
+        },
+        "extraversion": {
+          "value": 0.85,
+          "confidence": "high",
+          "rationale": "Dinner-party lion, House of Commons showman"
+        },
+        "agreeableness": {
+          "value": 0.4,
+          "confidence": "medium",
+          "rationale": "Generous with friends, savage with opponents"
+        },
+        "neuroticism": {
+          "value": 0.65,
+          "confidence": "high",
+          "rationale": "'Black dog' depression lifelong, documented extensively"
+        },
+        "risk_appetite": {
+          "value": 0.9,
+          "confidence": "high",
+          "rationale": "Gallipoli, cavalry charges, political gambles across career"
+        },
+        "analytical_depth": {
+          "value": 0.7,
+          "confidence": "medium",
+          "rationale": "Strong strategic grasp; weak on technical detail"
+        },
+        "impulsivity": {
+          "value": 0.65,
+          "confidence": "medium",
+          "rationale": "Strategic impulsiveness (Dardanelles); quick decisions"
+        },
+        "patience": {
+          "value": 0.4,
+          "confidence": "medium",
+          "rationale": "Persistent in decade-long goals but impatient in execution"
+        },
+        "social_dominance": {
+          "value": 0.9,
+          "confidence": "high",
+          "rationale": "Defining wartime leadership presence"
+        },
+        "herd_susceptibility": {
+          "value": 0.15,
+          "confidence": "high",
+          "rationale": "Wilderness years opposing appeasement consensus"
+        },
+        "authority_compliance": {
+          "value": 0.3,
+          "confidence": "high",
+          "rationale": "Crossed floor twice; clashed with party establishment"
+        },
+        "contrarian_tendency": {
+          "value": 0.8,
+          "confidence": "high",
+          "rationale": "Career defined by minority positions (rearmament, India, Bolshevism)"
+        },
+        "empathy": {
+          "value": 0.45,
+          "confidence": "medium",
+          "rationale": "Public sentiment reader; personally self-absorbed"
+        },
+        "financial_optimism": {
+          "value": 0.8,
+          "confidence": "high",
+          "rationale": "Lavish spending; always wrote his way out of debt"
+        },
+        "loss_aversion": {
+          "value": 0.25,
+          "confidence": "high",
+          "rationale": "Career-risking political stands; personal debt tolerance"
+        },
+        "fomo_susceptibility": {
+          "value": 0.4,
+          "confidence": "low",
+          "rationale": "Set agendas more than followed them"
+        },
+        "communication_assertiveness": {
+          "value": 0.98,
+          "confidence": "high",
+          "rationale": "Iconic rhetoric, 'we shall fight on the beaches'"
+        },
+        "persuasion_skill": {
+          "value": 0.95,
+          "confidence": "high",
+          "rationale": "Mobilized Britain in 1940; Nobel Prize in Literature"
+        },
+        "information_sharing": {
+          "value": 0.8,
+          "confidence": "medium",
+          "rationale": "Prolific author, memoirist, pamphleteer"
+        },
+        "tradition_vs_progress": {
+          "value": 0.4,
+          "confidence": "high",
+          "rationale": "Monarchist, imperialist; some social reforms"
+        },
+        "individualism": {
+          "value": 0.85,
+          "confidence": "high",
+          "rationale": "'I am a destiny person' — strong personal-destiny narrative"
+        },
+        "spirituality": {
+          "value": 0.35,
+          "confidence": "medium",
+          "rationale": "Nominal Anglican; largely secular in practice"
+        }
+      }
+    },
+    "frida_kahlo": {
+      "name": "Frida Kahlo",
+      "birth": {
+        "local_iso": "1907-07-06T08:30:00",
+        "timezone": "America/Mexico_City",
+        "latitude": 19.3497,
+        "longitude": -99.162,
+        "birth_time_confidence": "a",
+        "astro_databank_rating": "A"
+      },
+      "era": "historical",
+      "occupation": "art",
+      "sources": [
+        "Hayden Herrera, Frida: A Biography (1983)",
+        "Kahlo's diary (published 1995)"
+      ],
+      "expected_traits": {
+        "openness": {
+          "value": 0.95,
+          "confidence": "high",
+          "rationale": "Surrealist/symbolist iconography; radical self-portraiture"
+        },
+        "conscientiousness": {
+          "value": 0.6,
+          "confidence": "medium",
+          "rationale": "Productive painter through illness; chaotic relationship life"
+        },
+        "extraversion": {
+          "value": 0.7,
+          "confidence": "high",
+          "rationale": "Provocative public persona, salon host"
+        },
+        "agreeableness": {
+          "value": 0.45,
+          "confidence": "medium",
+          "rationale": "Passionate with friends; bitter in rivalries"
+        },
+        "neuroticism": {
+          "value": 0.85,
+          "confidence": "high",
+          "rationale": "Chronic physical pain, depressive spirals documented in diary"
+        },
+        "risk_appetite": {
+          "value": 0.7,
+          "confidence": "medium",
+          "rationale": "Radical political affiliations; sexual freedom in 1930s Mexico"
+        },
+        "analytical_depth": {
+          "value": 0.55,
+          "confidence": "low",
+          "rationale": "Emotional/symbolic depth more than analytical"
+        },
+        "impulsivity": {
+          "value": 0.65,
+          "confidence": "medium",
+          "rationale": "Passionate affairs, public political stunts"
+        },
+        "patience": {
+          "value": 0.45,
+          "confidence": "low",
+          "rationale": "Patient with painting craft; impatient interpersonally"
+        },
+        "social_dominance": {
+          "value": 0.65,
+          "confidence": "medium",
+          "rationale": "Commanding presence despite physical frailty"
+        },
+        "herd_susceptibility": {
+          "value": 0.2,
+          "confidence": "high",
+          "rationale": "Deliberately anti-conventional appearance, art, politics"
+        },
+        "authority_compliance": {
+          "value": 0.25,
+          "confidence": "high",
+          "rationale": "Communist activist against establishment"
+        },
+        "contrarian_tendency": {
+          "value": 0.75,
+          "confidence": "high",
+          "rationale": "Defied artistic and gender norms of her era"
+        },
+        "empathy": {
+          "value": 0.7,
+          "confidence": "medium",
+          "rationale": "Strong political solidarity; less steady in personal life"
+        },
+        "financial_optimism": {
+          "value": 0.45,
+          "confidence": "low",
+          "rationale": "Modest commercial success in lifetime"
+        },
+        "loss_aversion": {
+          "value": 0.35,
+          "confidence": "low",
+          "rationale": "Willing to suffer for principles and art"
+        },
+        "fomo_susceptibility": {
+          "value": 0.35,
+          "confidence": "low",
+          "rationale": "Trendsetter rather than follower"
+        },
+        "communication_assertiveness": {
+          "value": 0.75,
+          "confidence": "medium",
+          "rationale": "Outspoken interviews and correspondence"
+        },
+        "persuasion_skill": {
+          "value": 0.6,
+          "confidence": "low",
+          "rationale": "Persuaded through imagery more than argument"
+        },
+        "information_sharing": {
+          "value": 0.75,
+          "confidence": "medium",
+          "rationale": "Confessional diary and self-portraits"
+        },
+        "tradition_vs_progress": {
+          "value": 0.85,
+          "confidence": "high",
+          "rationale": "Progressive on gender, sexuality, class politics"
+        },
+        "individualism": {
+          "value": 0.75,
+          "confidence": "high",
+          "rationale": "Radical self-portraiture; individuated iconography"
+        },
+        "spirituality": {
+          "value": 0.55,
+          "confidence": "medium",
+          "rationale": "Mexican folk Catholicism, indigenous symbolism"
+        }
+      }
+    },
+    "muhammad_ali": {
+      "name": "Muhammad Ali",
+      "birth": {
+        "local_iso": "1942-01-17T18:35:00",
+        "timezone": "America/Kentucky/Louisville",
+        "latitude": 38.2527,
+        "longitude": -85.7585,
+        "birth_time_confidence": "aa",
+        "astro_databank_rating": "AA"
+      },
+      "era": "historical",
+      "occupation": "sport",
+      "sources": [
+        "Jonathan Eig, Ali: A Life (2017)",
+        "Thomas Hauser, Muhammad Ali: His Life and Times (1991)"
+      ],
+      "expected_traits": {
+        "openness": {
+          "value": 0.75,
+          "confidence": "medium",
+          "rationale": "Religious conversion, poetry, social activism beyond sport"
+        },
+        "conscientiousness": {
+          "value": 0.7,
+          "confidence": "medium",
+          "rationale": "Disciplined training at peak; erratic outside the ring"
+        },
+        "extraversion": {
+          "value": 0.95,
+          "confidence": "high",
+          "rationale": "Defining public showman; 'I am the greatest'"
+        },
+        "agreeableness": {
+          "value": 0.45,
+          "confidence": "medium",
+          "rationale": "Warm with fans; cruel taunts to opponents"
+        },
+        "neuroticism": {
+          "value": 0.45,
+          "confidence": "medium",
+          "rationale": "Composed in ring; difficulty later in personal life"
+        },
+        "risk_appetite": {
+          "value": 0.9,
+          "confidence": "high",
+          "rationale": "Draft refusal risking prison and career"
+        },
+        "analytical_depth": {
+          "value": 0.6,
+          "confidence": "medium",
+          "rationale": "Sophisticated ring strategy; less in political rhetoric"
+        },
+        "impulsivity": {
+          "value": 0.55,
+          "confidence": "medium",
+          "rationale": "Some impulsive public statements, marriages"
+        },
+        "patience": {
+          "value": 0.55,
+          "confidence": "medium",
+          "rationale": "Comeback years; 'rope-a-dope' strategic waiting"
+        },
+        "social_dominance": {
+          "value": 0.95,
+          "confidence": "high",
+          "rationale": "Defining alpha-male persona of his era"
+        },
+        "herd_susceptibility": {
+          "value": 0.15,
+          "confidence": "high",
+          "rationale": "Conversion to Nation of Islam against family"
+        },
+        "authority_compliance": {
+          "value": 0.1,
+          "confidence": "high",
+          "rationale": "Refused Vietnam draft at career cost"
+        },
+        "contrarian_tendency": {
+          "value": 0.85,
+          "confidence": "high",
+          "rationale": "Name change, religion, politics — serial defiance"
+        },
+        "empathy": {
+          "value": 0.65,
+          "confidence": "medium",
+          "rationale": "Generous to strangers; civil rights advocacy"
+        },
+        "financial_optimism": {
+          "value": 0.8,
+          "confidence": "medium",
+          "rationale": "Confident in earnings; lost/gained fortune multiple times"
+        },
+        "loss_aversion": {
+          "value": 0.2,
+          "confidence": "high",
+          "rationale": "Gave up prime years of career for principles"
+        },
+        "fomo_susceptibility": {
+          "value": 0.3,
+          "confidence": "low",
+          "rationale": "Set cultural pace rather than followed"
+        },
+        "communication_assertiveness": {
+          "value": 0.98,
+          "confidence": "high",
+          "rationale": "Legendary trash-talk and press conferences"
+        },
+        "persuasion_skill": {
+          "value": 0.85,
+          "confidence": "high",
+          "rationale": "Rallied American public opinion on Vietnam over years"
+        },
+        "information_sharing": {
+          "value": 0.8,
+          "confidence": "medium",
+          "rationale": "Open public life; TV interviews, autobiography"
+        },
+        "tradition_vs_progress": {
+          "value": 0.7,
+          "confidence": "medium",
+          "rationale": "Religious traditionalist, civil rights progressive"
+        },
+        "individualism": {
+          "value": 0.85,
+          "confidence": "high",
+          "rationale": "'I am the greatest' self-narrative"
+        },
+        "spirituality": {
+          "value": 0.9,
+          "confidence": "high",
+          "rationale": "Deep Sunni Islamic practice throughout life"
+        }
+      }
+    },
+    "princess_diana": {
+      "name": "Princess Diana",
+      "birth": {
+        "local_iso": "1961-07-01T19:45:00",
+        "timezone": "Europe/London",
+        "latitude": 52.8297,
+        "longitude": 0.508,
+        "birth_time_confidence": "aa",
+        "astro_databank_rating": "AA"
+      },
+      "era": "historical",
+      "occupation": "monarchy",
+      "sources": [
+        "Andrew Morton, Diana: Her True Story (1992/1997)",
+        "Tina Brown, The Diana Chronicles (2007)"
+      ],
+      "expected_traits": {
+        "openness": {
+          "value": 0.7,
+          "confidence": "medium",
+          "rationale": "Charity causes spanning AIDS, landmines, homelessness"
+        },
+        "conscientiousness": {
+          "value": 0.55,
+          "confidence": "low",
+          "rationale": "Dedicated to causes; poor at formal education/protocol"
+        },
+        "extraversion": {
+          "value": 0.7,
+          "confidence": "medium",
+          "rationale": "Warm with public; shy in childhood accounts"
+        },
+        "agreeableness": {
+          "value": 0.75,
+          "confidence": "high",
+          "rationale": "Emotionally warm image consistently documented"
+        },
+        "neuroticism": {
+          "value": 0.85,
+          "confidence": "high",
+          "rationale": "Bulimia, suicide attempts, depression widely attested"
+        },
+        "risk_appetite": {
+          "value": 0.65,
+          "confidence": "medium",
+          "rationale": "Broke royal protocol; controversial interviews"
+        },
+        "analytical_depth": {
+          "value": 0.4,
+          "confidence": "low",
+          "rationale": "Intuitive rather than analytical per biographers"
+        },
+        "impulsivity": {
+          "value": 0.65,
+          "confidence": "medium",
+          "rationale": "Emotional decisions about public disclosures"
+        },
+        "patience": {
+          "value": 0.4,
+          "confidence": "low",
+          "rationale": "Left cold marriage rather than endure stoically"
+        },
+        "social_dominance": {
+          "value": 0.55,
+          "confidence": "medium",
+          "rationale": "Magnetic but unequal power in royal family"
+        },
+        "herd_susceptibility": {
+          "value": 0.55,
+          "confidence": "low",
+          "rationale": "Mixed — sometimes media-reactive, sometimes agenda-setting"
+        },
+        "authority_compliance": {
+          "value": 0.3,
+          "confidence": "high",
+          "rationale": "Openly defied Palace conventions"
+        },
+        "contrarian_tendency": {
+          "value": 0.55,
+          "confidence": "medium",
+          "rationale": "Counter-royal in many gestures"
+        },
+        "empathy": {
+          "value": 0.95,
+          "confidence": "high",
+          "rationale": "'Queen of Hearts' — defining personality trait"
+        },
+        "financial_optimism": {
+          "value": 0.5,
+          "confidence": "low",
+          "rationale": "Limited personal financial record"
+        },
+        "loss_aversion": {
+          "value": 0.4,
+          "confidence": "low",
+          "rationale": "Gave up royal title; chose divorce"
+        },
+        "fomo_susceptibility": {
+          "value": 0.5,
+          "confidence": "low",
+          "rationale": "Mixed media-sensitivity"
+        },
+        "communication_assertiveness": {
+          "value": 0.7,
+          "confidence": "medium",
+          "rationale": "Bashir interview showed strategic assertion"
+        },
+        "persuasion_skill": {
+          "value": 0.85,
+          "confidence": "high",
+          "rationale": "Shifted public opinion on AIDS stigma, landmines"
+        },
+        "information_sharing": {
+          "value": 0.8,
+          "confidence": "high",
+          "rationale": "Tape recordings, interviews disclosed private life"
+        },
+        "tradition_vs_progress": {
+          "value": 0.65,
+          "confidence": "medium",
+          "rationale": "Within monarchy, pushed progressive causes"
+        },
+        "individualism": {
+          "value": 0.7,
+          "confidence": "medium",
+          "rationale": "Asserted personal identity against institutional role"
+        },
+        "spirituality": {
+          "value": 0.65,
+          "confidence": "medium",
+          "rationale": "Personal Christian faith; New Age exploration"
+        }
+      }
+    },
+    "mahatma_gandhi": {
+      "name": "Mahatma Gandhi",
+      "birth": {
+        "local_iso": "1869-10-02T07:12:00",
+        "timezone": "Asia/Kolkata",
+        "latitude": 21.6417,
+        "longitude": 69.6293,
+        "birth_time_confidence": "b",
+        "astro_databank_rating": "B"
+      },
+      "era": "historical",
+      "occupation": "politics",
+      "sources": [
+        "Ramachandra Guha, Gandhi (2013, 2018 two volumes)",
+        "Gandhi's Autobiography (1927)"
+      ],
+      "expected_traits": {
+        "openness": {
+          "value": 0.75,
+          "confidence": "medium",
+          "rationale": "Religious synthesis, experimental lifestyle, salt march innovation"
+        },
+        "conscientiousness": {
+          "value": 0.9,
+          "confidence": "high",
+          "rationale": "Extreme self-discipline; ashram organization"
+        },
+        "extraversion": {
+          "value": 0.45,
+          "confidence": "medium",
+          "rationale": "Public leader but ascetically reserved"
+        },
+        "agreeableness": {
+          "value": 0.7,
+          "confidence": "medium",
+          "rationale": "Nonviolence philosophy; strict with followers and family"
+        },
+        "neuroticism": {
+          "value": 0.35,
+          "confidence": "medium",
+          "rationale": "Remarkable composure under British pressure"
+        },
+        "risk_appetite": {
+          "value": 0.8,
+          "confidence": "high",
+          "rationale": "Repeatedly staged fasts unto death; civil disobedience"
+        },
+        "analytical_depth": {
+          "value": 0.75,
+          "confidence": "medium",
+          "rationale": "Political strategy in Hind Swaraj and tactical writings"
+        },
+        "impulsivity": {
+          "value": 0.15,
+          "confidence": "high",
+          "rationale": "Deliberate, principled decision-making"
+        },
+        "patience": {
+          "value": 0.95,
+          "confidence": "high",
+          "rationale": "Decades-long satyagraha campaigns"
+        },
+        "social_dominance": {
+          "value": 0.75,
+          "confidence": "medium",
+          "rationale": "Moral authority without coercive dominance"
+        },
+        "herd_susceptibility": {
+          "value": 0.15,
+          "confidence": "high",
+          "rationale": "Pioneered methods against both British and Indian consensus"
+        },
+        "authority_compliance": {
+          "value": 0.1,
+          "confidence": "high",
+          "rationale": "Defining civil disobedience figure of 20th century"
+        },
+        "contrarian_tendency": {
+          "value": 0.8,
+          "confidence": "high",
+          "rationale": "Against industrial modernity, against nationalist violence"
+        },
+        "empathy": {
+          "value": 0.85,
+          "confidence": "high",
+          "rationale": "Identification with untouchables, poor; fasting for Hindu-Muslim unity"
+        },
+        "financial_optimism": {
+          "value": 0.35,
+          "confidence": "medium",
+          "rationale": "Renounced wealth; embraced poverty ideology"
+        },
+        "loss_aversion": {
+          "value": 0.15,
+          "confidence": "high",
+          "rationale": "Repeatedly risked life; gave up legal career and possessions"
+        },
+        "fomo_susceptibility": {
+          "value": 0.05,
+          "confidence": "high",
+          "rationale": "Ascetic rejection of material and social trends"
+        },
+        "communication_assertiveness": {
+          "value": 0.8,
+          "confidence": "high",
+          "rationale": "Disarming direct speech, letter-writing"
+        },
+        "persuasion_skill": {
+          "value": 0.95,
+          "confidence": "high",
+          "rationale": "Mobilized hundreds of millions nonviolently"
+        },
+        "information_sharing": {
+          "value": 0.85,
+          "confidence": "high",
+          "rationale": "Voluminous writings; journal Harijan"
+        },
+        "tradition_vs_progress": {
+          "value": 0.5,
+          "confidence": "medium",
+          "rationale": "Traditionalist on village life, progressive on caste and gender"
+        },
+        "individualism": {
+          "value": 0.4,
+          "confidence": "medium",
+          "rationale": "Personal conviction within collective liberation framework"
+        },
+        "spirituality": {
+          "value": 0.98,
+          "confidence": "high",
+          "rationale": "Hindu-Jain-Christian synthesis; prayer discipline core identity"
+        }
+      }
+    },
+    "theodore_roosevelt": {
+      "name": "Theodore Roosevelt",
+      "birth": {
+        "local_iso": "1858-10-27T19:45:00",
+        "timezone": "America/New_York",
+        "latitude": 40.7369,
+        "longitude": -73.9925,
+        "birth_time_confidence": "aa",
+        "astro_databank_rating": "AA"
+      },
+      "era": "historical",
+      "occupation": "politics",
+      "sources": [
+        "Edmund Morris, The Rise of Theodore Roosevelt (1979)",
+        "Theodore Rex (2001)",
+        "Colonel Roosevelt (2010)"
+      ],
+      "notes": "Substituted for Napoleon Bonaparte (1769): Swiss Ephemeris asteroid file seas_12.se1 (covering 1200-1800 CE) is not installed in this environment, only seas_18.se1 (1800+ CE). Roosevelt preserves Napoleon's archetypal commander/dominant/risk-taker signature in a computable era.",
+      "expected_traits": {
+        "openness": {
+          "value": 0.8,
+          "confidence": "high",
+          "rationale": "Prolific author (30+ books); naturalist, historian, explorer"
+        },
+        "conscientiousness": {
+          "value": 0.85,
+          "confidence": "high",
+          "rationale": "Exhaustive work ethic; self-overcame childhood asthma via discipline"
+        },
+        "extraversion": {
+          "value": 0.95,
+          "confidence": "high",
+          "rationale": "Bully pulpit defined; boundless social energy across domains"
+        },
+        "agreeableness": {
+          "value": 0.5,
+          "confidence": "medium",
+          "rationale": "Warm in friendships; pugnacious with opponents"
+        },
+        "neuroticism": {
+          "value": 0.45,
+          "confidence": "medium",
+          "rationale": "Composed in crises; manic energy patterns documented"
+        },
+        "risk_appetite": {
+          "value": 0.95,
+          "confidence": "high",
+          "rationale": "Rough Rider charge; Amazon expedition; third-party Bull Moose run"
+        },
+        "analytical_depth": {
+          "value": 0.75,
+          "confidence": "high",
+          "rationale": "Harvard-trained; naturalist publications; historical scholarship"
+        },
+        "impulsivity": {
+          "value": 0.65,
+          "confidence": "medium",
+          "rationale": "Rapid decisions (Cuba, Panama Canal intervention)"
+        },
+        "patience": {
+          "value": 0.45,
+          "confidence": "medium",
+          "rationale": "Impatient with process; persistent in long campaigns"
+        },
+        "social_dominance": {
+          "value": 0.95,
+          "confidence": "high",
+          "rationale": "Archetypal alpha of the Progressive Era"
+        },
+        "herd_susceptibility": {
+          "value": 0.15,
+          "confidence": "high",
+          "rationale": "Broke with Republican establishment for Bull Moose"
+        },
+        "authority_compliance": {
+          "value": 0.25,
+          "confidence": "high",
+          "rationale": "Trust-buster; defied party bosses and business elite"
+        },
+        "contrarian_tendency": {
+          "value": 0.75,
+          "confidence": "high",
+          "rationale": "Progressive Republican — minority position in his party"
+        },
+        "empathy": {
+          "value": 0.55,
+          "confidence": "medium",
+          "rationale": "Conservation empathy; paternalistic social policy"
+        },
+        "financial_optimism": {
+          "value": 0.75,
+          "confidence": "medium",
+          "rationale": "Confident builder — Panama, national parks, navy"
+        },
+        "loss_aversion": {
+          "value": 0.25,
+          "confidence": "high",
+          "rationale": "Split Republican party knowing it would lose presidency"
+        },
+        "fomo_susceptibility": {
+          "value": 0.35,
+          "confidence": "low",
+          "rationale": "Set agendas; limited by fashion-following"
+        },
+        "communication_assertiveness": {
+          "value": 0.95,
+          "confidence": "high",
+          "rationale": "Bully pulpit — invented the modern presidential platform"
+        },
+        "persuasion_skill": {
+          "value": 0.9,
+          "confidence": "high",
+          "rationale": "Mobilized public opinion on conservation, trusts, foreign policy"
+        },
+        "information_sharing": {
+          "value": 0.85,
+          "confidence": "high",
+          "rationale": "Prolific author, correspondent, public communicator"
+        },
+        "tradition_vs_progress": {
+          "value": 0.75,
+          "confidence": "high",
+          "rationale": "Progressive Era leader on regulation, conservation, labor"
+        },
+        "individualism": {
+          "value": 0.85,
+          "confidence": "high",
+          "rationale": "Self-reliance ethos, strenuous-life philosophy"
+        },
+        "spirituality": {
+          "value": 0.55,
+          "confidence": "medium",
+          "rationale": "Reformed Dutch Protestant practice; not mystical"
+        }
+      }
+    },
+    "marilyn_monroe": {
+      "name": "Marilyn Monroe",
+      "birth": {
+        "local_iso": "1926-06-01T09:30:00",
+        "timezone": "America/Los_Angeles",
+        "latitude": 34.0522,
+        "longitude": -118.2437,
+        "birth_time_confidence": "aa",
+        "astro_databank_rating": "AA"
+      },
+      "era": "historical",
+      "occupation": "art",
+      "sources": [
+        "Donald Spoto, Marilyn Monroe: The Biography (1993)",
+        "Fragments (2010) — Monroe's writings"
+      ],
+      "expected_traits": {
+        "openness": {
+          "value": 0.75,
+          "confidence": "medium",
+          "rationale": "Method Acting studies; literature and philosophy interests"
+        },
+        "conscientiousness": {
+          "value": 0.4,
+          "confidence": "medium",
+          "rationale": "Late on sets, substance issues; earnest in preparation"
+        },
+        "extraversion": {
+          "value": 0.7,
+          "confidence": "medium",
+          "rationale": "On-camera warmth; private introversion and shyness"
+        },
+        "agreeableness": {
+          "value": 0.7,
+          "confidence": "medium",
+          "rationale": "Kind to crew and fans; vulnerable in personal relationships"
+        },
+        "neuroticism": {
+          "value": 0.9,
+          "confidence": "high",
+          "rationale": "Documented anxiety, depression, addiction, insomnia"
+        },
+        "risk_appetite": {
+          "value": 0.7,
+          "confidence": "medium",
+          "rationale": "Left studio for NYC; formed own production company"
+        },
+        "analytical_depth": {
+          "value": 0.45,
+          "confidence": "low",
+          "rationale": "Emotional intelligence more than analytical per biographers"
+        },
+        "impulsivity": {
+          "value": 0.75,
+          "confidence": "high",
+          "rationale": "Impulsive relationships, publicly disclosed in memoirs"
+        },
+        "patience": {
+          "value": 0.3,
+          "confidence": "medium",
+          "rationale": "Impatient with typecasting; quick to change direction"
+        },
+        "social_dominance": {
+          "value": 0.55,
+          "confidence": "medium",
+          "rationale": "Sex-symbol cultural dominance; personally vulnerable"
+        },
+        "herd_susceptibility": {
+          "value": 0.6,
+          "confidence": "medium",
+          "rationale": "Shaped by Hollywood system; tried to break free late"
+        },
+        "authority_compliance": {
+          "value": 0.45,
+          "confidence": "medium",
+          "rationale": "Studio clashes; unconventional for 1950s"
+        },
+        "contrarian_tendency": {
+          "value": 0.5,
+          "confidence": "low",
+          "rationale": "Mixed — conformed then rebelled"
+        },
+        "empathy": {
+          "value": 0.8,
+          "confidence": "high",
+          "rationale": "Supported civil rights (Ella Fitzgerald anecdote), orphans"
+        },
+        "financial_optimism": {
+          "value": 0.55,
+          "confidence": "low",
+          "rationale": "Mixed earnings sophistication"
+        },
+        "loss_aversion": {
+          "value": 0.5,
+          "confidence": "low",
+          "rationale": "Risky personal choices; attached to studio security"
+        },
+        "fomo_susceptibility": {
+          "value": 0.55,
+          "confidence": "low",
+          "rationale": "Hollywood cultural sensitivity mixed"
+        },
+        "communication_assertiveness": {
+          "value": 0.55,
+          "confidence": "medium",
+          "rationale": "On-screen charm; stammer and meekness off-screen"
+        },
+        "persuasion_skill": {
+          "value": 0.7,
+          "confidence": "medium",
+          "rationale": "Massive audience persuasion via screen presence"
+        },
+        "information_sharing": {
+          "value": 0.65,
+          "confidence": "medium",
+          "rationale": "Interview openness about upbringing, struggles"
+        },
+        "tradition_vs_progress": {
+          "value": 0.65,
+          "confidence": "medium",
+          "rationale": "Culturally transgressive in sexuality, feminism"
+        },
+        "individualism": {
+          "value": 0.65,
+          "confidence": "medium",
+          "rationale": "Renamed self; crafted persona"
+        },
+        "spirituality": {
+          "value": 0.5,
+          "confidence": "low",
+          "rationale": "Some Christian Science exposure, Jewish conversion for marriage"
+        }
+      }
+    },
+    "thomas_edison": {
+      "name": "Thomas Edison",
+      "birth": {
+        "local_iso": "1847-02-11T03:00:00",
+        "timezone": "America/New_York",
+        "latitude": 41.2964,
+        "longitude": -82.6066,
+        "birth_time_confidence": "aa",
+        "astro_databank_rating": "AA"
+      },
+      "era": "historical",
+      "occupation": "science",
+      "sources": [
+        "Edmund Morris, Edison (2019)",
+        "Randall Stross, The Wizard of Menlo Park (2007)"
+      ],
+      "notes": "Substituted for Leonardo da Vinci (1452): Swiss Ephemeris asteroid file seas_12.se1 (1200-1800 CE) not installed. Edison preserves Leonardo's archetypal polymath-inventor signature in a computable era.",
+      "expected_traits": {
+        "openness": {
+          "value": 0.85,
+          "confidence": "high",
+          "rationale": "1,093 patents spanning sound, light, motion, industrial chemistry"
+        },
+        "conscientiousness": {
+          "value": 0.9,
+          "confidence": "high",
+          "rationale": "Obsessive laboratory hours; '1% inspiration, 99% perspiration' ethos"
+        },
+        "extraversion": {
+          "value": 0.55,
+          "confidence": "medium",
+          "rationale": "Press-savvy public figure; private, workaholic personality"
+        },
+        "agreeableness": {
+          "value": 0.35,
+          "confidence": "medium",
+          "rationale": "Rivalry with Tesla/Westinghouse; brutal with competitors (AC electrocution campaign)"
+        },
+        "neuroticism": {
+          "value": 0.4,
+          "confidence": "medium",
+          "rationale": "Steady workaholic; few depressive records"
+        },
+        "risk_appetite": {
+          "value": 0.75,
+          "confidence": "high",
+          "rationale": "Bet fortunes on light bulb, motion pictures, mining ventures"
+        },
+        "analytical_depth": {
+          "value": 0.8,
+          "confidence": "high",
+          "rationale": "Systematic invention methodology; material science depth"
+        },
+        "impulsivity": {
+          "value": 0.35,
+          "confidence": "medium",
+          "rationale": "Iterative experimentation over impulsive decisions"
+        },
+        "patience": {
+          "value": 0.85,
+          "confidence": "high",
+          "rationale": "Thousands of filament experiments for incandescent bulb"
+        },
+        "social_dominance": {
+          "value": 0.8,
+          "confidence": "high",
+          "rationale": "Dominant industrial figure of his era; Menlo Park stage-management"
+        },
+        "herd_susceptibility": {
+          "value": 0.2,
+          "confidence": "high",
+          "rationale": "Pursued DC against eventual AC consensus; persistent on failed ventures"
+        },
+        "authority_compliance": {
+          "value": 0.55,
+          "confidence": "medium",
+          "rationale": "Worked within capitalism successfully; own empire-builder"
+        },
+        "contrarian_tendency": {
+          "value": 0.65,
+          "confidence": "medium",
+          "rationale": "Defended DC, opposed abstract theory vs empiricism"
+        },
+        "empathy": {
+          "value": 0.3,
+          "confidence": "medium",
+          "rationale": "Ruthless in business rivalries; devoted to family"
+        },
+        "financial_optimism": {
+          "value": 0.85,
+          "confidence": "high",
+          "rationale": "Serial commercial venturer; confident capital deployment"
+        },
+        "loss_aversion": {
+          "value": 0.35,
+          "confidence": "medium",
+          "rationale": "Willing to lose on ventures (ore milling disaster)"
+        },
+        "fomo_susceptibility": {
+          "value": 0.3,
+          "confidence": "low",
+          "rationale": "Set technological agendas; less driven by fashion"
+        },
+        "communication_assertiveness": {
+          "value": 0.75,
+          "confidence": "high",
+          "rationale": "Press engagement, public demonstrations, direct style"
+        },
+        "persuasion_skill": {
+          "value": 0.8,
+          "confidence": "high",
+          "rationale": "Mobilized investor capital; shaped public on DC vs AC war"
+        },
+        "information_sharing": {
+          "value": 0.7,
+          "confidence": "medium",
+          "rationale": "Patents openly filed; selective about internal lab methods"
+        },
+        "tradition_vs_progress": {
+          "value": 0.9,
+          "confidence": "high",
+          "rationale": "Defining industrial modernizer"
+        },
+        "individualism": {
+          "value": 0.9,
+          "confidence": "high",
+          "rationale": "Self-made inventor-industrialist archetype"
+        },
+        "spirituality": {
+          "value": 0.25,
+          "confidence": "medium",
+          "rationale": "Agnostic/deist; empiricist worldview"
+        }
+      }
+    },
+    "martin_luther_king_jr": {
+      "name": "Martin Luther King Jr",
+      "birth": {
+        "local_iso": "1929-01-15T12:00:00",
+        "timezone": "America/New_York",
+        "latitude": 33.749,
+        "longitude": -84.388,
+        "birth_time_confidence": "a",
+        "astro_databank_rating": "A"
+      },
+      "era": "historical",
+      "occupation": "activism",
+      "sources": [
+        "Taylor Branch, America in the King Years (trilogy 1988-2006)",
+        "King's sermons and letters"
+      ],
+      "expected_traits": {
+        "openness": {
+          "value": 0.8,
+          "confidence": "high",
+          "rationale": "Theological synthesis: Gandhi, Niebuhr, social gospel, personalism"
+        },
+        "conscientiousness": {
+          "value": 0.85,
+          "confidence": "high",
+          "rationale": "Rigorous sermon preparation; SCLC organizational discipline"
+        },
+        "extraversion": {
+          "value": 0.75,
+          "confidence": "high",
+          "rationale": "Public oratory energizing; warm social presence"
+        },
+        "agreeableness": {
+          "value": 0.8,
+          "confidence": "high",
+          "rationale": "Beloved community ethos; collaborative with rivals"
+        },
+        "neuroticism": {
+          "value": 0.55,
+          "confidence": "medium",
+          "rationale": "Depression and doubt documented; composed publicly"
+        },
+        "risk_appetite": {
+          "value": 0.9,
+          "confidence": "high",
+          "rationale": "Repeatedly faced physical danger, death threats"
+        },
+        "analytical_depth": {
+          "value": 0.8,
+          "confidence": "high",
+          "rationale": "PhD Boston University; 'Letter from Birmingham Jail' reasoning"
+        },
+        "impulsivity": {
+          "value": 0.3,
+          "confidence": "medium",
+          "rationale": "Deliberate strategic campaigns"
+        },
+        "patience": {
+          "value": 0.75,
+          "confidence": "high",
+          "rationale": "Years-long movement organizing across multiple campaigns"
+        },
+        "social_dominance": {
+          "value": 0.75,
+          "confidence": "medium",
+          "rationale": "Moral leadership; not coercive dominance"
+        },
+        "herd_susceptibility": {
+          "value": 0.2,
+          "confidence": "high",
+          "rationale": "Refused to limit movement to approved issues"
+        },
+        "authority_compliance": {
+          "value": 0.25,
+          "confidence": "high",
+          "rationale": "Civil disobedience core methodology"
+        },
+        "contrarian_tendency": {
+          "value": 0.65,
+          "confidence": "medium",
+          "rationale": "Opposed both gradualists and militants; Vietnam stand against allies"
+        },
+        "empathy": {
+          "value": 0.9,
+          "confidence": "high",
+          "rationale": "Defining compassion-based leadership"
+        },
+        "financial_optimism": {
+          "value": 0.45,
+          "confidence": "low",
+          "rationale": "Modest personal resources"
+        },
+        "loss_aversion": {
+          "value": 0.15,
+          "confidence": "high",
+          "rationale": "Repeatedly risked life and family for principle"
+        },
+        "fomo_susceptibility": {
+          "value": 0.15,
+          "confidence": "medium",
+          "rationale": "Principle-driven rather than trend-driven"
+        },
+        "communication_assertiveness": {
+          "value": 0.95,
+          "confidence": "high",
+          "rationale": "'I Have a Dream' — iconic oratory"
+        },
+        "persuasion_skill": {
+          "value": 0.98,
+          "confidence": "high",
+          "rationale": "Moved national opinion; changed law"
+        },
+        "information_sharing": {
+          "value": 0.8,
+          "confidence": "high",
+          "rationale": "Books, sermons, press engagement"
+        },
+        "tradition_vs_progress": {
+          "value": 0.75,
+          "confidence": "high",
+          "rationale": "Religious traditionalist; civil rights progressive"
+        },
+        "individualism": {
+          "value": 0.35,
+          "confidence": "medium",
+          "rationale": "Community-centered; 'inescapable network of mutuality'"
+        },
+        "spirituality": {
+          "value": 0.95,
+          "confidence": "high",
+          "rationale": "Baptist minister; theology central to life"
+        }
+      }
+    },
+    "margaret_thatcher": {
+      "name": "Margaret Thatcher",
+      "birth": {
+        "local_iso": "1925-10-13T09:00:00",
+        "timezone": "Europe/London",
+        "latitude": 52.9125,
+        "longitude": -0.6389,
+        "birth_time_confidence": "aa",
+        "astro_databank_rating": "AA"
+      },
+      "era": "historical",
+      "occupation": "politics",
+      "sources": [
+        "Charles Moore, Margaret Thatcher: The Authorized Biography (three volumes)",
+        "Thatcher memoirs"
+      ],
+      "expected_traits": {
+        "openness": {
+          "value": 0.45,
+          "confidence": "medium",
+          "rationale": "Economic doctrine openness; cultural traditionalism"
+        },
+        "conscientiousness": {
+          "value": 0.95,
+          "confidence": "high",
+          "rationale": "4-hours-sleep work ethic; obsessive briefing mastery"
+        },
+        "extraversion": {
+          "value": 0.65,
+          "confidence": "medium",
+          "rationale": "Commanding at podium; private and formal socially"
+        },
+        "agreeableness": {
+          "value": 0.2,
+          "confidence": "high",
+          "rationale": "'The lady's not for turning' — famously combative"
+        },
+        "neuroticism": {
+          "value": 0.45,
+          "confidence": "medium",
+          "rationale": "Composed publicly; stress reportedly intense privately"
+        },
+        "risk_appetite": {
+          "value": 0.8,
+          "confidence": "high",
+          "rationale": "Falklands war; poll tax gamble; miners' strike confrontation"
+        },
+        "analytical_depth": {
+          "value": 0.8,
+          "confidence": "high",
+          "rationale": "Chemistry + law background; briefed to granular detail"
+        },
+        "impulsivity": {
+          "value": 0.35,
+          "confidence": "medium",
+          "rationale": "Conviction-driven but deliberate"
+        },
+        "patience": {
+          "value": 0.45,
+          "confidence": "medium",
+          "rationale": "Persistent on policy, impatient with dissent"
+        },
+        "social_dominance": {
+          "value": 0.95,
+          "confidence": "high",
+          "rationale": "Iron Lady — quintessential dominant leader"
+        },
+        "herd_susceptibility": {
+          "value": 0.05,
+          "confidence": "high",
+          "rationale": "Explicitly anti-consensus politics"
+        },
+        "authority_compliance": {
+          "value": 0.55,
+          "confidence": "medium",
+          "rationale": "Respected hierarchy when it suited; dominated it otherwise"
+        },
+        "contrarian_tendency": {
+          "value": 0.85,
+          "confidence": "high",
+          "rationale": "Against post-war consensus; Europe; unions"
+        },
+        "empathy": {
+          "value": 0.2,
+          "confidence": "high",
+          "rationale": "'No such thing as society'; limited warmth in policy"
+        },
+        "financial_optimism": {
+          "value": 0.7,
+          "confidence": "medium",
+          "rationale": "Privatization confidence; free-market faith"
+        },
+        "loss_aversion": {
+          "value": 0.4,
+          "confidence": "medium",
+          "rationale": "Took major political risks; held firm in crises"
+        },
+        "fomo_susceptibility": {
+          "value": 0.15,
+          "confidence": "high",
+          "rationale": "Principle over popularity throughout career"
+        },
+        "communication_assertiveness": {
+          "value": 0.95,
+          "confidence": "high",
+          "rationale": "Prime Minister's Questions mastery; direct speech"
+        },
+        "persuasion_skill": {
+          "value": 0.85,
+          "confidence": "high",
+          "rationale": "Reshaped British political consensus for a generation"
+        },
+        "information_sharing": {
+          "value": 0.55,
+          "confidence": "medium",
+          "rationale": "Public and direct; cabinet tightly held"
+        },
+        "tradition_vs_progress": {
+          "value": 0.35,
+          "confidence": "high",
+          "rationale": "Socially/culturally traditionalist; economically neoliberal"
+        },
+        "individualism": {
+          "value": 0.95,
+          "confidence": "high",
+          "rationale": "Defining individualist ideology; 'set the people free'"
+        },
+        "spirituality": {
+          "value": 0.55,
+          "confidence": "medium",
+          "rationale": "Methodist upbringing; morally framed but not devotional publicly"
+        }
+      }
+    },
+    "freddie_mercury": {
+      "name": "Freddie Mercury",
+      "birth": {
+        "local_iso": "1946-09-05T05:46:00",
+        "timezone": "Africa/Dar_es_Salaam",
+        "latitude": -6.1659,
+        "longitude": 39.2026,
+        "birth_time_confidence": "aa",
+        "astro_databank_rating": "AA"
+      },
+      "era": "historical",
+      "occupation": "art",
+      "sources": [
+        "Lesley-Ann Jones, Freddie Mercury: The Definitive Biography (2011)",
+        "Queen bandmate interviews"
+      ],
+      "expected_traits": {
+        "openness": {
+          "value": 0.9,
+          "confidence": "high",
+          "rationale": "Genre-spanning compositions: rock, opera, funk, disco"
+        },
+        "conscientiousness": {
+          "value": 0.7,
+          "confidence": "medium",
+          "rationale": "Perfectionist studio work; chaotic personal life"
+        },
+        "extraversion": {
+          "value": 0.95,
+          "confidence": "high",
+          "rationale": "Stadium showmanship; Live Aid defining extraversion"
+        },
+        "agreeableness": {
+          "value": 0.65,
+          "confidence": "medium",
+          "rationale": "Loyal to inner circle; diva on demand"
+        },
+        "neuroticism": {
+          "value": 0.7,
+          "confidence": "medium",
+          "rationale": "Private loneliness under public flamboyance"
+        },
+        "risk_appetite": {
+          "value": 0.85,
+          "confidence": "high",
+          "rationale": "'Bohemian Rhapsody' released against label advice; hedonistic lifestyle"
+        },
+        "analytical_depth": {
+          "value": 0.55,
+          "confidence": "low",
+          "rationale": "Musical sophistication; less documented intellectual output"
+        },
+        "impulsivity": {
+          "value": 0.7,
+          "confidence": "medium",
+          "rationale": "Hedonistic spending and relationships"
+        },
+        "patience": {
+          "value": 0.45,
+          "confidence": "low",
+          "rationale": "Perfectionist in studio; impatient in daily life"
+        },
+        "social_dominance": {
+          "value": 0.9,
+          "confidence": "high",
+          "rationale": "Commanded 70,000+ audiences with minimal gestures"
+        },
+        "herd_susceptibility": {
+          "value": 0.3,
+          "confidence": "medium",
+          "rationale": "Defied rock conventions; somewhat shaped by fashion"
+        },
+        "authority_compliance": {
+          "value": 0.3,
+          "confidence": "medium",
+          "rationale": "Overrode label decisions repeatedly"
+        },
+        "contrarian_tendency": {
+          "value": 0.7,
+          "confidence": "medium",
+          "rationale": "Non-conformist persona; bisexual in era of stigma"
+        },
+        "empathy": {
+          "value": 0.65,
+          "confidence": "low",
+          "rationale": "Close bonds in circle; broader signals mixed"
+        },
+        "financial_optimism": {
+          "value": 0.8,
+          "confidence": "medium",
+          "rationale": "Lavish lifestyle; confident in earnings"
+        },
+        "loss_aversion": {
+          "value": 0.35,
+          "confidence": "medium",
+          "rationale": "High-risk artistic and lifestyle choices"
+        },
+        "fomo_susceptibility": {
+          "value": 0.45,
+          "confidence": "low",
+          "rationale": "Shaped rock culture; some fashion engagement"
+        },
+        "communication_assertiveness": {
+          "value": 0.95,
+          "confidence": "high",
+          "rationale": "Commanding stage voice; direct interview style"
+        },
+        "persuasion_skill": {
+          "value": 0.85,
+          "confidence": "high",
+          "rationale": "Moved masses emotionally in live performance"
+        },
+        "information_sharing": {
+          "value": 0.45,
+          "confidence": "medium",
+          "rationale": "Private about illness, sexuality until late"
+        },
+        "tradition_vs_progress": {
+          "value": 0.8,
+          "confidence": "high",
+          "rationale": "Gender/sexuality pioneer in mainstream rock"
+        },
+        "individualism": {
+          "value": 0.85,
+          "confidence": "high",
+          "rationale": "Singular self-invented stage persona"
+        },
+        "spirituality": {
+          "value": 0.45,
+          "confidence": "low",
+          "rationale": "Zoroastrian heritage; varied spiritual references"
+        }
+      }
+    },
+    "mother_teresa": {
+      "name": "Mother Teresa",
+      "birth": {
+        "local_iso": "1910-08-26T14:25:00",
+        "timezone": "Europe/Belgrade",
+        "latitude": 41.9973,
+        "longitude": 21.428,
+        "birth_time_confidence": "aa",
+        "astro_databank_rating": "AA"
+      },
+      "era": "historical",
+      "occupation": "activism",
+      "sources": [
+        "Navin Chawla, Mother Teresa: The Authorized Biography (1992)",
+        "Come Be My Light (2007) — published letters"
+      ],
+      "expected_traits": {
+        "openness": {
+          "value": 0.5,
+          "confidence": "medium",
+          "rationale": "Doctrinally conservative; missionary creativity"
+        },
+        "conscientiousness": {
+          "value": 0.9,
+          "confidence": "high",
+          "rationale": "Ascetic work discipline; Missionaries of Charity organization"
+        },
+        "extraversion": {
+          "value": 0.4,
+          "confidence": "medium",
+          "rationale": "Private and humble personality, public-facing vocation"
+        },
+        "agreeableness": {
+          "value": 0.75,
+          "confidence": "medium",
+          "rationale": "Loving public image; strict with novices internally"
+        },
+        "neuroticism": {
+          "value": 0.6,
+          "confidence": "medium",
+          "rationale": "Decades of 'dark night of the soul' documented in letters"
+        },
+        "risk_appetite": {
+          "value": 0.65,
+          "confidence": "medium",
+          "rationale": "Left convent for slums; expanded mission against diocesan caution"
+        },
+        "analytical_depth": {
+          "value": 0.4,
+          "confidence": "low",
+          "rationale": "Intuitive/spiritual rather than analytical per letters"
+        },
+        "impulsivity": {
+          "value": 0.2,
+          "confidence": "medium",
+          "rationale": "Rule-bound religious obedience"
+        },
+        "patience": {
+          "value": 0.95,
+          "confidence": "high",
+          "rationale": "Decades of slum service; enduring spiritual dryness"
+        },
+        "social_dominance": {
+          "value": 0.55,
+          "confidence": "medium",
+          "rationale": "Moral weight without coercive dominance"
+        },
+        "herd_susceptibility": {
+          "value": 0.2,
+          "confidence": "medium",
+          "rationale": "Did not follow secular fashion or even Church pop-trends"
+        },
+        "authority_compliance": {
+          "value": 0.85,
+          "confidence": "high",
+          "rationale": "Devoted to Catholic hierarchy; papal loyalty"
+        },
+        "contrarian_tendency": {
+          "value": 0.35,
+          "confidence": "medium",
+          "rationale": "Against abortion consensus, conservative positions in progressive spaces"
+        },
+        "empathy": {
+          "value": 0.95,
+          "confidence": "high",
+          "rationale": "Defining public trait — compassion for dying/poor"
+        },
+        "financial_optimism": {
+          "value": 0.6,
+          "confidence": "low",
+          "rationale": "Fundraising success; personal renunciation"
+        },
+        "loss_aversion": {
+          "value": 0.2,
+          "confidence": "high",
+          "rationale": "Renounced worldly goods by vow"
+        },
+        "fomo_susceptibility": {
+          "value": 0.1,
+          "confidence": "high",
+          "rationale": "Indifferent to secular trends"
+        },
+        "communication_assertiveness": {
+          "value": 0.6,
+          "confidence": "medium",
+          "rationale": "Quiet public voice; Nobel speech assertive on abortion"
+        },
+        "persuasion_skill": {
+          "value": 0.75,
+          "confidence": "medium",
+          "rationale": "Mobilized global donations and order expansion"
+        },
+        "information_sharing": {
+          "value": 0.45,
+          "confidence": "medium",
+          "rationale": "Guarded about inner spiritual crisis until posthumous letters"
+        },
+        "tradition_vs_progress": {
+          "value": 0.25,
+          "confidence": "high",
+          "rationale": "Catholic traditionalist on doctrine"
+        },
+        "individualism": {
+          "value": 0.25,
+          "confidence": "medium",
+          "rationale": "Collectivist religious identity"
+        },
+        "spirituality": {
+          "value": 0.98,
+          "confidence": "high",
+          "rationale": "Defining life characteristic"
+        }
+      }
+    },
+    "warren_buffett": {
+      "name": "Warren Buffett",
+      "birth": {
+        "local_iso": "1930-08-30T15:00:00",
+        "timezone": "America/Chicago",
+        "latitude": 41.2565,
+        "longitude": -95.9345,
+        "birth_time_confidence": "aa",
+        "astro_databank_rating": "AA"
+      },
+      "era": "modern",
+      "occupation": "business",
+      "sources": [
+        "Alice Schroeder, The Snowball: Warren Buffett and the Business of Life (2008)",
+        "Berkshire annual letters"
+      ],
+      "expected_traits": {
+        "openness": {
+          "value": 0.5,
+          "confidence": "medium",
+          "rationale": "Narrow investment domain but deep; limited consumer-tech adoption"
+        },
+        "conscientiousness": {
+          "value": 0.9,
+          "confidence": "high",
+          "rationale": "Disciplined reading/research routine for 70+ years"
+        },
+        "extraversion": {
+          "value": 0.6,
+          "confidence": "medium",
+          "rationale": "Annual meeting showman; daily life reportedly quiet"
+        },
+        "agreeableness": {
+          "value": 0.7,
+          "confidence": "medium",
+          "rationale": "Folksy warmth; tough in negotiations"
+        },
+        "neuroticism": {
+          "value": 0.25,
+          "confidence": "high",
+          "rationale": "Defining emotional equanimity through market cycles"
+        },
+        "risk_appetite": {
+          "value": 0.4,
+          "confidence": "high",
+          "rationale": "Risk-aware value investor — opposite of reckless"
+        },
+        "analytical_depth": {
+          "value": 0.95,
+          "confidence": "high",
+          "rationale": "Canonical example of investment analytical depth"
+        },
+        "impulsivity": {
+          "value": 0.1,
+          "confidence": "high",
+          "rationale": "Famous for patience over action"
+        },
+        "patience": {
+          "value": 0.98,
+          "confidence": "high",
+          "rationale": "Holding periods measured in decades"
+        },
+        "social_dominance": {
+          "value": 0.7,
+          "confidence": "medium",
+          "rationale": "Market influence; gentle personal style"
+        },
+        "herd_susceptibility": {
+          "value": 0.1,
+          "confidence": "high",
+          "rationale": "'Be fearful when others are greedy' — definitional anti-herd"
+        },
+        "authority_compliance": {
+          "value": 0.6,
+          "confidence": "medium",
+          "rationale": "Worked within market/regulatory systems"
+        },
+        "contrarian_tendency": {
+          "value": 0.85,
+          "confidence": "high",
+          "rationale": "Contrarian value investing methodology"
+        },
+        "empathy": {
+          "value": 0.65,
+          "confidence": "medium",
+          "rationale": "Philanthropy; Giving Pledge; warm with Munger and family"
+        },
+        "financial_optimism": {
+          "value": 0.75,
+          "confidence": "high",
+          "rationale": "Long-term bullish on America / compounding"
+        },
+        "loss_aversion": {
+          "value": 0.9,
+          "confidence": "high",
+          "rationale": "'Rule 1: Don't lose money' — defining heuristic"
+        },
+        "fomo_susceptibility": {
+          "value": 0.05,
+          "confidence": "high",
+          "rationale": "Avoided dot-com bubble, consistently avoided trends"
+        },
+        "communication_assertiveness": {
+          "value": 0.75,
+          "confidence": "high",
+          "rationale": "Clear direct communication in letters and interviews"
+        },
+        "persuasion_skill": {
+          "value": 0.85,
+          "confidence": "high",
+          "rationale": "Annual letter genre; shaped generations of investors"
+        },
+        "information_sharing": {
+          "value": 0.85,
+          "confidence": "high",
+          "rationale": "Transparent annual letters; educational mission"
+        },
+        "tradition_vs_progress": {
+          "value": 0.4,
+          "confidence": "medium",
+          "rationale": "Traditional value-investing philosophy"
+        },
+        "individualism": {
+          "value": 0.7,
+          "confidence": "medium",
+          "rationale": "Self-made narrative; American individualist ethos"
+        },
+        "spirituality": {
+          "value": 0.15,
+          "confidence": "high",
+          "rationale": "Agnostic/atheist public stance"
+        }
+      }
+    },
+    "nelson_mandela": {
+      "name": "Nelson Mandela",
+      "birth": {
+        "local_iso": "1918-07-18T14:54:00",
+        "timezone": "Africa/Johannesburg",
+        "latitude": -31.9141,
+        "longitude": 28.4997,
+        "birth_time_confidence": "aa",
+        "astro_databank_rating": "AA"
+      },
+      "era": "historical",
+      "occupation": "politics",
+      "sources": [
+        "Anthony Sampson, Mandela: The Authorised Biography (1999)",
+        "Long Walk to Freedom (1994)"
+      ],
+      "notes": "Substituted for Cleopatra (69 BC), whose date is outside Python datetime range (year >= 1 required). Keeps African geographic representation and adds high-empathy counterpoint to Thatcher.",
+      "expected_traits": {
+        "openness": {
+          "value": 0.7,
+          "confidence": "medium",
+          "rationale": "Embraced multi-ethnic reconciliation vision; wide reading in prison"
+        },
+        "conscientiousness": {
+          "value": 0.85,
+          "confidence": "high",
+          "rationale": "Prison discipline over 27 years; methodical legal training"
+        },
+        "extraversion": {
+          "value": 0.65,
+          "confidence": "medium",
+          "rationale": "Charismatic in speeches; dignified and reserved personally"
+        },
+        "agreeableness": {
+          "value": 0.8,
+          "confidence": "high",
+          "rationale": "Reconciliation with oppressors; warmth across lines"
+        },
+        "neuroticism": {
+          "value": 0.25,
+          "confidence": "high",
+          "rationale": "Legendary composure through imprisonment and transition"
+        },
+        "risk_appetite": {
+          "value": 0.85,
+          "confidence": "high",
+          "rationale": "Armed struggle decision; life risk at Rivonia trial"
+        },
+        "analytical_depth": {
+          "value": 0.8,
+          "confidence": "high",
+          "rationale": "Legal and strategic reasoning in writings"
+        },
+        "impulsivity": {
+          "value": 0.2,
+          "confidence": "high",
+          "rationale": "Deliberate patience over 27 prison years"
+        },
+        "patience": {
+          "value": 0.98,
+          "confidence": "high",
+          "rationale": "27-year imprisonment, multi-decade liberation struggle"
+        },
+        "social_dominance": {
+          "value": 0.85,
+          "confidence": "high",
+          "rationale": "Moral and political dominance of transition era"
+        },
+        "herd_susceptibility": {
+          "value": 0.2,
+          "confidence": "high",
+          "rationale": "Resisted both ANC militancy and white-liberal compromise at times"
+        },
+        "authority_compliance": {
+          "value": 0.2,
+          "confidence": "high",
+          "rationale": "Defied apartheid legal system throughout life"
+        },
+        "contrarian_tendency": {
+          "value": 0.7,
+          "confidence": "medium",
+          "rationale": "Rejected revenge when expected; rejected capitulation earlier"
+        },
+        "empathy": {
+          "value": 0.95,
+          "confidence": "high",
+          "rationale": "Defining reconciliation trait across biographers"
+        },
+        "financial_optimism": {
+          "value": 0.5,
+          "confidence": "low",
+          "rationale": "Modest personal finances; state-leader standards"
+        },
+        "loss_aversion": {
+          "value": 0.2,
+          "confidence": "high",
+          "rationale": "Gave up freedom and family for principle"
+        },
+        "fomo_susceptibility": {
+          "value": 0.15,
+          "confidence": "medium",
+          "rationale": "Principle-stable across decades"
+        },
+        "communication_assertiveness": {
+          "value": 0.8,
+          "confidence": "high",
+          "rationale": "Rivonia trial statement; inaugural speech"
+        },
+        "persuasion_skill": {
+          "value": 0.95,
+          "confidence": "high",
+          "rationale": "Reconciliation framework; shaped post-apartheid consensus"
+        },
+        "information_sharing": {
+          "value": 0.7,
+          "confidence": "medium",
+          "rationale": "Autobiography; public engagement"
+        },
+        "tradition_vs_progress": {
+          "value": 0.7,
+          "confidence": "medium",
+          "rationale": "Tribal-heritage respectful; democratic-progressive"
+        },
+        "individualism": {
+          "value": 0.45,
+          "confidence": "medium",
+          "rationale": "Ubuntu philosophy — strongly collectivist"
+        },
+        "spirituality": {
+          "value": 0.6,
+          "confidence": "medium",
+          "rationale": "Methodist upbringing; private practice"
+        }
+      }
+    },
+    "napoleon_bonaparte": {
+      "name": "Napoleon Bonaparte",
+      "birth": {
+        "local_iso": "1769-08-15T09:52:00",
+        "timezone": "Europe/Paris",
+        "latitude": 41.9194,
+        "longitude": 8.7386,
+        "birth_time_confidence": "aa",
+        "astro_databank_rating": "AA"
+      },
+      "era": "historical",
+      "occupation": "politics",
+      "sources": [
+        "Andrew Roberts, Napoleon: A Life (2014)",
+        "Napoleon's own correspondence (Correspondance generale)",
+        "Adam Zamoyski, Napoleon: A Life (2018)"
+      ],
+      "expected_traits": {
+        "openness": {
+          "value": 0.8,
+          "confidence": "high",
+          "rationale": "Modernizer; Napoleonic Code, metric system advocacy, military innovation"
+        },
+        "conscientiousness": {
+          "value": 0.9,
+          "confidence": "high",
+          "rationale": "Relentless work ethic; detailed campaign planning; prolific correspondence"
+        },
+        "extraversion": {
+          "value": 0.7,
+          "confidence": "medium",
+          "rationale": "Commanding battlefield presence and public speeches; also described as brooding in private"
+        },
+        "agreeableness": {
+          "value": 0.25,
+          "confidence": "high",
+          "rationale": "Betrayed allies, abandoned armies in Egypt and Russia, ruthless with political rivals"
+        },
+        "neuroticism": {
+          "value": 0.55,
+          "confidence": "medium",
+          "rationale": "Documented mood volatility during Russian and Waterloo campaigns"
+        },
+        "risk_appetite": {
+          "value": 0.95,
+          "confidence": "high",
+          "rationale": "Invaded Russia; Hundred Days return from Elba; bet everything repeatedly"
+        },
+        "analytical_depth": {
+          "value": 0.85,
+          "confidence": "high",
+          "rationale": "Strategic genius; read military history voraciously; drafted legal code"
+        },
+        "impulsivity": {
+          "value": 0.5,
+          "confidence": "medium",
+          "rationale": "Meticulous planner but capable of sudden irrevocable decisions (Russia, Waterloo)"
+        },
+        "patience": {
+          "value": 0.35,
+          "confidence": "high",
+          "rationale": "Impatient for glory; forced premature campaigns; famous for rapid movement"
+        },
+        "social_dominance": {
+          "value": 0.95,
+          "confidence": "high",
+          "rationale": "Self-crowned Emperor; dictated terms to crowned heads of Europe"
+        },
+        "herd_susceptibility": {
+          "value": 0.15,
+          "confidence": "high",
+          "rationale": "Acted against consensus repeatedly (coup of 18 Brumaire, self-coronation)"
+        },
+        "authority_compliance": {
+          "value": 0.1,
+          "confidence": "high",
+          "rationale": "Overthrew the Directory; ignored Senate; defined his own legitimacy"
+        },
+        "contrarian_tendency": {
+          "value": 0.75,
+          "confidence": "high",
+          "rationale": "Fought successive coalitions; defied European royal order"
+        },
+        "empathy": {
+          "value": 0.25,
+          "confidence": "high",
+          "rationale": "Famously cold toward battlefield casualties; abandoned his armies twice"
+        },
+        "financial_optimism": {
+          "value": 0.7,
+          "confidence": "medium",
+          "rationale": "Confidence in conquest-funded treasury; Louisiana Purchase for quick cash"
+        },
+        "loss_aversion": {
+          "value": 0.15,
+          "confidence": "high",
+          "rationale": "Staked empire on single campaigns; chose risky escape from Elba"
+        },
+        "fomo_susceptibility": {
+          "value": 0.55,
+          "confidence": "medium",
+          "rationale": "Driven by need for historical glory; envious of Alexander and Caesar"
+        },
+        "communication_assertiveness": {
+          "value": 0.95,
+          "confidence": "high",
+          "rationale": "Iconic proclamations and addresses; direct command style"
+        },
+        "persuasion_skill": {
+          "value": 0.9,
+          "confidence": "high",
+          "rationale": "Rallied exhausted troops at Lodi and Arcola; charmed diplomats and soldiers"
+        },
+        "information_sharing": {
+          "value": 0.6,
+          "confidence": "medium",
+          "rationale": "Prolific writer/correspondent yet tightly controlled military intelligence"
+        },
+        "tradition_vs_progress": {
+          "value": 0.75,
+          "confidence": "high",
+          "rationale": "Modernizer of law, administration, education; metric and meritocratic reforms"
+        },
+        "individualism": {
+          "value": 0.95,
+          "confidence": "high",
+          "rationale": "'Impossible is not French'; cult of personal destiny"
+        },
+        "spirituality": {
+          "value": 0.35,
+          "confidence": "medium",
+          "rationale": "Pragmatic deist; Concordat with Rome was political, not devout"
+        }
+      }
+    },
+    "leonardo_da_vinci": {
+      "name": "Leonardo da Vinci",
+      "birth": {
+        "local_iso": "1452-04-15T21:40:00",
+        "timezone": "Europe/Rome",
+        "latitude": 43.7833,
+        "longitude": 10.9167,
+        "birth_time_confidence": "aa",
+        "astro_databank_rating": "AA"
+      },
+      "era": "historical",
+      "occupation": "science",
+      "sources": [
+        "Walter Isaacson, Leonardo da Vinci (2017)",
+        "Leonardo's own notebooks (Codex Atlanticus, Leicester)",
+        "Martin Kemp, Leonardo da Vinci: The Marvellous Works of Nature and Man (2006)"
+      ],
+      "expected_traits": {
+        "openness": {
+          "value": 0.98,
+          "confidence": "high",
+          "rationale": "Archetypal polymath; curiosity spanned painting, anatomy, engineering, botany, hydraulics"
+        },
+        "conscientiousness": {
+          "value": 0.3,
+          "confidence": "high",
+          "rationale": "Famously abandoned works (Adoration of the Magi, Battle of Anghiari); Mona Lisa unfinished for years"
+        },
+        "extraversion": {
+          "value": 0.55,
+          "confidence": "medium",
+          "rationale": "Charming at Sforza and French courts; but workshop solitary and reserved"
+        },
+        "agreeableness": {
+          "value": 0.7,
+          "confidence": "medium",
+          "rationale": "Described by contemporaries as gentle and generous with apprentices"
+        },
+        "neuroticism": {
+          "value": 0.4,
+          "confidence": "medium",
+          "rationale": "Some melancholic notebook reflections on time and mortality"
+        },
+        "risk_appetite": {
+          "value": 0.6,
+          "confidence": "medium",
+          "rationale": "Served rival patrons across Italy; pursued dangerous anatomical dissections"
+        },
+        "analytical_depth": {
+          "value": 0.98,
+          "confidence": "high",
+          "rationale": "Dissected 30+ corpses; invented scientific notation; reverse-engineered flight, hydraulics"
+        },
+        "impulsivity": {
+          "value": 0.45,
+          "confidence": "medium",
+          "rationale": "Jumped between projects; but often deliberative on individual experiments"
+        },
+        "patience": {
+          "value": 0.55,
+          "confidence": "medium",
+          "rationale": "Iterated obsessively on paintings yet abandoned many due to shifting interests"
+        },
+        "social_dominance": {
+          "value": 0.45,
+          "confidence": "medium",
+          "rationale": "Respected court artist; commanded his studio; not politically dominant"
+        },
+        "herd_susceptibility": {
+          "value": 0.15,
+          "confidence": "high",
+          "rationale": "Challenged Aristotelian received wisdom; direct empirical observation over authority"
+        },
+        "authority_compliance": {
+          "value": 0.4,
+          "confidence": "medium",
+          "rationale": "Served patrons but on his own terms and schedule"
+        },
+        "contrarian_tendency": {
+          "value": 0.8,
+          "confidence": "high",
+          "rationale": "Dissected corpses despite Church prohibition; wrote in mirror script; vegetarian in meat-eating age"
+        },
+        "empathy": {
+          "value": 0.75,
+          "confidence": "high",
+          "rationale": "Vegetarian on ethical grounds; bought caged birds to free them; anatomical studies with evident compassion"
+        },
+        "financial_optimism": {
+          "value": 0.55,
+          "confidence": "medium",
+          "rationale": "Courted wealthy patrons continuously; confident in securing commissions"
+        },
+        "loss_aversion": {
+          "value": 0.4,
+          "confidence": "medium",
+          "rationale": "Relatively stable patronage; but protected notebooks and unfinished works closely"
+        },
+        "fomo_susceptibility": {
+          "value": 0.25,
+          "confidence": "medium",
+          "rationale": "Internally driven by curiosity rather than contemporary status competition"
+        },
+        "communication_assertiveness": {
+          "value": 0.6,
+          "confidence": "medium",
+          "rationale": "Prolific in writing yet deliberately coded notebooks to obscure content"
+        },
+        "persuasion_skill": {
+          "value": 0.75,
+          "confidence": "high",
+          "rationale": "Secured patronage from Sforza, the French King, the Medici, Cesare Borgia successively"
+        },
+        "information_sharing": {
+          "value": 0.25,
+          "confidence": "high",
+          "rationale": "Mirror-script notebooks deliberately resistant to others; trade secrets protected"
+        },
+        "tradition_vs_progress": {
+          "value": 0.95,
+          "confidence": "high",
+          "rationale": "Epitome of progressive empirical thinking breaking from Scholastic tradition"
+        },
+        "individualism": {
+          "value": 0.9,
+          "confidence": "high",
+          "rationale": "Uniquely polymathic approach; refused guild and academy constraints"
+        },
+        "spirituality": {
+          "value": 0.5,
+          "confidence": "medium",
+          "rationale": "Religious commissions executed; notebook content heterodox and proto-deist"
+        }
+      }
+    }
+  }
+}

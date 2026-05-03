@@ -70,10 +70,36 @@ class TestDemographicAdapterBehavior:
         jp = a.build(_profile(country="JP"))
         assert us != jp
 
-    def test_political_spectrum_stays_neutral(self):
-        """Scope boundary: political_spectrum is excluded across the pipeline."""
+    def test_political_spectrum_varies_by_country(self):
+        """Sprint 11: political_spectrum is no longer hard-coded 0.5; it is
+        derived from Hofstede pdi+idv so different countries diverge."""
         a = DemographicAdapter()
-        tv = a.build(_profile())
-        # Must stay at 0.5 default — demographic adapter reuses compose_modifiers
-        # which derives from Hofstede/religion/region, none of which map here.
-        assert abs(tv.political_spectrum - 0.5) < 1e-9
+        us = a.build(_profile(country="US"))
+        jp = a.build(_profile(country="JP"))
+        cn = a.build(_profile(country="CN"))
+        dk = a.build(_profile(country="DK"))
+        # All four must produce distinct values.
+        values = {us.political_spectrum, jp.political_spectrum,
+                  cn.political_spectrum, dk.political_spectrum}
+        assert len(values) == 4
+
+    def test_political_spectrum_within_bounds(self):
+        """All 66 supported countries must keep political_spectrum in [0, 1]
+        and the spread must be wide enough to be meaningful (>0.20)."""
+        from realm.demographics.country_data import load_hofstede
+
+        a = DemographicAdapter()
+        spectrum_values: list[float] = []
+        for iso2 in load_hofstede():
+            tv = a.build(_profile(country=iso2))
+            assert 0.0 <= tv.political_spectrum <= 1.0
+            spectrum_values.append(tv.political_spectrum)
+        spread = max(spectrum_values) - min(spectrum_values)
+        assert spread >= 0.20, f"political_spectrum spread {spread:.3f} below 0.20"
+
+    def test_political_spectrum_deterministic(self):
+        """Same country + same call must yield identical political_spectrum."""
+        a = DemographicAdapter()
+        first = a.build(_profile(country="US")).political_spectrum
+        second = a.build(_profile(country="US")).political_spectrum
+        assert first == second

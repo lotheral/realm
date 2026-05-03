@@ -1,0 +1,53 @@
+# Sprint 17 WP3 — LLM-driven scenario analysis.
+#
+# Replaces the keyword-based `_perturbation_for_feed()` heuristic with
+# a semantic LLM read of the scenario_feed. The output is consumed by
+# `_make_perturbed_agent_builder()` to decide which traits to push and
+# what fraction of the agent population is swayed by the news.
+
+system: |
+  You analyze how a news event or scenario affects a swarm-simulation
+  prediction. The simulation will perturb a subset of agents' traits
+  using your output. Be precise about direction, magnitude, and which
+  traits respond.
+
+  Field rules:
+    - event_summary: 1 short sentence describing what happened.
+    - direction: one of "increases", "decreases", or "mixed".
+      • "increases" = the scenario makes the YES outcome more likely.
+      • "decreases" = the scenario makes the YES outcome less likely.
+      • "mixed" = the scenario has competing effects with no clear net.
+    - magnitude: one of "slight" (±3-7pp expected swing), "moderate"
+      (±8-15pp), "strong" (±16-25pp).
+    - trait_impacts: pick 3-6 trait names from the provided list.
+      Each value is a per-trait delta in [-0.15, +0.15] applied to the
+      affected agents' baseline trait values. Positive moves the trait
+      UP; negative moves DOWN. Use small magnitudes for slight events,
+      larger for strong events.
+    - affected_population_pct: float in [0.1, 0.95] — what fraction of
+      the population would actually update their position based on this
+      news? Major / clear events: 0.6-0.85. Niche or technical news:
+      0.2-0.4.
+    - reasoning: 1-2 sentences justifying the direction and trait_impacts.
+
+  Output STRICT JSON only — no commentary, no markdown fences:
+    {
+      "event_summary": "...",
+      "direction": "increases|decreases|mixed",
+      "magnitude": "slight|moderate|strong",
+      "trait_impacts": {"trait_name": 0.XX, ...},
+      "affected_population_pct": 0.XX,
+      "reasoning": "..."
+    }
+
+user: |
+  Prediction question: "$question"
+  Category: $category_id
+
+  Scenario / news to inject:
+  "$feed"
+
+  Available traits for trait_impacts (use exact names):
+  $trait_list
+
+  How does this scenario affect the prediction? Return JSON only.

@@ -45,6 +45,36 @@ def load_hofstede_global_mean() -> dict[str, int]:
 
 
 @lru_cache(maxsize=1)
+def load_vdem() -> dict[str, dict[str, float]]:
+    """Sprint 14 WP3 — V-Dem governance index loader.
+
+    Returns a dict ISO2 → {libdem, partipdem, polyarchy, eqdr} ∈ [0, 1].
+    See `data/external/vdem_scores.json` for provenance + curation notes.
+    """
+    raw = load_json("external/vdem_scores.json")
+    scores = raw.get("scores", {})
+    if not scores:
+        raise DataError("vdem_scores.json has no 'scores' dict")
+    return scores
+
+
+@lru_cache(maxsize=1)
+def load_vdem_global_mean() -> dict[str, float]:
+    raw = load_json("external/vdem_scores.json")
+    return raw.get("global_mean", {
+        "libdem": 0.5, "partipdem": 0.45, "polyarchy": 0.62, "eqdr": 0.58,
+    })
+
+
+def get_vdem(iso2: str) -> dict[str, float]:
+    """Return V-Dem scores. Falls back to global mean if country missing."""
+    scores = load_vdem()
+    if iso2 in scores:
+        return scores[iso2]
+    return load_vdem_global_mean()
+
+
+@lru_cache(maxsize=1)
 def load_professions() -> dict[str, Any]:
     return load_json("professions.json")
 

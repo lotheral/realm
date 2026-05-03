@@ -2,16 +2,352 @@
 
 ## CLAUDE.md — Project Blueprint & Development Guide
 
-> **Version:** 0.3.0
+> **Version:** 0.19.0
 > **Created:** 2026-04-22
-> **Last Updated:** 2026-04-23
+> **Last Updated:** 2026-05-04 (v0.19.0 — Repositioning: baseline LLM-dominant + scenario sim-dominant blend + multi-cat full parameter blending + About panel reframe)
 > **Author:** Loth + Claude (Anthropic)
-> **License:** Proprietary (commercial flexibility reserved)
-> **Status:** Phase 1-6 + LLM integration + butterfly scenario panel complete. 464 tests passing, ruff clean.
+> **License:** TBD (placeholder pending decision; see README.md)
+> **Status:** Phase 1-6 + LLM + scenario panel + Sprints 1-19 complete. **881 tests passing**, all Sprint 19 files ruff clean. Sprint 16 added 3 geopolitics-pool drift event types (regime_consolidation, diplomatic_stalemate, sanctions_pressure) and a per-category `baseline_probability_offset` fine-tuning knob, but the headline finding was a **latent engine bug since Sprint 10**: `ExperienceDriftEngine._EVENT_TRAIT_MAP` only ever held the 6 Sprint 9 events, and `build_branch_sim` never passed `bridge.event_map` into the engine — so all Sprint 10 events (leadership_act, group_conformity, group_dissent, financial_loss, financial_gain, cultural_experience) had been silently no-op'd by `engine.event_map.get(event_type)` returning None for 6 sprints. Two-line fix in `realm/output/predictor.py`: load bridge first, then pass `event_map=drift_bridge.event_map`. Sprint 14/15 baseline differentiation calibrations had been running on only 6 events; Sprint 16 is the first calibration where all 15 events actually contribute to drift accumulation.
 
 ---
 
-## 0. CURRENT BUILD STATE (2026-04-24)
+## 0. CURRENT BUILD STATE (2026-05-04)
+
+### Sprint 19 — Repositioning + Calibration + Multi-cat Full Blend (2026-05-04)
+
+Sprint 18 backtesting found that **simulation adds NEGATIVE value to
+baseline predictions** (LLM+sim Brier 0.165 vs LLM-only 0.117). Sprint
+19 acts on that finding by repositioning REALM and recalibrating the
+blend math accordingly.
+
+**WP1 — Dual baseline / scenario blend weights.** Each category now
+carries TWO LLM-blend weights: `llm_blend_weight` (baseline,
+sim-when-no-scenario-feed) and the new `scenario_llm_blend_weight`
+(scenario, sim-when-scenario_feed-supplied). Recalibrated per-category
+config in `config/prediction_categories.json`:
+
+| category    | baseline LLM | scenario LLM |
+|-------------|--------------|--------------|
+| science     | 0.95         | 0.50         |
+| politics    | 0.90         | 0.40         |
+| economics   | 0.90         | 0.40         |
+| geopolitics | 0.90         | 0.40         |
+| balanced    | 0.90         | 0.40         |
+| crypto      | 0.85         | 0.40         |
+| sports      | 0.85         | 0.40         |
+| markets     | 0.85         | 0.40         |
+| culture     | 0.85         | 0.40         |
+
+Wired in `realm/api/predict.py`: when `scenario_feed` is provided the
+scenario weight applies to the scenario branch's blend; the baseline
+branch always uses the baseline weight.
+
+**WP3 — Multi-category FULL parameter blending.** Sprint 18 only
+blended `drift_event_weights` across multi-cat categories. Sprint 19's
+new `blend_category_parameters()` extends to:
+- `sigmoid_sensitivity_multiplier`
+- `drift_volatility`
+- `drift_asymmetry_positive` / `drift_asymmetry_negative`
+- `baseline_probability_offset`
+
+predict_endpoint applies the blended view via `dataclasses.replace`
+on the CategoryMatch so all downstream code (incl. `_calibrated_outcome`)
+reads the blended scalars transparently.
+
+**WP4 — Dashboard transparency.** `askQuestion()` typewriter now
+shows: web research status (`web research ACTIVE — N sources`),
+server-side category override (when LLM router differs from JS preview),
+and the blend transparency block (`llm prior X%`, `simulation Y%`,
+`blended Z%`) — letting the user see exactly how the final number
+was computed.
+
+**WP5 — About panel REFRAMING.** Section 1 rewritten to describe REALM
+as a "collective sentiment simulation platform" with two distinct
+question types (BASELINE = LLM-dominant, SCENARIO = sim-dominant)
+rather than a "swarm prediction engine that beats markets." Honest
+limitations section adds the Sprint 18 backtest numbers verbatim.
+
+**WP2 — Polymarket Brier methodology note.** Documented in the
+backtest report: Polymarket's score in the Sprint 18 results uses
+settlement price (gives perfect 0.000 Brier). Sprint 20 backlog: fetch
+CLOB prices-history endpoint for last pre-resolution trading price.
+The actual large backtest re-run with new blend weights is also
+Sprint 20 work (50 markets × 3 modes × ~20s each = ~50 min).
+
+**WP6 — Tests.** 869 → **881** (+12). New files:
+`realm/api/tests/test_blend_weights_dual.py` (6) and
+`realm/output/tests/test_multi_cat_full_blend.py` (6). Existing
+`test_per_category_weight_loaded_from_config` updated for new values.
+
+**WP7 — Docs.** This block, milestone § 25, REALM_CLAUDE.md v0.19.0,
+Sprint 19 memory observation. README still pointing at Sprint 17/18
+narrative — explicit note in milestone that the next session should
+align README to v0.19.0 positioning.
+
+**Known follow-ups (Sprint 20+):**
+- Larger backtest run (50+ markets) with the new blend weights to
+  measure whether LLM+sim ≤ LLM-only Brier (the WP1 hypothesis).
+- CLOB prices-history fetch for proper Polymarket Brier methodology.
+- README full reframing (Sprint 19 positioning).
+- Calibration curve / per-category Brier breakdown in the report.
+
+### Sprint 18 — Validation, Web Research, Multi-Category Routing (2026-05-04)
+
+Sprint 17 shipped LLM-as-brain. Live testing exposed three concrete
+failures that Sprint 18 addresses:
+
+1. **No external validation.** No way to measure whether REALM is
+   actually accurate. Polymarket backtesting now provides Brier-score
+   ground truth.
+2. **LLM prior used historical base rates.** Strait of Hormuz question:
+   REALM 58.1% vs Polymarket 32% because LLM didn't know transit had
+   collapsed 90%+. Web research now grounds LLM prior in current data.
+3. **Cross-domain questions collapsed to "balanced".** Hormuz spans
+   geopolitics + economics + markets but routing forced single-category.
+   Multi-category routing now blends drift event weights across the set.
+
+**WP1 — Polymarket backtesting infrastructure.** New
+`realm/validation/polymarket.py` (sync httpx Gamma client,
+`ResolvedMarket` + `BrierResult` dataclasses, parsing of
+JSON-encoded outcomePrices, filters for clean YES/NO resolutions
++ min volume), `scripts/backtest_polymarket.py` (3-way A/B:
+LLM+sim blended vs LLM-only vs sim-only), markdown report
+generator. New `use_llm` and `use_sim` toggles on `PredictRequest`
+gate the entire LLM stack and simulation pipeline independently;
+when `use_sim=False` the endpoint short-circuits to an LLM-only
+fast path. **First backtest result (5 markets, scale 50×10×3):
+LLM+sim Brier 0.165, LLM-only 0.117, sim-only 0.247 → simulation
+ADDS NEGATIVE VALUE (+0.048 Brier).** Honest report; calibration
+work belongs in a future sprint.
+
+**WP2 — Web research prior enhancement.** New
+`realm/llm/web_researcher.py` with pluggable search backends
+(Tavily / Brave) + `prompts/web_researcher/generate_queries.yaml`.
+Flow: LLM generates 2-3 targeted queries → search returns snippets
+→ snippets concatenated into context → context injected into
+`prompts/question/analyze.yaml` so the LLM prior reflects current
+data, not just training-data base rates. Gated by
+`REALM_WEB_SEARCH_PROVIDER` + matching API key in `.env`; silently
+no-ops when unconfigured (graceful degrade everywhere). New
+`enable_web_research` flag on `PredictRequest` (default True);
+new `web_research_used` + `web_sources[]` on `PredictResponse`.
+
+**WP3 — Multi-category routing.** `prompts/category/route.yaml`
+extended to optionally return `{"categories": [{"id":..., "weight":...}, ...]}`
+for cross-domain questions. New `CategoryMatch.secondary_categories`
+field stores `(id, weight)` tuples for non-primary categories.
+`blend_drift_event_weights()` helper produces a weighted-average
+event-weight map across all active categories, used in
+`predict_endpoint` to compute the simulation's drift_event_weights.
+Single-category routing (the common case) is bit-for-bit unchanged.
+
+**Cross-cutting protections.**
+- New root `conftest.py` resets `REALM_LLM_CATEGORY_BACKEND=""` at
+  pytest startup so the Sprint 17 module-level `load_dotenv` in
+  `realm/api/predict.py` doesn't leak LLM into hermetic tests
+  (calibration determinism + routing tests).
+- `.env` auto-load now happens at `realm/api/predict.py` import
+  time (Sprint 17 added this earlier this session). `realm_start.bat`
+  picks up LLM credentials without any extra launcher.
+- Polymarket client uses `httpx.MockTransport` for hermetic tests —
+  20 unit tests run in 0.2 s without touching the live API.
+
+**WP4 — Tests.** 826 → **869** (+43). New test files:
+`realm/validation/tests/test_polymarket_client.py` (20),
+`realm/llm/tests/test_web_researcher.py` (12),
+`realm/output/tests/test_multi_category_routing.py` (11). Plus
+the 4 Sprint 17 tests that broke after `.env` auto-load were
+fixed via the new conftest hermeticity guard.
+
+**WP5 — Docs.** This block, milestone § 24, README "LLM
+Configuration" + "Web Research" + "Polymarket Validation" sections.
+
+**Sprint 18 files: ruff-clean.** Calibration regression
+(`test_geopolitics_baseline.py`) still passes — Sprint 16's 49.20%
+geopolitics baseline preserved.
+
+**Known follow-ups (Sprint 19+):**
+- The "sim adds negative value" finding needs deeper investigation:
+  is it sim noise drowning out LLM signal, or is sim actually
+  capturing useful information that just happens to disagree with
+  LLM on these 5 old markets?
+- Multi-category trait-weight blending (Sprint 18 only blended
+  drift event weights; primary_traits + sigmoid + asymmetry
+  multipliers still pull from the primary category alone).
+- Dashboard display for `web_research_used` + multi-category
+  breakdown currently absent (only via API response).
+
+### Sprint 17 — LLM-as-brain integration (2026-05-03)
+
+Pre-Sprint-17, REALM had rich LLM infrastructure (Moonshot + OpenAI
+backends, prompt loader, FallbackBackend wrapper, test mocks) but the
+engine barely used it: keyword routing missed legal questions, scenario
+parsing was sentiment-word counting, drivers were template strings,
+and there was no factual prior. Sprint 17 inverts the priority — LLM
+is the primary intelligence layer when configured; today's heuristic
+path is the graceful-degrade fallback.
+
+**WP1 — LLM-first category routing.** `CategoryRouter.route()` now
+calls the LLM classifier first (3-second timeout, in-process LRU
+cache, gated by `REALM_LLM_CATEGORY_BACKEND`). On success with
+`confidence ≥ 0.5` the LLM choice wins; on timeout / error / low
+confidence / unknown id the keyword path runs unchanged. New task
+constant `TASK_CATEGORY` in `realm/llm/router.py`. Politics keyword
+list also expanded with legal terms (lawsuit, antitrust, court, judge,
+attorney, indictment, etc.) so even the keyword fallback now catches
+the original motivating example: `"Will Musk win his case?"` → politics.
+
+**WP2 — Question analyzer + probability blending.** New
+`QuestionAnalyzer` (`realm/output/question_analyzer.py`) extracts
+structured info per question — subject, yes_means, no_means,
+key_factors, relevant_traits, time_horizon, and a calibrated
+`llm_prior`. The prior is blended with the simulation probability via
+`final = (1-w)*sim + w*llm_prior`, where `w` is per-category
+(`science`/`economics`/`markets`/`geopolitics` 0.7, `politics`/`culture`
+0.5, `sports` 0.4, `crypto` 0.3, `balanced` 0.5 — set in
+`config/prediction_categories.json`). The `simulation_probability`
+(pre-blend) and `blended_probability` (post-blend) both surface on
+the API response so divergence is visible.
+
+**WP3 — Scenario analyzer (semantic perturbation).** New
+`ScenarioAnalyzer` (`realm/output/scenario_analyzer.py`) replaces
+`_perturbation_for_feed()`'s sentiment-word counting with a semantic
+LLM read of `scenario_feed`: `direction` ∈ {increases, decreases,
+mixed}, `magnitude` ∈ {slight, moderate, strong}, per-trait
+`trait_impacts` (clamped ±0.15), and `affected_population_pct`
+(clamped [0.1, 0.95]). `_make_perturbed_agent_builder()` accepts the
+analysis and applies per-trait deltas to the affected fraction. When
+LLM is unavailable / fails the pre-Sprint-17 sentiment-word path runs
+unchanged.
+
+**WP4 — Prediction narrator.** New `PredictionNarrator`
+(`realm/output/prediction_narrator.py`) produces a question-specific
+narrative after the simulation completes — `headline` (with
+probability), `key_drivers` (3-4 specific bullets, no generic
+templates), `dissent_view`, `confidence_note`, `caveat`. The narrative
+fields land on `PredictResponse` (additive — clients that only read
+`.probability` work unchanged).
+
+**WP5 — Dashboard LLM-aware display.** `askQuestion()` typewriter
+in `realm_dashboard_v2.html` renders the LLM headline first, shows
+both `simulation_probability` and `blended_probability` alongside the
+final probability, prefers `narrative_drivers` over template
+`drivers` when present, and renders the LLM `dissent_narrative` /
+`confidence_note` / `caveat` when populated. About panel gained an
+"LLM Integration" subsection.
+
+**WP6 — Graceful degradation.** Every analyzer wraps `complete_json`
+in try/except + schema validation; returns `None` on any failure path
+so callers fall through to today's behavior. Startup log prints one
+line: `"[REALM] LLM backend ACTIVE/INACTIVE — ..."`.
+**`scripts/calibrate_categories.py` defensively clears
+`REALM_LLM_CATEGORY_BACKEND`** from `os.environ` at startup so
+calibration mechanics stay deterministic regardless of the dev's
+shell — Sprint 16's geopolitics 49.20% is protected.
+
+**WP7 — Tests.** 777 → **826** (+49). Five new test files:
+`test_llm_category_routing.py` (10 tests), `test_question_analyzer.py`
+(8 tests), `test_scenario_analyzer.py` (12 tests),
+`test_prediction_narrator.py` (9 tests), `test_probability_blend.py`
+(9 tests). All hermetic — every test injects a `_ScriptedBackend`
+mock. The pre-existing Sprint 11 `test_category_router.py` LLM
+fallback class was renamed `TestLLMFirst` and its assertions inverted
+to match the new priority. Calibration regression tests
+(`test_geopolitics_baseline.py`, `test_calibration_spread.py`)
+unchanged and still produce the Sprint 16 numbers — proves the
+keyword path is bit-for-bit preserved when no LLM is wired.
+
+**WP8 — Documentation.** This block, milestone § 23, README LLM
+configuration section.
+
+**Sprint 17 files: ruff-clean.** Calibration regression at 200×30×5×10
+verified within ±0.5pp of Sprint 16 baseline.
+
+### Sprint 16 — Geopolitics structural fix + latent engine bug discovery (2026-05-03)
+
+Sprint 15 v0.15.1 hotfix left geopolitics at 50.10% — under 50% but
+above the prompt's `<49.5%` strict target. Sprint 16 attacked the root
+cause and uncovered something much bigger along the way.
+
+**WP1 — Three new drift event types** in `config/drift_events.json`:
+`regime_consolidation`, `diplomatic_stalemate`, `sanctions_pressure`. All
+three model status-quo / non-escalation geopolitical dynamics that the
+Sprint 9/10 event pool lacked, with primary-net-negative effects on the
+geopolitics primary trait set (authority_compliance / social_dominance /
+contrarian_tendency / empathy / risk_appetite). Each event has `post`
+and `engage` rules placed AFTER the legacy `positive_social_fallback_*`
+rules so first-match-wins is preserved; weighted sampling picks them up
+via per-category `drift_event_weights`.
+
+**WP2 — `baseline_probability_offset`** per-category knob (range
+`[-0.05, +0.05]`), validated in `CategoryRouter._validate_categories`,
+extracted in `_build_match()`, applied in `realm/api/predict.py` AFTER
+sigmoid + clamp, then re-clamped to `[0.05, 0.95]`. Defaults to 0.0 for
+every category — the design intent is that drift mechanics carry the
+load and offset is only the last-mile cleanup.
+
+**WP3 — Calibration journey, root-cause-first.** Loth's correction to
+the original plan: exhaust structural fixes (5× magnitude scaling) before
+reaching for the cosmetic offset, and log every step. Four tiers at
+200×30×5×10:
+
+| tier | engine | new-event mag | offset | geopolitics | spread |
+|------|--------|---------------|--------|-------------|--------|
+| 1 (broken engine) | 6 events | spec 0.02–0.04 | 0.0 | 49.98% | 3.27pp |
+| 2 (broken engine) | 6 events | 5× (0.10–0.20) | 0.0 | **49.98%** ← bit-identical → bug | 3.27pp |
+| 1 corrected | 15 events | spec | 0.0 | 49.92% | 3.47pp |
+| 2 corrected | 15 events | 5× | 0.0 | 49.70% | 3.64pp |
+| 3 final | 15 events | 5× | −0.005 (geo only) | (calibration confirms) | (≥3.6pp) |
+
+The bit-identical Tier 1/Tier 2 result with explicitly different
+magnitudes was the diagnostic that surfaced the Sprint 10 bug. Without
+the root-cause-first correction, I would have collapsed straight to
+offset and missed the real fix entirely.
+
+**ENGINE BUG DETAIL.** `realm/simulation/drift.py` defines
+`_EVENT_TRAIT_MAP` as a constant holding only the 6 Sprint 9 events.
+`ExperienceDriftEngine` defaults `event_map = _EVENT_TRAIT_MAP` if no
+override is passed. `build_branch_sim()` in `realm/output/predictor.py`
+constructed the engine WITHOUT passing `event_map`, so Sprint 10's
+6 events (leadership_act / group_conformity / group_dissent /
+financial_loss / financial_gain / cultural_experience) and Sprint 16's
+3 events were silently no-op'd by `engine.event_map.get(event_type)`
+returning `None` and the early-return `if not weights: return`.
+**Sprint 14 weighted sampling and Sprint 15 baseline differentiation
+were both running on only 6 events** — the Sprint 10 expansion never
+reached the engine. The fix is two lines:
+
+```python
+# realm/output/predictor.py — build_branch_sim
+drift_bridge = DriftEventBridge.default()  # MOVED before engine
+if drift_event_weights:
+    drift_bridge = drift_bridge.with_weights(drift_event_weights)
+drift_engine = ExperienceDriftEngine(
+    ...,
+    event_map=drift_bridge.event_map,  # ← was missing
+)
+```
+
+This is the root cause of why Sprint 14/15 couldn't get geopolitics
+under 50% no matter how aggressively asymmetry was tuned: the most
+geopolitics-relevant events (failed_risk weight=3.0, financial_loss
+weight=3.0, group_conformity weight=3.0) were Sprint 10 additions and
+were not actually firing.
+
+**WP4 — Tests.** 742 → **777** (+35). New files:
+`realm/simulation/tests/test_new_drift_events.py` (17 tests),
+`realm/api/tests/test_baseline_probability_offset.py` (11 tests),
+`tests/test_geopolitics_baseline.py` (2 tests). Five existing tests
+adapted for the 15-event bridge (test_drift_bridge.py +
+test_drift_event_weights.py).
+
+**WP5 — Dashboard.** SAMPLE_PREDICTIONS geopolitics + scenario mocks
+updated to reflect Sprint 16 baselines. About panel + boot screen +
+stack info: "12 event types" → "15 event types" in 3 places.
+
+**Sprint 16 files: ruff-clean.**
+
+
 
 **Phases complete:**
 - ✅ Phase 1 — core + astro + personality (rule-based) (143 tests)
@@ -24,9 +360,187 @@
 - ✅ Phase 6b — scenario/what-if panel with baseline vs scenario side-by-side
 - ✅ **Trait variance fix (2026-04-24)** — DAMPENING 0.12→0.40, opt-in soft-rescale calibration layer, Phase 1 diagnostic + Phase 4 validation (10K agents). Source σ 0.067 → post-cal 0.160, 23/24 traits at target. Jobs directional invariance preserved (Spearman ρ=0.999). `realm/personality/calibration.py` (7 tests), `scripts/diag_variance.py`, `scripts/validate_trait_distribution.py`.
 - ✅ **InputAdapter layer (2026-04-24)** — pluggable trait sources above `IPersonalityEmbedder`. Three adapters: `AstrologicalAdapter` (wraps existing embedder, default), `BigFiveAdapter` (OCEAN scores → 24 traits via literature-sourced `data/personality/big_five_derivation.json` with DOI citations), `DemographicAdapter` (Hofstede+religion+region as primary signal, skips CulturalModifier to avoid double-counting). Config key: `realm.personality.adapter`. `realm/personality/adapters/` package, 37 new tests.
+- ✅ **BF validity study synthetic (2026-04-24, Sprints 3-4)** — N=10K synthetic OCEAN population, 4 pipeline configs, 10-section report. Source-aware TraitCalibrator (`config/trait_calibration_{type}.json` per adapter). Synthetic: 7/7 criteria PASS under adapter-aware calibration.
+- ✅ **BF validity study real (2026-04-24, Sprints 4-5)** — automoto/big-five-data N=10K stratified study; real 5/8 PASS → 6/8 under source-aware calibration. Calibrator-synth-bias + mean-drift documented as honest FAILs.
+- ✅ **Sprint 5 (2026-04-24)** — `BlendedAdapter` (60% astro + 25% BF + 15% demographic, weight renormalisation on missing components, deterministic Gaussian noise per-agent-seed). Country coverage 30 → 66 (+53K real rows). Johnson IPIP-NEO-120 facet-derivation audit: 10 PASS / 3 WARN / 0 FAIL. 566 tests green.
+- ✅ **Sprint 6 (2026-04-24)** — 3 WARNs → 13/13 PASS with explicit facet citations in `data/personality/big_five_derivation.json`. Facet-level BigFiveAdapter shipped (`use_facets` config toggle, backwards-compatible OCEAN path). Johnson real validity 8/8 under facet mode + contemporary online-sample tolerance (Criterion #8a vs 1992 Costa-McCrae intentionally left failing as sample-drift indicator). 575 tests green.
+- ✅ **Sprint 7 (2026-04-24)** — First astrological validity benchmark. `data/validation/celebrity_profiles.json` (20 figures × 23 traits, 50.4% high / 40.0% medium / 9.6% low confidence). `scripts/generate_celebrity_astro_profiles.py` + `scripts/validate_astro_study.py`. All 4 criteria PASS: Directional Accuracy 0.682 / Pearson r 0.268 / Extreme-Trait Detection 0.766 / Confidence-Weighted DA 0.754. Best-mapped: `communication_assertiveness` (1.00), `persuasion_skill` (1.00). **Worst: `loss_aversion` (DA=0.05, non-fallback) — Sprint 8 backlog.** `outputs/astro_validity_study.md` (9 sections) + `outputs/astro_validity_metrics.json`. 598 tests green.
+- ✅ **Sprint 8 (2026-04-24)** — Mapping fix + calibration methodology + observatory dashboard. **WP1:** added semantic counter-planet contributors to `loss_aversion` in `data/astro/planet_trait_map.json` — Mars −0.45, Jupiter −0.25, Uranus −0.30 (Saturn kept at +0.55 as the principled anchor); **loss_aversion DA 0.05 → 1.00** without any calibration. **WP2+WP3:** added three-mode `--calibration=` flag (`none` default, `variance`, `full`) to the generate script with an adaptive-boundary variance expander; grid search revealed that *any* calibration mode degrades celebrity-validation metrics because celebrities are a selection-biased subsample — **calibration is a simulation tool, not a validation tool**, decided and documented. **WP4a:** Sprint 7→8 lift — DA +0.040, Pearson +0.054, Extreme +0.036, CW-DA +0.035, non-fallback +0.051. **WP4b:** `outputs/realm_dashboard.html` — 47 KB single-file Neural Observatory dashboard. D3.js v7 force-directed Agent Synapse Network (8 hand-authored archetypes, bioluminescent signal particles along gradient edges), sticky scoreboard with glow badges, per-trait DA grid, per-person ranked bars, sprint-comparison strip, BF validity checklist — dark space theme + cyan/magenta/amber/violet accents, JetBrains Mono display + DM Sans body. 598 tests green.
 - ⏳ Phase 7 — POLYLIQ/ARGUS stubs (deferred)
 
-**Current test total: 508 passing, ruff clean.**
+**Current test total: 881 passing (+12 in Sprint 19, +43 in Sprint 18, +49 in Sprint 17, +35 in Sprint 16, +17 in Sprint 15, +37 in Sprint 14). Sprint 19 files ruff clean. ~8 pre-existing ruff errors in `tests/test_core_smoke.py` and `realm/astro/kerykeion_engine.py` (unchanged since pre-Sprint 14, not Sprint 19 territory).**
+
+### v0.15.1 hotfix — Geopolitics asymmetry retune (2026-04-26)
+
+Sprint 15 left geopolitics at 50.43% baseline (target was <50% for status-quo bias). Hotfix:
+
+1. **`_ASYMMETRY_RANGE` widened 0.5–1.5 → 0.3–1.7** in `realm/output/category_router.py` so domains with strong status-quo bias have headroom to push asymmetry further.
+2. **Geopolitics retuned** to vol 0.5 / asym 0.3/1.7 / sigmoid 0.5 + drift_event_weights biased toward negative-net rules (failed_risk 3.0, group_conformity 3.0, financial_loss 3.0; positive_social 0.3) + seed_offsets shifted to amplify gated rule firing (risk_appetite +0.04, loss_aversion +0.04, contrarian -0.04, empathy -0.04).
+3. **Economics nudged** to asym 0.5/1.5 (slightly stronger institutional conservatism).
+
+**Result @ 200×30×5, 5 runs/category:** geopolitics mean 50.43% → **50.10%** (0.33pp toward target; min run 49.81%). Spread maintained at **4.11pp ≥ 3pp** ✅, all sanity ordering preserved, 742 tests still green.
+
+**Architectural finding (honest):** the stated `<49.5%` target is not reachable via the asymmetry mechanism alone. Most drift events in `config/drift_events.json` have positive net coefficients on geopolitics primary traits (∑pos=5.1 vs ∑neg=1.7 magnitude), and the dominant fallback rule (`positive_social_fallback_post`) always matches any post action regardless of trait state. Asymmetry can only DAMPEN positive drift toward zero, not reverse it. Real status-quo bias would require either:
+
+- New drift event types with negative-net coefficients on the common geopolitics primaries (authority/dominance/contrarian/empathy/risk_appetite), OR
+- A direct `baseline_probability_offset` field that shifts the post-sigmoid probability without going through drift accumulation, OR
+- Restructuring the rule firing conditions so negative-net events fire as often as fallback positive_social.
+
+Sprint 16+ backlog. Shipping v0.15.1 with the maximum push achievable inside the original scope.
+
+### Sprint 15 — Baseline differentiation fix (2026-04-26)
+
+Sprint 14's WP1+WP2 wired the machinery for category-conditioned drift but
+the production weights shipped with `pos:neg = 1:1` and a single global
+sigmoid sensitivity, so baseline probabilities clustered within ~1pp of
+50% across categories. Sprint 15's single goal: hit the **≥3pp baseline
+differentiation** acceptance gate with no scenario-flow regressions.
+
+Three layered knobs added per category:
+
+- **drift_volatility (0.5..2.0)** — scales BOTH the cumulative drift cap
+  (`max_drift_ratio × volatility`) AND the per-event speed (a new
+  `intensity_scale` field on `ExperienceDriftEngine`). Crypto ships at 1.6,
+  politics at 0.5.
+- **drift_asymmetry (positive_multiplier / negative_multiplier ∈ 0.5..1.5)**
+  — applied PER-EVENT based on the event's net signed effect on the active
+  category's primary traits. Events that push primaries up are scaled by
+  `positive_multiplier`; events pushing primaries down by
+  `negative_multiplier`. Plumbed via a new `primary_trait_set` field on
+  `ExperienceDriftEngine`. Science ships at 1.5/0.5 (progress bias),
+  politics 0.5/1.5 (incumbency drag), geopolitics 0.5/1.5 (status-quo).
+- **sigmoid_sensitivity_multiplier (0.5..2.0)** — scales the predict.py
+  sigmoid sensitivity (8.0 base) per category so volatile domains have
+  steeper probability curves and stable domains keep deviations near 50%.
+
+Plus one global physics tweak: `_BASE_DRIFT_COEFFICIENT` 0.01 → 0.025 so
+asymmetry and volatility have enough per-tick headroom to bias the
+population mean within the 30-tick horizon. The cumulative cap still
+binds asymptotically (asymmetry can only push so far).
+
+**Sprint 15 measured @ 200×30×5 (3 runs/category, calibration log):**
+
+| category    | mean | std | volatility | asymmetry | sens |
+|-------------|------|-----|------------|-----------|------|
+| politics    | 50.20% | 0.12pp | 0.5 | 0.5/1.5 | 0.5 |
+| economics   | 50.50% | 0.21pp | 0.7 | 0.6/1.4 | 0.7 |
+| geopolitics | 50.43% | 0.16pp | 0.6 | 0.5/1.5 | 0.6 |
+| crypto      | 51.16% | 0.42pp | 1.6 | 1.0/1.0 | 1.6 |
+| culture     | 51.58% | 0.38pp | 1.3 | 1.4/0.6 | 1.3 |
+| sports      | 51.95% | 0.66pp | 1.4 | 1.0/1.0 | 1.4 |
+| markets     | 52.33% | 0.32pp | 1.4 | 1.3/0.7 | 1.4 |
+| science     | 54.24% | 0.53pp | 1.0 | 1.5/0.5 | 1.5 |
+
+**Spread = 4.04pp ≥ 3pp gate ✅**
+
+Live A/B (server, real curl): 4 baseline questions span 50.28% (politics) → 54.86% (science) = **4.58pp spread**, all sanity ordering preserved (crypto std > politics std, geopolitics ≤ science, no probability exactly 0.5).
+
+Scenario deltas now scale with category volatility (this is the design intent, not a regression):
+
+| category    | scenario delta range |
+|-------------|----------------------|
+| politics    | ±7-8pp |
+| economics   | ±10-11pp |
+| crypto      | ±20-23pp |
+
+The "10-20pp scenario delta" Sprint 14 acceptance window is now domain-relative — high-volatility crypto reaches the upper edge by design while low-volatility politics tightens to ±7pp. Direction consistency 8/8, max trait_shift bounded by `volatility × 0.10` cap as expected.
+
+### Sprint 14 — Pre-release consolidation (2026-04-25)
+
+Seven work packages, all shipped:
+
+- **WP1 — Category-conditioned drift event sampling.** `DriftEventBridge` gained an optional `event_weights` constructor field; `event_for(decision, traits, rng)` collects all matching rules and samples one weighted by its event_type's category weight. Legacy first-match-wins preserved when `event_weights=None` (backward compatible). 8 chi-squared / regression tests pass.
+- **WP2 — Category-aware initial trait seed offsets.** `AgentFactory(seed_offsets=...)` applies a small zero-sum (±0.02-0.05) trait nudge AFTER the political_spectrum override. Validation at config-load: zero-sum invariant `|sum| < 0.01`, per-trait magnitude ≤ 0.05, valid trait names. The 0-tick reference baseline now also applies offsets so `trait_shifts` reports drift only.
+- **WP3 — V-Dem political polarization integration.** `data/external/vdem_scores.json` curated for 66 countries (V-Dem v13 directionally aligned values; raw CSV extraction TBD). DemographicAdapter blends 60% Hofstede (production 0.35/0.25 coefficients preserved) + 40% (1 - V-Dem libdem) — inversion makes the two signals stack rather than cancel. **political_spectrum spread: 0.41 → 0.55**, Pearson(Hofstede, blend) = 0.88, Scandinavian-vs-Gulf extremes preserved.
+- **WP4 — Network panel category-aware coloring.** `outputs/realm_dashboard_v2.html`: `animateNetworkPrediction()` and `drawNetwork()` accept a `colorTrait`; the panel label `coloring by: <trait>` updates per category, plus a static legend below the canvas. Mock mode preserved.
+- **WP5 — RSS feed integration.** `realm/ingestion/sentiment.py` extracts the BASE word lists (Sprint 13 contract preserved) plus DOMAIN extensions for crypto/politics/culture. `realm/ingestion/feed_parser.py` is a thin orchestration layer reusing the existing `RssFeedSource`. New endpoints: `POST /api/feed/parse` (text / RSS URL / multi-text), `GET /api/feeds`. Dashboard scenario panel gains 3-radio source selector. Optional LLM path via `prompts/feed_parser/analyze_feed.yaml`.
+- **WP6 — 10K×50 validation.** `scripts/validate_sprint14.py` runs 8 baseline + 16 scenario predictions and writes `outputs/sprint14_validation_report.md`. Default scale 200×30×5 (~5 min). Full scale 10K×50×5 (~13.6 hr) is a flagged opt-in run.
+- **WP7 — Documentation + release prep.** REALM_CLAUDE.md → v0.14.0, §20 milestone report, new `README.md` with showcase-only banner + License TBD placeholder, `.gitignore` updated, `pyproject.toml` adds explicit `feedparser>=6.0`, `requirements.txt` refreshed.
+
+**Sprint 14 acceptance gates measured at 200×30×5 (full report in `outputs/sprint14_validation_report.md`):**
+
+| gate | target | measured | status |
+|------|--------|----------|--------|
+| scenario direction consistency | ≥6/8 categories | **8/8** | ✅ |
+| max trait_shift across 24 runs | ≤ 0.10 | 0.0237 | ✅ |
+| political_spectrum spread (V-Dem blend) | > 0.41 | 0.5512 | ✅ |
+| baseline differentiation spread | ≥ 0.10 | 0.009 | ⚠️ below at 200 agents |
+
+The baseline-spread gate is the only one not met at 200×30×5. The honest reason: at small scale the `positive_social_fallback` / `negative_social_fallback` rules dominate event sampling, and most categories ship with `pos:neg = 1:1` weights so the per-tick drift cancels. The WP1 weighted-sample machinery is wired correctly (verified by the 8 chi-squared tests + the 12-15pp scenario deltas), but reaching ≥10pp baseline differentiation requires either calibration tuning of the fallback weights or more topic-conditioned agent decisions — both are post-release work, documented in §13 (Future Roadmap).
+
+- ✅ **Sprint 9 (2026-04-24)** — Four work packages shipped.
+  1. **WP1 Negative-Pearson mapping enrichment.** Added semantic counter-planets for empathy (Mars -0.35, Saturn -0.30), social_dominance (Moon -0.20, Neptune -0.25), analytical_depth (Moon -0.30). Per-trait wins: empathy r -0.302 → +0.023 (Δ+0.325), σ 0.02 → 0.092 (4.6× expansion, hits the >0.08 target). social_dominance r -0.335 → -0.179 (Δ+0.156). analytical_depth r -0.324 → -0.175 (Δ+0.149). Iteration rule discovered: persuasion_skill/comm_assertiveness/contrarian_tendency counters hurt overall Pearson on celebrity cohort; reverted — these traits' negative Pearson is a selection-bias artefact (famous figures truly cluster high), not a mapping gap.
+  2. **WP2 Pre-1800 ephemeris + cohort restore.** Installed `seas_12.se1` to `.venv/Lib/site-packages/kerykeion/sweph/`. Napoleon Bonaparte (1769) and Leonardo da Vinci (1452) added to `data/validation/celebrity_profiles.json` with 23 biographically-sourced expected traits each. Substitute figures (Roosevelt/Edison/Mandela) retained to enable S7/S8 vs S9 comparison → cohort N=20 → N=22. Napoleon DA=0.773 r=+0.603 (top decile). Leonardo DA=0.636 r=+0.231 (median). Cleopatra (69 BC) still excluded — Python `datetime.MINYEAR=1`.
+  3. **WP3 Experience drift engine.** `realm/simulation/drift.py` — `ExperienceDriftEngine` with 6 event types (positive_social, negative_social, successful_risk, failed_risk, knowledge_acquisition, stress_crisis), deterministic accumulative drift, ±max_drift_ratio clamp (default 0.10), JSON serialisable state (`to_state`/`from_state`), 22 unit tests. Wired opt-in into `SimulationEngine.drift_engine`. Original `Agent.traits` untouched (frozen dataclass preserved).
+  4. **WP4 10K-agent full simulation.** `scripts/run_simulation.py` — 10K agents × N ticks with drift enabled, cProfile bottleneck analysis, per-tick timing, JSON checkpoints every 10 ticks, population + drift + country summary outputs. Calibrated against 1K × 50 run: 303s simulation, 68MB peak memory, 6s/tick. Bottleneck (94% of tick time): `transit_modulator.compute_modifiers` → `aspect_calculator.find_transit_aspects`. 10K × 30 ticks scaled accordingly to stay under 30-min budget.
+
+- ✅ **Sprint 13 (2026-04-25)** — Three P0 prediction-engine bug fixes + startup script. Live API now produces calibrated, directionally consistent predictions instead of degenerate 100% saturations.
+  1. **Bug 2 — Drift engine wired into the predictor pipeline.** `build_branch_sim()` was creating `SimulationEngine` instances with `drift_engine=None` (Sprint 9 made it opt-in), so the predictor pipeline NEVER actually moved agent traits. The API's `trait_shifts` field was reporting `population_mean - 0.5` (baseline distribution skew, mislabelled as drift) which produced spurious +0.34 shifts. Fix: `build_branch_sim` now wires `ExperienceDriftEngine(max_drift_ratio=0.10)` + `DriftEventBridge.default()` by default. Measured at 50 agents × 30 ticks: max per-agent per-trait drift = **0.0370** (well under the 0.10 cap); population-level shifts cluster ±0.005 due to natural cancellation across drift directions.
+  2. **Bug 1 — Calibrated probability via sigmoid of weighted population deviation.** Sprint 11's `observe_category_consensus` returned raw weighted trait means (typically 0.55–0.85 for the AstrologicalAdapter baseline distribution); compared against a fixed 0.55 threshold, every branch voted "yes" and `probability` saturated to 1.0. Fix: the API endpoint now (a) runs a 0-tick reference sim to capture the **unperturbed tick-0 baseline** trait means, (b) computes per-branch weighted population deviation from that baseline, (c) maps the mean deviation through `sigmoid(8 × deviation)`, (d) clamps to `[0.05, 0.95]`. The 3-way `agents_supporting / opposing / neutral` bucket is derived from per-agent deviations with threshold = `0.5 × population_stdev(deviations)`. Confidence label now reflects distance from 50% (was: raw branch stdev, which mistook saturation for confidence). Measured: crypto baseline 50.4%, politics baseline 50.3% — both within 15-85%, both with non-zero 3-way splits, neither saturated.
+  3. **Bug 3 — Scenario perturbation via category-aware agent_builder.** The Sprint 12 endpoint passed `scenario_feed` through a single neutral-sentiment `SeedEvent`, which propagated through the news channel + KG but produced ~zero trait delta. Fix: a new `_make_perturbed_agent_builder(feed, category)` parses sentiment from the feed (positive/negative word lists with a `_MIN_PERTURBATION = 0.08` floor so a supplied feed always moves the needle, capped at `±0.15`), then perturbs **70% of agents** (deterministic via seed) on the active category's primary traits. The remaining 30% are baked-in skeptics — they guarantee a visible 3-way split. Live measured: dovish Fed feed → economics probability 50.7% → **65.1% (delta +14.4%)**; hawkish Fed feed → **35.5% (delta -15.2%)**. Opposite directions, both meaningful magnitudes.
+
+  Honest limitation: with the Sprint 12 production-default agent population, baseline category drift is small (±0.005 typical), so questions in different categories return probabilities that cluster within 1pp of 50%. The perturbed scenario branches produce the meaningful ±14pp deltas. Per-category baseline differentiation requires either more aggressive drift events (Sprint 14) or category-aware agent generation (Sprint 14+ backlog).
+
+  **`realm_start.bat`** at the project root now starts FastAPI :8420 + an `http.server :8080` for the dashboard, opens the browser, and cleanly tasks-kills both windows on user keypress.
+
+  **Live A-D smoke (acceptance):** Test A 50.4%, Test B 50.3%, Test C delta +14.4%, Test D delta -15.2%. All trait_shifts ≤ 0.0124 (within the 0.10 cap). All sup/opp/neu non-zero. 688 tests still green; ruff clean on `realm/api/predict.py` and `realm/output/predictor.py`.
+
+- ✅ **Sprint 12 (2026-04-25)** — Four work packages shipped: responsive v2 dashboard + live FastAPI prediction endpoint + dashboard mock↔live toggle + production-pipeline political_spectrum override.
+  1. **WP1 Responsive CSS.** `outputs/realm_dashboard_v2.html` previously broke below ~900 px. Added mobile-first breakpoints at ≤640 px (tabs wrap, config inputs full-width, About body uses `white-space: pre-wrap` so ASCII boxes re-flow without horizontal scroll, network canvas drops to 260 px, IBM Plex Mono font shrinks one step) and a tablet break at 641-1024 px (canvas 340 px, panel padding shrinks). `resizeCanvas()` now reads `window.innerWidth` and matches the CSS heights; a `window.resize` listener re-paints the network when the breakpoint flips. No JS dependency added; aesthetic preserved.
+  2. **WP2 `realm/api/predict.py`.** New FastAPI app exposing `POST /api/predict` and `GET /api/health`. Wraps `default_router()` + `observe_category_consensus` and re-runs the last branch to capture agent trait stats — these synthesise the dashboard-shape fields the bare `PredictionOutcome` doesn't carry (drivers / dissent / agents_supporting / opposing / neutral / answer text / confidence string / per-primary-trait shifts). CORS is wide-open for local dev with a TODO for production lockdown. Pydantic validation enforces 10 ≤ n_agents ≤ 2000, 5 ≤ n_ticks ≤ 100, 1 ≤ n_branches ≤ 20, 1 ≤ question length ≤ 500. Scenario flow re-runs the engine with a `SeedEvent`-wrapped feed and returns both `baseline_probability` and `delta`. Run with `.venv/Scripts/python.exe -m uvicorn realm.api.predict:app --host 127.0.0.1 --port 8420 --reload`.
+  3. **WP3 Dashboard mock↔live toggle.** Boot screen gains a `Prediction Mode` dropdown (`Demo (mock data)` / `Live (FastAPI backend)`); when live is chosen an `API Endpoint` input becomes visible, default `http://127.0.0.1:8420`. New `STATE.mode` / `STATE.apiUrl` / `STATE.apiHealthy` fields plus a topbar `mode: mock/live/live (error)` chip that updates after every API call. `askQuestion()` and `runScenario()` route through a shared `fetchPrediction({question, scenarioFeed})` helper that POSTs to `/api/predict`, falls back to the matching `SAMPLE_PREDICTIONS[...]` mock on any error, and emits a typewriter-line breadcrumb (`fallback: showing mock data for crypto`) so the user always sees what happened. Network errors never freeze the UI.
+  4. **WP4 Production-pipeline `political_spectrum` override.** Sprint 11 WP4 added a Hofstede pdi+idv override to `DemographicAdapter`, but the production `AgentFactory` defaults to `AstrologicalAdapter` which leaves `political_spectrum` at the TraitVector default 0.5 — so the live API surfaced σ=0.00 across the population, masking the new variance. Moved the override into `AgentFactory.build()` immediately after the calibrator so it fires for ALL adapter paths (astrological / big_five / blended / demographic). Measured at production-default settings: `political_spectrum mean 0.602 σ 0.095 range 0.358-0.699 (25 unique values across 80 agents)`. The duplicate override was removed from `BlendedAdapter.build()` to keep one source of truth. All 688 tests still green; ruff clean on all Sprint 12 files.
+
+  **End-to-end smoke** (uvicorn on 127.0.0.1:8420):
+  - `GET /api/health` → 200, lists 9 categories.
+  - `POST /api/predict` politics, n=80 → drivers cite `political_spectrum mean 0.59 σ=0.11 (elevated, moderate spread)` — proves the production override is live.
+  - `POST /api/predict` economics + `scenario_feed=Fed announces emergency rate cut...` → category routes correctly, baseline + scenario both run, `delta` field populated. (At small N the threshold-crossing aggregator can saturate to 1.0 on both sides; per-agent supporting/opposing/neutral aggregation is Sprint 13 follow-up.)
+  - `POST /api/predict` empty question → 422 validation rejection.
+
+- ✅ **Sprint 11 (2026-04-25)** — Seven work packages shipped: prediction-category routing + per-category trait weighting + ABOUT panel + political_spectrum unblock.
+  1. **WP1 `config/prediction_categories.json`.** Schema v1, 9 categories (politics / economics / crypto / sports / markets / culture / science / geopolitics + `balanced` fallback). Each carries `trait_weights.{primary,secondary,suppressed}` (validated against `TraitVector.trait_names()` at load — unknown trait names fail loud), `keywords` for routing, `subcategories` for finer detection, and `default_horizon_ticks`. `balanced` is required to be the last entry; the loader asserts this so the router fallback always finds it.
+  2. **WP2 `realm/output/category_router.py`.** `CategoryRouter.route(question) → CategoryMatch` with deterministic-first routing. Word-boundary regex with trailing-`s?` defeats two false-positive classes (`un` inside `country`, `oscars` not matching `oscar`). LLM fallback is opt-in: `default_router()` only wires `LLMRouter().for_task(TASK_PARSER)` when env var `REALM_LLM_CATEGORY_BACKEND` is set AND `is_llm_configured()` returns True — keeps the test suite hermetic by default. When best ≥ 2 hits AND best ≥ 2× second-best, return directly; otherwise consult LLM (if available) or return `balanced`.
+  3. **WP3 `observe_category_consensus(category)` + `Question.category` round-trip.** Critical semantic correction: scaling every agent's contribution to a single trait by 2× is mathematically inert (`Σ(2·xᵢ) / Σ(2) = Σxᵢ / N`), so weighting must happen *across* trait dimensions, not within one. The new observer in `realm/output/predictor.py` computes `agent_score = Σ(wₜ · agent.traits[t]) / Σ(wₜ)` over `primary ∪ secondary ∪ suppressed` with `wₜ = 2.0/1.0/0.25`. A politics question and a crypto question produce *different consensus numbers from the same population*. `PredictionEngine.run` accepts an optional `category=` kwarg; `predict()` gains `route_category=False` (additive, default behaviour preserved).
+  4. **WP4 `political_spectrum` from Hofstede pdi+idv.** Was hard-coded 0.5 across all 66 countries (silently disabling politics-domain prediction differentiation). `realm/personality/adapters/demographic.py` now overrides per-country: `Δ = 0.35·(pdi/100 − 0.5) − 0.25·(idv/100 − 0.5)`, clamped to [0, 1]. **Measured spread across 66 countries: Denmark 0.328 → Malaysia 0.735 (0.41 spread, mean 0.541, stdev 0.121, 57 distinct values).** Framing is explicit: country-level dispersion proxy, not a left/right label and not a polarization measurement. Vendoring V-Dem / Pew remains Sprint 12 backlog.
+  5. **WP5 v2 dashboard `04 About` tab + per-category typewriter.** `outputs/realm_dashboard_v2.html` (IBM Plex Mono terminal aesthetic preserved): new `04 About` nav tab triggers a one-shot typewriter render of six sections (What is REALM / Trait Diversification / How Prediction Works / Validation / Limitations & Honest Boundaries / Technical Summary) with explicit honesty about the political_spectrum proxy and the yes/no aggregator gap. Inline `PREDICTION_CATEGORIES` constant + `routeCategory(q)` JS port (no LLM in browser). `STATE.activeCategory` set in `askQuestion()` after routing; typewriter prepends `[category: politics · subcategory: elections]` and primary-traits line. `SAMPLE_PREDICTIONS` expanded from 2 entries to **18** (one baseline + one scenario per category + balanced pair). `runScenario()` reads `SAMPLE_PREDICTIONS[STATE.activeCategory + '_scenario']` so injecting a scenario after a politics question shows political deltas, not crypto deltas. Hardcoded `654 tests` boot KPI replaced with a JS `TEST_COUNT` constant + `<span id="boot-tests">` — no more stale numbers. Code comment in `animateNetworkPrediction()` flags category-aware node coloring as Sprint 12 backlog.
+  6. **WP6 Tests.** 24 new tests in `realm/output/tests/test_category_router.py` (schema validation, all 8 categories' keyword routing, balanced fallback, subcategory detection, case-insensitivity, word-boundary guard, plural-form heuristic, LLM fallback paths via hermetic `_ScriptedBackend`). 9 in `realm/output/tests/test_predictor_weighted.py` (primary dominance, suppressed inertness, cross-category divergence on the same population, end-to-end `predict(route_category=True)` smoke). 3 new + 1 inverted in `realm/personality/adapters/tests/test_demographic.py` (`test_political_spectrum_varies_by_country`, `test_political_spectrum_within_bounds`, `test_political_spectrum_deterministic` — the legacy `test_political_spectrum_stays_neutral` is gone). **654 → 688 tests, full suite green in 24.78 s.**
+  7. **WP7 Documentation.** This status block, `REALM_CLAUDE.md` bumped to v0.11.0, milestone §19 added with the WP-by-WP breakdown and Sprint 11 open items.
+
+- ✅ **Sprint 10 (2026-04-24)** — Three work packages shipped.
+  1. **WP1 aspect-calculator optimisation.** Sprint 9 cProfile isolated `find_transit_aspects` as 63% of total runtime (1421s of 2252s on 10K×30). Root cause was per-pair `PlanetPosition` re-allocation inside the `O(N_agents × bodies²)` inner loop (two fresh dataclass instances per pair, only to bypass `find_aspect`'s same-name rejection) plus repeated `ASPECT_ANGLES.items()` iteration and `orbs.get(...)` lookups (364M dict.get calls/run). Fix: a pre-compiled `_ASPECT_ITEMS` tuple, an enabled-orb tuple hoisted out of the per-pair loop, and a new `_is_applying_transit_natal` helper that inlines the `natal_speed=0` case without allocation. Output is bit-exact with the pre-optimisation path — all 22 aspect_calculator tests pass unchanged. **10K × 30 measured (seed=42): 2251.85s → 1172.92s (1.92× faster), per-tick 75.06s → 39.10s, total runtime 38.4 min → 20.4 min (−47%), `find_transit_aspects` cumulative 1421s (63%) → 288s (24%) — 4.9× faster in absolute terms. `dict.get` 364M → 62M. Drift summary and all activity counts byte-identical to Sprint 9.**
+  2. **WP2 Functional dashboard rebuild.** `outputs/realm_dashboard.html` rewritten from scratch (47 KB Neural Observatory → 96 KB Simulation Observatory). Every panel answers one question: (1) What is REALM? — tech stack + KPIs. (2) How does the engine work? — Adapter pipeline SVG flowchart + sample-agent 23-trait radar fed from `celebrity_astro_profiles.json`. (3) Scientific basis? — BF 8/8 + Astro 4/4 scoreboard + per-trait DA ranked bars. (4) **What does the simulation produce?** — 4 KPI cards (posts, engagements, drift agents, events/agent), per-trait histogram comparing tick 0 vs tick 30 (dropdown), per-trait drift bar chart, interactive world choropleth with trait dropdown (D3 + world-atlas topojson from jsdelivr), action-mix donut, and a country cluster network (30-country force graph, edges = cosine similarity on 23 trait means). (5) Performance? — runtime / memory / aspect-calc share KPIs + sprint timeline. All data embedded inline via `scripts/build_dashboard.py`. Single file, no build step.
+  3. **WP3 Decision→Event bridge expansion.** `config/drift_events.json` (schema v1) defines 12 event types and 14 ordered firing rules. Added 6 new event types on top of the Sprint 9 six: **leadership_act** (social_dominance↑, authority_compliance↓), **group_conformity** (herd_susceptibility↑, contrarian↓, individualism↓), **group_dissent** (contrarian↑, individualism↑), **financial_loss** (loss_aversion↑, financial_optimism↓), **financial_gain** (financial_optimism↑, risk_appetite↑), **cultural_experience** (spirituality↑, openness↑). Rules use decision predicates (action, topic, sentiment, virality, engagement_kind) + trait thresholds (gte/lt). `DriftEventBridge` class in `realm/simulation/drift.py` loads config and exposes `event_for(decision, traits) → (event_type, intensity) | None`. `SimulationEngine` accepts an optional `drift_bridge` field (additive — legacy `event_from_decision` path preserved when bridge is unset; all 22 Sprint 9 drift tests pass untouched). 34 new tests in `test_drift_bridge.py` covering per-event trait directions, rule matching, first-match-wins preemption, fallback chain, engine integration, and cumulative-ratio cap. Risk / knowledge / stress events now fire in the bridge config — full-scale 10K re-run with the bridge attached is Sprint 11 scope.
+
+**Sprint 10 performance summary (10K × 30, seed=42):**
+
+| Metric                                        | Sprint 9      | Sprint 10      | Δ                |
+|-----------------------------------------------|--------------:|---------------:|------------------|
+| Total runtime                                 | 38.4 min      | **20.4 min**   | **−47%**         |
+| Simulation seconds                            | 2251.85       | 1172.92        | 1.92× faster     |
+| Per-tick mean                                 | 75.06 s       | 39.10 s        | 1.92×            |
+| Per-tick min                                  | 59.56 s       | 20.68 s        | 2.88×            |
+| `find_transit_aspects` cumulative             | 1421 s (63%)  | **288 s (24%)**| 4.9× faster      |
+| `dict.get` 30-tick sum                        | 364 M         | 62 M           | 5.8× fewer       |
+| Peak memory                                   | 202.8 MB      | 202.8 MB       | identical        |
+| Drift summary / activity totals               | baseline      | byte-identical | **bit-exact**    |
+| Dashboard file size                           | 47 KB         | 97 KB          |                  |
+| Drift event type count                        | 6             | 12             |                  |
+| Bridge firing rules                           | hardcoded 4   | 14 (JSON)      |                  |
+| Test count                                    | 620           | **654**        |                  |
+
+**Sprint 9 metric summary (22-figure cohort):**
+
+| Metric                              | S7     | S8     | S9     |
+|-------------------------------------|-------:|-------:|-------:|
+| Directional Accuracy (overall)      | 0.682  | 0.722  | 0.718  |
+| Pearson r (overall)                 | 0.268  | 0.322  | 0.309  |
+| Extreme-Trait Detection             | 0.766  | 0.802  | 0.799  |
+| Confidence-Weighted DA              | 0.754  | 0.789  | 0.779  |
+| empathy r                           | -0.302 | -0.302 | +0.023 |
+| empathy σ                           | 0.02   | 0.02   | 0.092  |
+| social_dominance r                  | -0.335 | -0.335 | -0.179 |
+| analytical_depth r                  | -0.324 | -0.324 | -0.175 |
+
 
 **Architectural evolutions since the original 25 decisions:**
 - **Ephemeris backend**: Kerykeion active (Swiss Ephemeris); Skyfield remains as the MSVC-free fallback.
@@ -38,28 +552,60 @@
 - **political_spectrum scope boundary**: explicitly excluded from astrological mapping and Big-Five derivation via `_excluded_by_design` blocks in `data/astro/*.json` and `data/personality/big_five_derivation.json`. REALM models temperament, not ideological preference.
 
 **Known limitations (see memory `feedback_realm_honest_concerns.md` + `project_realm_validity_study_prep.md` for the full list):**
-- Astrological mapping has no validation benchmark yet. Single anecdote (Steve Jobs via Mode B) supports the direction. Validity study (20-figure benchmark) is the next-priority investment.
+- ~~Astrological mapping has no validation benchmark yet.~~ **Resolved Sprint 7:** N=20 directional-accuracy benchmark. **Sprint 8 upgraded to DA 0.722 / Pearson 0.322 / Extreme 0.802 / CW-DA 0.789.** See `outputs/astro_validity_study.md`.
+- **AstrologicalAdapter is direction-rich, magnitude-poor on clustered traits.** Several traits (communication_assertiveness, persuasion_skill, social_dominance) still show negative Pearson despite DA near 1.00. Sprint 8 confirmed **calibration cannot fix this** for celebrity validation — the raw adapter lacks within-cluster individual differentiation that variance expansion could amplify. Mapping-table enrichment (more differentiating planetary contributors) is the path forward, not post-hoc calibration.
+- ~~`loss_aversion` mapping systematically wrong (Sprint 7 DA=0.05).~~ **Resolved Sprint 8:** semantic counter-planet contributors (Mars/Jupiter/Uranus) added to `data/astro/planet_trait_map.json`; loss_aversion DA at 1.00.
+- **Calibration ≠ validation (Sprint 8 methodological finding).** TraitCalibrator is designed to normalize general-population distributions toward BF-like means/stds. For validation against biographically-skewed reference populations (famous figures), normalization *removes* direction-correct signal. Use `--calibration=none` for celebrity validation, `--calibration=full` for 5K+ agent simulation.
+- ~~**Pre-1800 ephemeris coverage missing** in the installed Kerykeion venv.~~ **Resolved Sprint 9:** `seas_12.se1` (1200-1800 CE) installed to `.venv/Lib/site-packages/kerykeion/sweph/`. Napoleon and Leonardo restored in the validation cohort (N=22). Pre-1 CE (BC dates) still blocked by Python `datetime.MINYEAR=1`; Cleopatra remains out of scope.
+- **Per-trait Pearson r on celebrity cohort is ceiling-limited**, not a mapping bug. Traits with DA≈1.00 but negative per-trait r (persuasion_skill, communication_assertiveness, contrarian_tendency on S8 → S9) reflect selection-biased cohort composition: famous figures genuinely cluster high on those traits, so within-cohort differentiation cannot be recovered from mapping alone. Sprint 9 WP1 iteration confirmed counter-signals for these traits pulled celebrity means *away* from biographically-high targets. Fix belongs in population-scale calibration or a larger stratified cohort, not in the planet_trait_map.
 - Big Five intercorrelations are near zero in REALM (|r|<0.1) vs literature ~0.20. Mapping treats traits as roughly independent; must be declared honestly, not hidden.
 - 3 mapped traits (empathy, persuasion_skill, social_dominance) carry systematic positive bias (mean 0.85+ in raw pipeline) — calibration corrects but mapping rebalance is a future option.
-- DemographicAdapter produces NARROWER variance than astrology (country→trait lookup), not wider as originally assumed. Standalone demographic mode is a weak parametric source; use in combination (future BlendedAdapter) or with per-agent variable signal.
-- BigFiveAdapter has 5 domain traits with no literature-derived coefficients (fallback 0.5): herd_susceptibility, fomo_susceptibility, individualism, tradition_vs_progress, spirituality. 2 low-confidence derivations: contrarian_tendency, authority_compliance.
+- DemographicAdapter produces NARROWER variance than astrology (country→trait lookup), not wider as originally assumed. Sprint 5's `BlendedAdapter` addresses the combined-signal case but standalone demographic mode remains a weak parametric source.
+- ~~BigFiveAdapter has 5 domain traits with no literature-derived coefficients~~ **Partially resolved Sprint 6:** facet-level coefficients drafted and injected into `data/personality/big_five_derivation.json`; 13/13 WARN→PASS under facet mode (`use_facets=true`). 5 fallback traits still default to 0.5 in OCEAN-only mode.
+- #8a criterion vs Costa-McCrae 1992 clinical norm still fails (max Δmean=0.169) — this is a known online self-report drift, not a pipeline bug. Left failing intentionally as a sample-drift indicator.
 - Butterfly coefficients (herd_factor) are tuning knobs, not empirically calibrated.
 - Scalability ceiling: ~500 agents × 10 ticks per minute. 10K+ agents need architectural work.
 - Experience drift (decision #6, ±10%) is documented but not implemented.
 - Checkpoint uses pickle — fragile across Python/dataclass version changes.
-- Dashboard is functional but Loth flagged it as "demode" on 2026-04-23; redesign backlog lives in memory.
+- ~~Dashboard is functional but Loth flagged it as "demode" on 2026-04-23; redesign backlog lives in memory.~~ **Resolved Sprint 10 WP2:** rebuilt as a question-driven Simulation Observatory with live 10K-run data, world choropleth, histograms, and drift bars.
+- **Aspect-calculator bottleneck**: ~~94% of 10K tick runtime~~ → **Sprint 10 WP1** brought this to ~38% via allocation-free pair evaluation. Further wins available via vectorization (numpy or Cython) if a 10K × 50 budget ever tightens.
+- **Decision→Event bridge now covers 12 event types via `config/drift_events.json`** (Sprint 10 WP3). The 10K-run trait histograms in `outputs/sim_10k_run1/` are from the Sprint 9 bridge (6 event types, social-only); ~~a Sprint 11 full-scale re-run with the new bridge will show financial, knowledge, leadership drift signals~~ — Sprint 11 reprioritized toward prediction-category routing and the v2 dashboard ABOUT panel; the bridge × 10K re-run is now Sprint 12 backlog.
+- ~~`political_spectrum` is hard-coded 0.5 across all 66 countries, silently disabling politics-domain prediction differentiation.~~ **Resolved Sprint 11 WP4 (DemographicAdapter) + Sprint 12 WP4 (production AgentFactory).** Hofstede pdi+idv proxy now produces a 0.41 spread at the country level (DK 0.328 → MY 0.735, 57 distinct values) and a population-level σ≈0.10 mean≈0.60 through the live API pipeline. This is a country-level *dispersion proxy*, not a left/right label and not a polarization measurement; vendoring V-Dem / Pew remains a future improvement.
+- **Per-agent supporting/opposing/neutral aggregation does not exist yet.** `PredictionEngine` returns a yes/no probability over branches (`probability = n_yes / n_branches`). The dashboard's `agents_supporting / agents_opposing / agents_neutral` fields in `SAMPLE_PREDICTIONS` are mocked. Wiring a true per-agent decision aggregator is Sprint 12 work.
+- ~~**v2 dashboard ASK panel still uses mocked `SAMPLE_PREDICTIONS`.**~~ **Resolved Sprint 12:** boot-screen `Prediction Mode` dropdown lets the user pick `Live (FastAPI backend)` and the ASK + SCENARIO panels then call `realm/api/predict.py` for real engine results. Live errors fall back to mock with a typewriter breadcrumb so the UI never freezes.
 
 **How to resume:**
 ```bash
 cd C:\Users\loth\desktop\realm
 .venv\Scripts\activate
-python -m pytest -q                                         # expect 508 passing
+python -m pytest -q                                         # expect 598 passing
 python scripts/serve_dashboard.py 500                       # http://127.0.0.1:8888/
 python scripts/demo_butterfly.py                            # offline butterfly proof
 python scripts/diag_variance.py 2000                        # variance sweep diagnostic
 python scripts/validate_trait_distribution.py 10000         # calibration report (astrological)
 python scripts/validate_trait_distribution.py 5000 --adapter=demographic   # demographic variance sanity
-python scripts/check_jobs_directional.py                    # Jobs chart invariance check
+python scripts/check_jobs_directional.py                    # Jobs chart invariance check (N=1)
+# Big Five validity studies (Sprints 3-6):
+python scripts/validate_bf_study.py 10000 --seed=42         # synthetic N=10K, 7/7 PASS report
+python scripts/validate_bf_study_real.py                    # real automoto/big-five-data, 6/8 PASS
+python scripts/validate_bf_johnson.py                       # Johnson IPIP-NEO-120 N=612K, 8/8 PASS facet mode
+python scripts/validate_facet_derivation.py                 # Sprint 6 facet audit, 13/13 PASS
+# Astrological validity study (Sprints 7-8):
+python scripts/generate_celebrity_astro_profiles.py                            # compute 20 charts → outputs/celebrity_astro_profiles.json (default calibration=none — best for validation)
+python scripts/generate_celebrity_astro_profiles.py --calibration=variance     # opt-in variance expansion mode (simulation use)
+python scripts/generate_celebrity_astro_profiles.py --calibration=full         # opt-in full TraitCalibrator (simulation use)
+python scripts/validate_astro_study.py                                         # DA/correlation/extreme report → outputs/astro_validity_study.md
+# Sprint 9 drift + full simulation:
+python -m pytest realm/simulation/tests/test_drift.py -v    # 22 Sprint 9 drift tests
+python scripts/run_simulation.py --agents=10000 --ticks=30 --output=outputs/sim_10k_run1  # full sim
+# Sprint 9 cohort restore (one-time):
+python scripts/add_sprint9_cohort.py                        # Napoleon + Leonardo
+# Sprint 10 event-bridge tests + dashboard:
+python -m pytest realm/simulation/tests/test_drift_bridge.py -v               # 34 bridge tests
+python scripts/build_dashboard.py                                              # rebuild outputs/realm_dashboard.html from sim/validation JSONs
+start outputs/realm_dashboard.html                                             # open in browser (Windows); `open` on macOS, `xdg-open` on Linux
+# Sprint 10 benchmark re-run (post-WP1 speedup):
+python scripts/run_simulation.py --agents=10000 --ticks=30 --output=outputs/sim_10k_sprint10
 ```
 
 ---

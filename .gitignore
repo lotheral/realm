@@ -1,7 +1,9 @@
 # Environment
 .env
 .env.*
+!.env.example
 .venv/
+.venv_wsl/
 venv/
 __pycache__/
 *.pyc
@@ -22,6 +24,10 @@ dist/
 build/
 *.egg-info/
 
+# Debug / scratch artifacts
+outputs/dashboard_js_extracted.js
+*.bak
+
 # IDE
 .vscode/
 .idea/
@@ -39,6 +45,13 @@ Thumbs.db
 logs/
 *.log
 checkpoints/
+
+# Simulation outputs (generated, regenerable; can be very large)
+outputs/sim_*/
+cache/
+
+# Scheduled-task working files
+.claude/scheduled_tasks.lock
 
 # Ephemeris binaries (regenerable from JPL — see realm/astro/)
 *.bsp

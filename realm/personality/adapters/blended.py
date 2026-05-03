@@ -155,5 +155,8 @@ class BlendedAdapter(IInputAdapter):
             for trait in trait_names:
                 blended[trait] += float(rng.normal(0.0, self._noise_sigma))
 
-        # 5. TraitVector.from_dict clamps to [0, 1].
+        # 5. TraitVector.from_dict clamps to [0, 1]. The country-level
+        # political_spectrum override now lives in AgentFactory.build() so it
+        # fires for ALL adapter paths (astrological, big_five, blended,
+        # demographic) — not just blended-with-demographic-component.
         return TraitVector.from_dict(blended)

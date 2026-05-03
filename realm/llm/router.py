@@ -33,8 +33,15 @@ TASK_SPOTLIGHT = "spotlight"
 TASK_PARSER = "parser"
 TASK_REPORT = "report"
 TASK_SIMULATION = "simulation"
+# Sprint 17: dedicated task for category-router LLM-first classification.
+# Allows the dashboard / API operator to point category routing at a
+# different (e.g. cheaper, faster) backend than personality embedding.
+TASK_CATEGORY = "category"
 
-_TASK_ORDER = (TASK_PERSONALITY, TASK_SPOTLIGHT, TASK_PARSER, TASK_REPORT, TASK_SIMULATION)
+_TASK_ORDER = (
+    TASK_PERSONALITY, TASK_SPOTLIGHT, TASK_PARSER, TASK_REPORT,
+    TASK_SIMULATION, TASK_CATEGORY,
+)
 
 
 @lru_cache(maxsize=1)
@@ -45,11 +52,26 @@ def _llm_config() -> dict:
         return {}
 
 
+_TRUTHY_GATE_VALUES = ("1", "true", "yes", "on")
+
+
 def _resolve_backend_name(task: str) -> str:
-    """Resolve the backend id for a task: env > config > default."""
+    """Resolve the backend id for a task: env > config > default.
+
+    Sprint 17: when the env value is a truthy boolean gate
+    ({"1", "true", "yes", "on"}) — common pattern for "enable LLM"
+    flags — fall through to the config-driven default rather than
+    trying to build a backend literally named "1". This lets users
+    write the simple `REALM_LLM_<TASK>_BACKEND=1` to enable LLM and
+    pick up their `realm.yaml` default, while explicit backend names
+    (e.g. `=openai`, `=ollama`) still pin to that specific backend.
+    """
     env_name = f"REALM_LLM_{task.upper()}_BACKEND"
     if env_name in os.environ:
-        return os.environ[env_name].strip()
+        env_val = os.environ[env_name].strip()
+        if env_val and env_val.lower() not in _TRUTHY_GATE_VALUES:
+            return env_val
+        # Truthy gate ("1" / "true" / etc): fall through to config default
     cfg = _llm_config()
     specific = cfg.get(f"{task}_backend")
     if specific:

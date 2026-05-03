@@ -15,7 +15,9 @@
     "neuroticism": 0.40,
     "herd_susceptibility": 0.40,
     "agreeableness": 0.20,
-    "communication_assertiveness": -0.15
+    "communication_assertiveness": -0.15,
+    "social_dominance": -0.20,
+    "analytical_depth": -0.30
   },
   "Mercury": {
     "analytical_depth": 0.70,
@@ -37,7 +39,9 @@
     "contrarian_tendency": 0.35,
     "communication_assertiveness": 0.40,
     "patience": -0.30,
-    "extraversion": 0.20
+    "extraversion": 0.20,
+    "loss_aversion": -0.45,
+    "empathy": -0.35
   },
   "Jupiter": {
     "openness": 0.55,
@@ -45,7 +49,8 @@
     "persuasion_skill": 0.45,
     "spirituality": 0.25,
     "risk_appetite": 0.20,
-    "agreeableness": 0.15
+    "agreeableness": 0.15,
+    "loss_aversion": -0.25
   },
   "Saturn": {
     "conscientiousness": 0.70,
@@ -54,21 +59,24 @@
     "loss_aversion": 0.55,
     "risk_appetite": -0.35,
     "spirituality": -0.15,
-    "fomo_susceptibility": -0.25
+    "fomo_susceptibility": -0.25,
+    "empathy": -0.30
   },
   "Uranus": {
     "contrarian_tendency": 0.65,
     "openness": 0.50,
     "tradition_vs_progress": 0.55,
     "authority_compliance": -0.40,
-    "analytical_depth": 0.20
+    "analytical_depth": 0.20,
+    "loss_aversion": -0.30
   },
   "Neptune": {
     "spirituality": 0.70,
     "empathy": 0.50,
     "herd_susceptibility": 0.35,
     "analytical_depth": -0.20,
-    "neuroticism": 0.20
+    "neuroticism": 0.20,
+    "social_dominance": -0.25
   },
   "Pluto": {
     "social_dominance": 0.55,

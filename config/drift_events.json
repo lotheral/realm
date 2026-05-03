@@ -1,0 +1,257 @@
+{
+  "_comment": "Sprint 10 WP3 — config-driven drift event bridge. event_types map each event to signed trait weights (± [-1,1], interpreted against _BASE_DRIFT_COEFFICIENT × intensity). rules are evaluated in order; first match fires. Fields in rule.when: action (str), topic (str), engagement_kind (str), sentiment_gte/sentiment_lt (float), virality_gte/virality_lt (float), trait_gte/trait_lt ({trait:threshold}), topic_in (list[str]). Sprint 16 added regime_consolidation, diplomatic_stalemate, sanctions_pressure event_types and 6 corresponding fallback rules (positioned after positive_social_fallback so legacy first-match behavior is unchanged; weighted sampling picks them up via category drift_event_weights).",
+  "schema_version": 1,
+  "default_intensity": 0.5,
+  "event_types": {
+    "positive_social": {
+      "traits": {
+        "empathy": 1.0,
+        "agreeableness": 0.7,
+        "social_dominance": 0.3,
+        "neuroticism": -0.4
+      }
+    },
+    "negative_social": {
+      "traits": {
+        "contrarian_tendency": 0.8,
+        "agreeableness": -0.7,
+        "neuroticism": 0.8,
+        "empathy": -0.3
+      }
+    },
+    "successful_risk": {
+      "traits": {
+        "risk_appetite": 1.0,
+        "financial_optimism": 0.8,
+        "loss_aversion": -0.7,
+        "impulsivity": 0.3
+      }
+    },
+    "failed_risk": {
+      "traits": {
+        "risk_appetite": -0.9,
+        "loss_aversion": 1.0,
+        "patience": 0.5,
+        "financial_optimism": -0.6
+      }
+    },
+    "knowledge_acquisition": {
+      "traits": {
+        "analytical_depth": 1.0,
+        "openness": 0.7,
+        "information_sharing": 0.3
+      }
+    },
+    "stress_crisis": {
+      "traits": {
+        "neuroticism": 1.0,
+        "impulsivity": 0.7,
+        "patience": -0.6,
+        "authority_compliance": 0.3
+      }
+    },
+    "leadership_act": {
+      "_doc": "Assertive pro-social post in politics/culture; reinforces dominance + persuasive confidence, nudges authority_compliance down (agent becomes the authority, not the follower).",
+      "traits": {
+        "social_dominance": 0.8,
+        "persuasion_skill": 0.5,
+        "communication_assertiveness": 0.4,
+        "authority_compliance": -0.3
+      }
+    },
+    "group_conformity": {
+      "_doc": "Agent engaged with a mainstream / viral post while already high on herd_susceptibility — the act itself reinforces the conforming tendency.",
+      "traits": {
+        "herd_susceptibility": 0.6,
+        "contrarian_tendency": -0.5,
+        "individualism": -0.4,
+        "fomo_susceptibility": 0.2
+      }
+    },
+    "group_dissent": {
+      "_doc": "Agent posted against prevailing sentiment — contrarian reinforcement and individualism uptick.",
+      "traits": {
+        "contrarian_tendency": 0.8,
+        "individualism": 0.5,
+        "social_dominance": 0.2,
+        "agreeableness": -0.3
+      }
+    },
+    "financial_loss": {
+      "_doc": "Posting about finance with loss-aversive outlook serves as a mild loss-proxy event (real monetary outcomes are not modelled this sprint).",
+      "traits": {
+        "loss_aversion": 1.0,
+        "financial_optimism": -0.7,
+        "neuroticism": 0.4,
+        "risk_appetite": -0.3
+      }
+    },
+    "financial_gain": {
+      "_doc": "Risk-taking agent with positive sentiment on finance — serves as mild gain-proxy event.",
+      "traits": {
+        "financial_optimism": 0.8,
+        "risk_appetite": 0.3,
+        "loss_aversion": -0.3,
+        "impulsivity": 0.2
+      }
+    },
+    "cultural_experience": {
+      "_doc": "Spiritual/cultural engagement widens openness and bolsters tradition_vs_progress in the pro-tradition direction (because spiritually-oriented agents mostly anchor traditional frames in the cohort).",
+      "traits": {
+        "spirituality": 0.6,
+        "tradition_vs_progress": 0.3,
+        "openness": 0.2,
+        "empathy": 0.2
+      }
+    },
+    "regime_consolidation": {
+      "_doc": "Sprint 16: Authoritarian power consolidation — passive resignation (authority_compliance ↓ as participation gives way to apathy), agency erosion (social_dominance ↓), hardened minority resistance (contrarian_tendency ↑), desensitization to political suffering (empathy ↓). Models status-quo maintenance dynamics absent from the Sprint 9/10 event pool. Magnitudes scaled 5× over original spec at calibration Tier 2 (2026-05-03) so per-event delta is comparable to existing Sprint 9/10 events (0.10-0.20 vs Sprint 10 0.5-1.0 range).",
+      "traits": {
+        "authority_compliance": -0.15,
+        "social_dominance": -0.20,
+        "contrarian_tendency": 0.10,
+        "empathy": -0.10
+      }
+    },
+    "diplomatic_stalemate": {
+      "_doc": "Sprint 16: Stalled negotiations / dragged-out sanctions — uncertainty drives risk aversion (risk_appetite ↓), status-quo frustration accumulates (contrarian_tendency ↑), mild institutional fallback (authority_compliance ↑), powerlessness reduces sense of agency (social_dominance ↓). Models the most common geopolitical outcome: nothing changes. Magnitudes scaled 5× over original spec at calibration Tier 2 (2026-05-03).",
+      "traits": {
+        "risk_appetite": -0.15,
+        "contrarian_tendency": 0.10,
+        "authority_compliance": 0.05,
+        "social_dominance": -0.10
+      }
+    },
+    "sanctions_pressure": {
+      "_doc": "Sprint 16: Economic sanctions / trade restrictions / asset freezes — broad economic pain (financial_optimism ↓), uncertainty rises (risk_appetite ↓), rally-around-flag under external pressure (authority_compliance ↑), heightened fear of further loss (loss_aversion ↑). Affects geopolitics primarily, economics secondarily. Magnitudes scaled 5× over original spec at calibration Tier 2 (2026-05-03).",
+      "traits": {
+        "financial_optimism": -0.20,
+        "risk_appetite": -0.15,
+        "authority_compliance": 0.10,
+        "loss_aversion": 0.15
+      }
+    }
+  },
+  "rules": [
+    {
+      "name": "leadership_act",
+      "when": {"action": "post", "topic_in": ["politics", "culture"], "sentiment_gte": 0.2, "trait_gte": {"social_dominance": 0.6}},
+      "fires": "leadership_act",
+      "intensity": 0.6
+    },
+    {
+      "name": "group_dissent_politics",
+      "when": {"action": "post", "topic": "politics", "trait_gte": {"contrarian_tendency": 0.6}},
+      "fires": "group_dissent",
+      "intensity": 0.6
+    },
+    {
+      "name": "stress_crisis_post",
+      "when": {"action": "post", "sentiment_lt": -0.3, "trait_gte": {"neuroticism": 0.8}},
+      "fires": "stress_crisis",
+      "intensity": 0.6
+    },
+    {
+      "name": "financial_gain_post",
+      "when": {"action": "post", "topic": "finance", "sentiment_gte": 0.0, "trait_gte": {"risk_appetite": 0.7}},
+      "fires": "financial_gain",
+      "intensity": 0.5
+    },
+    {
+      "name": "financial_loss_post",
+      "when": {"action": "post", "topic": "finance", "trait_gte": {"loss_aversion": 0.7}},
+      "fires": "financial_loss",
+      "intensity": 0.5
+    },
+    {
+      "name": "cultural_experience_post",
+      "when": {"action": "post", "topic": "culture", "trait_gte": {"spirituality": 0.6}},
+      "fires": "cultural_experience",
+      "intensity": 0.5
+    },
+    {
+      "name": "knowledge_acquisition_post",
+      "when": {"action": "post", "topic_in": ["tech", "news"], "trait_gte": {"analytical_depth": 0.7}},
+      "fires": "knowledge_acquisition",
+      "intensity": 0.5
+    },
+    {
+      "name": "successful_risk_post",
+      "when": {"action": "post", "virality_gte": 1.5, "trait_gte": {"risk_appetite": 0.7}},
+      "fires": "successful_risk",
+      "intensity": 0.5
+    },
+    {
+      "name": "failed_risk_post",
+      "when": {"action": "post", "virality_lt": 1.0, "trait_gte": {"risk_appetite": 0.7}},
+      "fires": "failed_risk",
+      "intensity": 0.4
+    },
+    {
+      "name": "group_conformity_share",
+      "when": {"action": "engage", "engagement_kind": "share", "trait_gte": {"herd_susceptibility": 0.5}},
+      "fires": "group_conformity",
+      "intensity": 0.5
+    },
+    {
+      "name": "knowledge_acquisition_engage",
+      "when": {"action": "engage", "trait_gte": {"analytical_depth": 0.6}},
+      "fires": "knowledge_acquisition",
+      "intensity": 0.3
+    },
+    {
+      "name": "negative_social_fallback",
+      "when": {"action": "post", "sentiment_lt": 0.0},
+      "fires": "negative_social",
+      "intensity": 0.5
+    },
+    {
+      "name": "positive_social_fallback_post",
+      "when": {"action": "post"},
+      "fires": "positive_social",
+      "intensity": 0.5
+    },
+    {
+      "name": "positive_social_fallback_engage",
+      "when": {"action": "engage"},
+      "fires": "positive_social",
+      "intensity": 0.5
+    },
+    {
+      "name": "regime_consolidation_post",
+      "when": {"action": "post"},
+      "fires": "regime_consolidation",
+      "intensity": 0.5
+    },
+    {
+      "name": "regime_consolidation_engage",
+      "when": {"action": "engage"},
+      "fires": "regime_consolidation",
+      "intensity": 0.5
+    },
+    {
+      "name": "diplomatic_stalemate_post",
+      "when": {"action": "post"},
+      "fires": "diplomatic_stalemate",
+      "intensity": 0.5
+    },
+    {
+      "name": "diplomatic_stalemate_engage",
+      "when": {"action": "engage"},
+      "fires": "diplomatic_stalemate",
+      "intensity": 0.5
+    },
+    {
+      "name": "sanctions_pressure_post",
+      "when": {"action": "post"},
+      "fires": "sanctions_pressure",
+      "intensity": 0.5
+    },
+    {
+      "name": "sanctions_pressure_engage",
+      "when": {"action": "engage"},
+      "fires": "sanctions_pressure",
+      "intensity": 0.5
+    }
+  ]
+}

@@ -24,6 +24,7 @@ from realm.agents.interfaces import Agent
 from realm.core.logging import get_logger
 from realm.personality.trait_vector import TraitVector
 from realm.simulation.clock import Clock
+from realm.simulation.drift import DriftEventBridge, ExperienceDriftEngine, event_from_decision
 from realm.simulation.network import NetworkTopology
 from realm.simulation.platforms.base import Engagement, IPlatform, Post
 from realm.simulation.transit_modulator import TransitModulator
@@ -53,6 +54,14 @@ class SimulationEngine:
     clock: Clock
     climate: ClimateEngine | None = None
     pre_tick_hooks: list[Callable[[int], None]] = field(default_factory=list)
+    # Sprint 9 WP3: optional drift engine. When set, tick() records a drift
+    # event per agent based on its Decision.action + Decision.sentiment.
+    drift_engine: ExperienceDriftEngine | None = None
+    # Sprint 10 WP3: optional config-driven event bridge. When set, overrides
+    # the hard-coded event_from_decision heuristic. The drift_engine's
+    # event_map is swapped to the bridge's catalogue so the new event types
+    # (leadership_act, group_conformity, …) have trait weights.
+    drift_bridge: DriftEventBridge | None = None
     history: list[TickStats] = field(default_factory=list)
     _post_counter: int = 0
     _agents_by_id: dict[str, Agent] = field(default_factory=dict, init=False)
@@ -120,6 +129,36 @@ class SimulationEngine:
             stats.actions_by_type[decision.action] = (
                 stats.actions_by_type.get(decision.action, 0) + 1
             )
+
+            # Sprint 9 WP3: record drift event from the decision against the
+            # agent's ORIGINAL traits (not transit-modulated), so drift
+            # represents lasting experience, not transient tick state.
+            # Sprint 10 WP3: if a DriftEventBridge is installed, use its
+            # rule-based resolver; otherwise fall back to the hard-coded
+            # event_from_decision heuristic with intensity 0.5.
+            if self.drift_engine is not None:
+                if self.drift_bridge is not None:
+                    resolved = self.drift_bridge.event_for(decision, agent.traits, rng=rng)
+                    if resolved is not None:
+                        event_type, intensity = resolved
+                        self.drift_engine.record_event(
+                            agent.agent_id,
+                            event_type,
+                            intensity=intensity,
+                            original_traits=agent.traits,
+                        )
+                else:
+                    event_type = event_from_decision(
+                        decision.action,
+                        getattr(decision, "sentiment", None),
+                    )
+                    if event_type is not None:
+                        self.drift_engine.record_event(
+                            agent.agent_id,
+                            event_type,
+                            intensity=0.5,
+                            original_traits=agent.traits,
+                        )
 
             if decision.action == "post":
                 post_id = f"P_{t}_{self._post_counter}"

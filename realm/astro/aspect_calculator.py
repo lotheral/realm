@@ -20,6 +20,11 @@ ASPECT_ANGLES: Mapping[str, float] = {
     "opposition": 180.0,
 }
 
+# Pre-materialised tuple for fast iteration in hot paths (avoids dict.items()
+# overhead every call). Order matches ASPECT_ANGLES insertion so tie-breaking
+# behaviour is bit-exact with the legacy find_aspect.
+_ASPECT_ITEMS: tuple[tuple[str, float], ...] = tuple(ASPECT_ANGLES.items())
+
 
 def _shortest_arc(lon1: float, lon2: float) -> float:
     """Absolute angular separation on the ecliptic, 0–180 degrees."""
@@ -59,7 +64,7 @@ def find_aspect(
     best: Aspect | None = None
     best_orb = float("inf")
 
-    for aspect_name, exact_angle in ASPECT_ANGLES.items():
+    for aspect_name, exact_angle in _ASPECT_ITEMS:
         max_orb = orbs.get(aspect_name)
         if max_orb is None:
             continue
@@ -125,6 +130,32 @@ def find_all_aspects(
     return tuple(aspects)
 
 
+def _is_applying_transit_natal(
+    tp_lon: float, tp_speed: float, np_lon: float, exact_angle: float,
+) -> bool:
+    """Transit→natal applying check; natal speed is always 0.
+
+    Inlined, allocation-free variant of ``_is_applying`` for the 10K-agent
+    simulation hot path. Mathematically equivalent: current_dist uses
+    ``abs(current ± exact_angle)``, future_dist advances only the transiting
+    body (natal speed = 0). Tie-break condition uses tp_speed != 0 which is
+    equivalent to ``rel_speed = -tp_speed != 0`` in the legacy path.
+    """
+    current = _signed_separation(tp_lon, np_lon)
+    current_dist_pos = abs(current - exact_angle)
+    current_dist_neg = abs(current + exact_angle)
+    current_dist = current_dist_pos if current_dist_pos < current_dist_neg else current_dist_neg
+
+    future = _signed_separation(tp_lon + tp_speed * 0.01, np_lon)
+    future_dist_pos = abs(future - exact_angle)
+    future_dist_neg = abs(future + exact_angle)
+    future_dist = future_dist_pos if future_dist_pos < future_dist_neg else future_dist_neg
+
+    return future_dist < current_dist - 1e-9 or (
+        future_dist < current_dist and tp_speed != 0
+    )
+
+
 def find_transit_aspects(
     transiting: tuple[PlanetPosition, ...] | list[PlanetPosition],
     natal: tuple[PlanetPosition, ...] | list[PlanetPosition],
@@ -134,41 +165,50 @@ def find_transit_aspects(
 
     planet1 in the returned Aspect is the transiting body, planet2 is the natal.
     Same-name aspects (e.g., transit Sun conjunct natal Sun) ARE included.
+
+    Sprint 10 WP1 optimisation: direct pair evaluation without the
+    per-pair PlanetPosition re-allocation the original implementation used to
+    bypass ``find_aspect``'s same-name rejection. The ``enabled`` tuple is
+    built once per call (hoisting dict lookups out of the O(N_transit ×
+    N_natal) inner loop). Bit-exact with the pre-optimisation code path.
     """
+    # Pre-compile (aspect_name, exact_angle, max_orb) once — the inner loop
+    # runs ~1.7M times/tick at 10K agents; every dict.get() hoist matters.
+    enabled: list[tuple[str, float, float]] = []
+    for aspect_name, exact_angle in _ASPECT_ITEMS:
+        max_orb = orbs.get(aspect_name)
+        if max_orb is not None:
+            enabled.append((aspect_name, exact_angle, float(max_orb)))
+
     aspects: list[Aspect] = []
     for tp in transiting:
+        tp_lon = tp.longitude
+        tp_speed = tp.speed
+        tp_name = tp.name
         for np_ in natal:
-            # Temporarily synthesize distinct names so find_aspect won't reject same-name pairs.
-            transit_position = PlanetPosition(
-                name=f"t_{tp.name}",
-                longitude=tp.longitude,
-                latitude=tp.latitude,
-                sign=tp.sign,
-                sign_degree=tp.sign_degree,
-                house=tp.house,
-                is_retrograde=tp.is_retrograde,
-                speed=tp.speed,
+            sep = _shortest_arc(tp_lon, np_.longitude)
+            best_name: str | None = None
+            best_exact = 0.0
+            best_orb = float("inf")
+            for aspect_name, exact_angle, max_orb in enabled:
+                delta = sep - exact_angle
+                if delta < 0.0:
+                    delta = -delta
+                if delta <= max_orb and delta < best_orb:
+                    best_name = aspect_name
+                    best_exact = exact_angle
+                    best_orb = delta
+            if best_name is None:
+                continue
+            applying = _is_applying_transit_natal(
+                tp_lon, tp_speed, np_.longitude, best_exact,
             )
-            natal_position = PlanetPosition(
-                name=f"n_{np_.name}",
-                longitude=np_.longitude,
-                latitude=np_.latitude,
-                sign=np_.sign,
-                sign_degree=np_.sign_degree,
-                house=np_.house,
-                is_retrograde=np_.is_retrograde,
-                speed=0.0,
-            )
-            a = find_aspect(transit_position, natal_position, orbs)
-            if a is not None:
-                aspects.append(
-                    Aspect(
-                        planet1=tp.name,
-                        planet2=np_.name,
-                        aspect_type=a.aspect_type,
-                        angle=a.angle,
-                        orb=a.orb,
-                        is_applying=a.is_applying,
-                    )
-                )
+            aspects.append(Aspect(
+                planet1=tp_name,
+                planet2=np_.name,
+                aspect_type=best_name,
+                angle=sep,
+                orb=best_orb,
+                is_applying=applying,
+            ))
     return tuple(aspects)

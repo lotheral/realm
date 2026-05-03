@@ -1,0 +1,1987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>REALM</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0a0a;
+  --panel: #111111;
+  --border: #1a1a1a;
+  --text: #c8c8c8;
+  --text-dim: #666;
+  --text-faint: #333;
+  --accent: #a0a0a0;
+  --green: #5a8a5a;
+  --green-bright: #7ab87a;
+  --red: #8a5a5a;
+  --red-bright: #b87a7a;
+  --amber: #8a7a5a;
+  --amber-bright: #b8a87a;
+  --cursor: #c8c8c8;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--bg); color: var(--text); font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; height: 100%; overflow-x: hidden; }
+
+/* Scanline overlay */
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--text-faint); border-radius: 2px; }
+
+/* Boot / Config Screen */
+#boot-screen {
+  min-height: 100vh;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  max-width: 720px;
+  margin: 0 auto;
+}
+.boot-line {
+  opacity: 0;
+  transform: translateY(4px);
+  animation: fadein 0.3s ease forwards;
+}
+@keyframes fadein { to { opacity: 1; transform: translateY(0); } }
+.boot-header {
+  color: var(--text-dim);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  margin-bottom: 32px;
+}
+.boot-logo {
+  font-size: 11px;
+  color: var(--text-dim);
+  white-space: pre;
+  line-height: 1.2;
+  margin-bottom: 24px;
+}
+.config-group {
+  margin-bottom: 20px;
+}
+.config-label {
+  color: var(--text-dim);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.config-input {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 13px;
+  padding: 8px 12px;
+  border-radius: 0;
+  width: 200px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.config-input:focus { border-color: var(--text-dim); }
+.config-input::placeholder { color: var(--text-faint); }
+select.config-input { cursor: pointer; -webkit-appearance: none; appearance: none; }
+
+.config-row {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  background: transparent;
+  border: 1px solid var(--text-dim);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 12px;
+  padding: 8px 24px;
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  transition: all 0.2s;
+  margin-top: 16px;
+}
+.btn:hover { background: var(--text); color: var(--bg); }
+.btn:disabled { opacity: 0.3; cursor: default; }
+.btn:disabled:hover { background: transparent; color: var(--text); }
+
+.divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 24px 0;
+}
+
+/* Main Dashboard */
+#main-screen {
+  display: none;
+  min-height: 100vh;
+}
+
+/* Top bar */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 32px;
+  border-bottom: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--text-dim);
+  position: sticky;
+  top: 0;
+  background: rgba(10,10,10,0.95);
+  backdrop-filter: blur(8px);
+  z-index: 100;
+}
+.topbar-brand { letter-spacing: 0.1em; font-weight: 500; }
+.topbar-status { display: flex; gap: 20px; }
+.topbar-status span { display: flex; align-items: center; gap: 6px; }
+.status-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--green); display: inline-block; }
+
+/* Tab nav */
+.tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  padding: 0 32px;
+}
+.tab {
+  padding: 12px 20px;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  cursor: pointer;
+  border-bottom: 1px solid transparent;
+  margin-bottom: -1px;
+  transition: all 0.2s;
+}
+.tab:hover { color: var(--text); }
+.tab.active { color: var(--text); border-bottom-color: var(--text-dim); }
+
+/* Panels */
+.panel { display: none; padding: 32px; max-width: 960px; }
+.panel.active { display: block; }
+
+.panel-title {
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+
+/* Question input */
+.question-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+.prompt-char { color: var(--text-dim); font-size: 14px; }
+.question-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 13px;
+  padding: 8px 0;
+  outline: none;
+}
+.question-input:focus { border-bottom-color: var(--text-dim); }
+.question-input::placeholder { color: var(--text-faint); }
+
+/* Output area */
+.output {
+  min-height: 200px;
+  padding: 16px 0;
+}
+.output-line {
+  margin-bottom: 4px;
+  min-height: 1.6em;
+}
+.typing-cursor {
+  display: inline-block;
+  width: 7px;
+  height: 14px;
+  background: var(--cursor);
+  animation: blink 0.8s step-end infinite;
+  vertical-align: text-bottom;
+  margin-left: 1px;
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+.label { color: var(--text-dim); font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; }
+.value { color: var(--text); }
+.value-green { color: var(--green-bright); }
+.value-red { color: var(--red-bright); }
+.value-amber { color: var(--amber-bright); }
+
+/* Prediction result block */
+.pred-result {
+  border: 1px solid var(--border);
+  padding: 20px;
+  margin: 16px 0;
+  background: var(--panel);
+}
+.pred-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--text-faint);
+}
+.pred-row:last-child { border-bottom: none; }
+.pred-key { color: var(--text-dim); }
+.pred-val { text-align: right; }
+
+.prob-bar-wrap {
+  margin: 16px 0;
+  height: 4px;
+  background: var(--text-faint);
+  position: relative;
+}
+.prob-bar {
+  height: 100%;
+  background: var(--text-dim);
+  transition: width 1.5s ease;
+}
+.prob-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 6px;
+}
+
+/* Delta display */
+.delta-wrap {
+  display: flex;
+  gap: 32px;
+  margin: 16px 0;
+  flex-wrap: wrap;
+}
+.delta-col {
+  flex: 1;
+  min-width: 200px;
+}
+.delta-title {
+  font-size: 10px;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+}
+.delta-big {
+  font-size: 28px;
+  font-weight: 300;
+}
+.delta-arrow {
+  font-size: 20px;
+  color: var(--text-faint);
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+}
+
+/* Scenario input */
+.scenario-input {
+  width: 100%;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 12px;
+  padding: 12px;
+  min-height: 80px;
+  resize: vertical;
+  outline: none;
+}
+.scenario-input:focus { border-color: var(--text-dim); }
+.scenario-input::placeholder { color: var(--text-faint); }
+
+/* Agent network canvas */
+#network-canvas {
+  width: 100%;
+  height: 400px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+}
+
+/* ====================================================================== */
+/* RESPONSIVE — mobile-first overrides without touching the desktop look. */
+/* ====================================================================== */
+
+/* Tablet — 641 to 1024 */
+@media (min-width: 641px) and (max-width: 1024px) {
+  #boot-screen { padding: 32px; }
+  .config-input { width: 180px; }
+  #network-canvas { height: 340px; }
+  .panel { padding: 24px; max-width: 100%; }
+  .tabs { padding: 0 24px; }
+  .topbar { padding: 12px 24px; }
+}
+
+/* Mobile — up to 640 */
+@media (max-width: 640px) {
+  #boot-screen { padding: 18px; align-items: stretch; }
+  .boot-logo { font-size: 9px; overflow-x: auto; padding: 8px 0; }
+  .config-row { flex-direction: column; gap: 12px; }
+  .config-group { width: 100%; }
+  .config-input { width: 100% !important; }
+  nav, .topbar { padding: 10px 14px; }
+  .topbar-status { gap: 10px; font-size: 10px; flex-wrap: wrap; }
+  .tabs { padding: 0 12px; flex-wrap: wrap; }
+  .tab { padding: 10px 12px; font-size: 10px; }
+  .panel { padding: 16px; max-width: 100%; }
+  .panel-title { font-size: 13px; }
+  .question-input { font-size: 12px; }
+  .output { font-size: 11px; }
+  .output-line { word-break: break-word; overflow-wrap: break-word; }
+  #network-canvas { height: 260px; }
+  .agent-log { font-size: 10px; max-height: 160px; }
+  #about-body { font-size: 10px; white-space: pre-wrap; word-break: break-word; overflow-wrap: anywhere; }
+  .pred-row { flex-direction: column; gap: 2px; align-items: flex-start; }
+  .pred-val { text-align: left; }
+  .scenario-input { font-size: 12px; }
+  .btn { padding: 10px 14px; font-size: 11px; }
+}
+
+/* Always-on safety: long output lines must never produce horizontal scroll
+   on the body. About panel uses pre-wrap on every viewport so ASCII boxes
+   re-flow on touch screens. */
+.output-line { overflow-wrap: anywhere; }
+#about-body { white-space: pre-wrap; word-break: break-word; }
+
+/* Agent log */
+.agent-log {
+  font-size: 11px;
+  color: var(--text-dim);
+  max-height: 200px;
+  overflow-y: auto;
+  margin-top: 16px;
+  padding: 12px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+}
+.agent-log-line {
+  padding: 2px 0;
+  opacity: 0;
+  animation: fadein 0.3s ease forwards;
+}
+.agent-log-line .agent-id { color: var(--text-faint); }
+
+/* Drivers list */
+.drivers {
+  margin: 12px 0;
+  padding-left: 16px;
+}
+.drivers li {
+  color: var(--text-dim);
+  font-size: 12px;
+  padding: 3px 0;
+  list-style: none;
+}
+.drivers li::before { content: '— '; color: var(--text-faint); }
+
+/* Footer hint */
+.hint {
+  font-size: 10px;
+  color: var(--text-faint);
+  margin-top: 32px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================ -->
+<!-- BOOT / CONFIG SCREEN                                          -->
+<!-- ============================================================ -->
+<div id="boot-screen">
+  <div class="boot-logo boot-line" style="animation-delay:0.2s">
+ ┌─────────────────────────────────────┐
+ │  R E A L M    v 0.16.0             │
+ │  Swarm Intelligence Prediction      │
+ │                                     │
+ │  <span id="boot-tests">000</span> tests  ·  66 countries         │
+ │  24 traits  ·  15 event types       │
+ └─────────────────────────────────────┘</div>
+
+  <div class="boot-line" style="animation-delay:0.6s">
+    <span class="label">system</span>
+    <span style="color:var(--text-dim);margin-left:8px;">initializing prediction engine...</span>
+  </div>
+  <div class="boot-line" style="animation-delay:0.9s">
+    <span class="label">system</span>
+    <span style="color:var(--text-dim);margin-left:8px;">loading adapters: astro + bigfive + demographic</span>
+  </div>
+  <div class="boot-line" style="animation-delay:1.2s">
+    <span class="label">system</span>
+    <span style="color:var(--green-bright);margin-left:8px;">engine ready. configure session below.</span>
+  </div>
+
+  <hr class="divider boot-line" style="animation-delay:1.5s">
+
+  <div class="boot-line" style="animation-delay:1.6s">
+    <div class="config-row">
+      <div class="config-group">
+        <div class="config-label">Agent Count</div>
+        <select class="config-input" id="cfg-agents">
+          <option value="50">50 (fast demo)</option>
+          <option value="100" selected>100 (balanced)</option>
+          <option value="500">500 (detailed)</option>
+          <option value="1000">1,000 (full)</option>
+          <option value="10000">10,000 (research)</option>
+        </select>
+      </div>
+      <div class="config-group">
+        <div class="config-label">Simulation Ticks</div>
+        <select class="config-input" id="cfg-ticks">
+          <option value="10">10</option>
+          <option value="30" selected>30</option>
+          <option value="50">50</option>
+        </select>
+      </div>
+      <div class="config-group">
+        <div class="config-label">Region Focus</div>
+        <select class="config-input" id="cfg-region">
+          <option value="global" selected>Global (all 66)</option>
+          <option value="asia">Asia-Pacific</option>
+          <option value="europe">Europe</option>
+          <option value="americas">Americas</option>
+          <option value="mena">MENA</option>
+          <option value="africa">Africa</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="boot-line" style="animation-delay:1.8s">
+    <div class="config-row">
+      <div class="config-group">
+        <div class="config-label">Drift Events</div>
+        <select class="config-input" id="cfg-drift">
+          <option value="on" selected>Enabled (15 types)</option>
+          <option value="off">Disabled</option>
+        </select>
+      </div>
+      <div class="config-group">
+        <div class="config-label">Transit Modulation</div>
+        <select class="config-input" id="cfg-transit">
+          <option value="on" selected>Active</option>
+          <option value="off">Bypassed</option>
+        </select>
+      </div>
+      <div class="config-group">
+        <div class="config-label">Prediction Branches</div>
+        <select class="config-input" id="cfg-branches">
+          <option value="3">3 (fast)</option>
+          <option value="5" selected>5 (default)</option>
+          <option value="10">10 (high-res)</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="boot-line" style="animation-delay:1.9s">
+    <div class="config-row">
+      <div class="config-group">
+        <div class="config-label">Prediction Mode</div>
+        <select class="config-input" id="cfg-mode" onchange="onModeChange(this.value)">
+          <option value="mock" selected>Demo (mock data)</option>
+          <option value="live">Live (FastAPI backend)</option>
+        </select>
+      </div>
+      <div class="config-group" id="cfg-api-group" style="display:none;">
+        <div class="config-label">API Endpoint</div>
+        <input class="config-input" id="cfg-api-url"
+               value="http://127.0.0.1:8420"
+               placeholder="http://127.0.0.1:8420"
+               style="width:300px;">
+      </div>
+    </div>
+  </div>
+
+  <div class="boot-line" style="animation-delay:2.0s">
+    <button class="btn" id="btn-start" onclick="startSession()">Initialize Session →</button>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- MAIN DASHBOARD                                                -->
+<!-- ============================================================ -->
+<div id="main-screen">
+  <div class="topbar">
+    <span class="topbar-brand">REALM</span>
+    <div class="topbar-status">
+      <span><span class="status-dot"></span> <span id="status-agents">100</span> agents</span>
+      <span><span id="status-ticks">30</span> ticks</span>
+      <span id="status-region">global</span>
+      <span id="status-mode">mode: mock</span>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-panel="ask" onclick="switchTab(this)">01 Ask</div>
+    <div class="tab" data-panel="scenario" onclick="switchTab(this)">02 Scenario</div>
+    <div class="tab" data-panel="network" onclick="switchTab(this)">03 Network</div>
+    <div class="tab" data-panel="about" onclick="switchTab(this)">04 About</div>
+  </div>
+
+  <!-- Panel 1: ASK REALM -->
+  <div class="panel active" id="panel-ask">
+    <div class="panel-title">Ask REALM a prediction question</div>
+
+    <div class="question-input-wrap">
+      <span class="prompt-char">›</span>
+      <input type="text" class="question-input" id="question-input"
+             placeholder="Will crypto markets rally in May 2026?"
+             onkeydown="if(event.key==='Enter') askQuestion()">
+    </div>
+    <button class="btn" onclick="askQuestion()" id="btn-ask">Run Prediction</button>
+
+    <div class="output" id="ask-output"></div>
+  </div>
+
+  <!-- Panel 2: SCENARIO INJECTION -->
+  <div class="panel" id="panel-scenario">
+    <div class="panel-title">Inject a scenario and observe the delta</div>
+
+    <div id="scenario-baseline-info" style="margin-bottom:16px;color:var(--text-dim);font-size:12px;">
+      Run a baseline prediction in the Ask panel first.
+    </div>
+
+    <div id="scenario-form" style="display:none;">
+      <div class="config-label">Baseline Question</div>
+      <div id="scenario-q" style="margin-bottom:16px;color:var(--text);"></div>
+
+      <!-- Sprint 14 WP5: feed source selector -->
+      <div class="config-label">Feed Source</div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:10px;font-size:12px;color:var(--text-dim);">
+        <label><input type="radio" name="feed-source" value="manual" checked onchange="onFeedSourceChange('manual')"> manual text</label>
+        <label><input type="radio" name="feed-source" value="rss" onchange="onFeedSourceChange('rss')"> RSS feed</label>
+        <label><input type="radio" name="feed-source" value="url" onchange="onFeedSourceChange('url')"> paste URL</label>
+      </div>
+      <div id="feed-rss-row" style="display:none;margin-bottom:10px;">
+        <select class="config-input" id="feed-rss-select" onchange="onFeedSourceChange('rss')" style="margin-bottom:8px;width:100%;">
+          <option value="">— select a feed —</option>
+        </select>
+        <button class="btn" type="button" onclick="loadFeedItems()" id="btn-load-feed" style="margin-bottom:8px;">Load headlines</button>
+        <div id="feed-items" style="font-size:12px;color:var(--text-dim);"></div>
+      </div>
+      <div id="feed-url-row" style="display:none;margin-bottom:10px;">
+        <input class="config-input" type="text" id="feed-url-input" placeholder="https://example.com/feed.xml" style="width:100%;margin-bottom:8px;">
+        <button class="btn" type="button" onclick="loadFeedItems()" id="btn-load-url" style="margin-bottom:8px;">Load headlines</button>
+        <div id="feed-url-items" style="font-size:12px;color:var(--text-dim);"></div>
+      </div>
+
+      <div class="config-label">Inject News / Feed / Event</div>
+      <textarea class="scenario-input" id="scenario-text"
+                placeholder="e.g. 'Federal Reserve announces emergency 75bps rate cut citing systemic banking risks'"></textarea>
+      <button class="btn" onclick="runScenario()" id="btn-scenario" style="margin-bottom:16px;">Inject & Re-run →</button>
+
+      <div class="output" id="scenario-output"></div>
+    </div>
+  </div>
+
+  <!-- Panel 3: NETWORK -->
+  <div class="panel" id="panel-network">
+    <div class="panel-title">Agent Interaction Network</div>
+    <canvas id="network-canvas"></canvas>
+    <div id="net-color-trait" class="label" style="margin-top:6px;">coloring by: opinion</div>
+    <div class="net-legend" style="display:flex;gap:14px;font-size:12px;margin-top:4px;color:#9aa;">
+      <span><span style="display:inline-block;width:10px;height:10px;background:rgba(90,138,90,0.9);border-radius:50%;vertical-align:middle;"></span> high (supporting)</span>
+      <span><span style="display:inline-block;width:10px;height:10px;background:rgba(100,100,100,0.6);border-radius:50%;vertical-align:middle;"></span> neutral</span>
+      <span><span style="display:inline-block;width:10px;height:10px;background:rgba(138,90,90,0.9);border-radius:50%;vertical-align:middle;"></span> low (opposing)</span>
+    </div>
+    <div class="agent-log" id="agent-log"></div>
+    <div class="hint">
+      Each node is an agent. Lines show engagement events. Color intensity = opinion strength on last prediction.
+      <span id="net-shown-count"></span>
+    </div>
+  </div>
+
+  <!-- Panel 4: ABOUT -->
+  <div class="panel" id="panel-about">
+    <div class="panel-title">About REALM</div>
+    <pre class="output" id="about-body" style="margin:0;white-space:pre;overflow-x:auto;"></pre>
+  </div>
+</div>
+
+<script>
+// ======================================================================
+// STATE
+// ======================================================================
+const STATE = {
+  agents: 100,
+  ticks: 30,
+  region: 'global',
+  drift: true,
+  transit: true,
+  branches: 5,
+  baselineQuestion: null,
+  baselineResult: null,
+  activeCategory: null,
+  agentNodes: [],
+  running: false,
+  aboutRendered: false,
+  mode: 'mock',
+  apiUrl: 'http://127.0.0.1:8420',
+  apiHealthy: null,   // null = unknown, true = ok, false = last call errored
+};
+
+function onModeChange(value) {
+  const grp = document.getElementById('cfg-api-group');
+  if (grp) grp.style.display = value === 'live' ? 'block' : 'none';
+}
+
+// Generic predict-endpoint caller. Returns:
+//   - the parsed JSON object (with extra _fellBackToMock=false) on success,
+//   - null in MOCK mode (caller should pull from SAMPLE_PREDICTIONS),
+//   - a sentinel { _fellBackToMock: true, ...mock } on live error.
+// Never throws — protects the typewriter from freezing on a bad fetch.
+async function fetchPrediction({ question, scenarioFeed = null }) {
+  if (STATE.mode !== 'live') return null;
+  try {
+    const body = {
+      question: question,
+      n_agents: STATE.agents,
+      n_ticks: STATE.ticks,
+      n_branches: STATE.branches,
+    };
+    if (scenarioFeed) body.scenario_feed = scenarioFeed;
+    const resp = await fetch(`${STATE.apiUrl}/api/predict`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    if (!resp.ok) {
+      const text = await resp.text().catch(() => `HTTP ${resp.status}`);
+      throw new Error(`HTTP ${resp.status}: ${text.substring(0, 120)}`);
+    }
+    const data = await resp.json();
+    STATE.apiHealthy = true;
+    updateModeIndicator();
+    data._fellBackToMock = false;
+    return data;
+  } catch (err) {
+    STATE.apiHealthy = false;
+    updateModeIndicator();
+    console.error('predict API error:', err);
+    const fallback = scenarioFeed
+      ? (SAMPLE_PREDICTIONS[(STATE.activeCategory || 'balanced') + '_scenario'] || SAMPLE_PREDICTIONS.balanced_scenario)
+      : (SAMPLE_PREDICTIONS[STATE.activeCategory || 'balanced'] || SAMPLE_PREDICTIONS.balanced);
+    return { ...fallback, _fellBackToMock: true, _apiError: String(err.message || err) };
+  }
+}
+
+function updateModeIndicator() {
+  const el = document.getElementById('status-mode');
+  if (!el) return;
+  if (STATE.mode === 'mock') {
+    el.textContent = 'mode: mock';
+    el.style.color = '';
+  } else if (STATE.apiHealthy === false) {
+    el.textContent = 'mode: live (error)';
+    el.style.color = 'var(--red, #b07070)';
+  } else {
+    el.textContent = 'mode: live';
+    el.style.color = 'var(--green-bright)';
+  }
+}
+
+// Sprint 16 metric — keep this in sync with the live test count after
+// running pytest. Boot screen reads it via #boot-tests.
+const TEST_COUNT = 777;
+
+// ======================================================================
+// PREDICTION CATEGORIES (mirrors config/prediction_categories.json)
+// Pure-JS port of CategoryRouter — keyword routing only, no LLM.
+// ======================================================================
+const PREDICTION_CATEGORIES = [
+  { id: 'politics', label: 'Politics & Elections',
+    primary: ['political_spectrum','authority_compliance','herd_susceptibility','contrarian_tendency','social_dominance'],
+    keywords: ['election','elected','president','presidential','vote','voter','ballot','congress','senate','senator','governor','parliament','polling','policy','law','regulation','government','party','democrat','republican','conservative','liberal','referendum','sanctions','diplomacy','treaty','campaign'],
+    subcategories: ['elections','legislation','geopolitics','executive_orders'] },
+  { id: 'economics', label: 'Economics & Macro',
+    primary: ['financial_optimism','loss_aversion','risk_appetite','analytical_depth','patience'],
+    keywords: ['fed','interest rate','inflation','cpi','gdp','recession','unemployment','jobs','housing','mortgage','fiscal','monetary','central bank','stimulus','taper','quantitative'],
+    subcategories: ['monetary_policy','labor_market','housing','fiscal_policy'] },
+  { id: 'crypto', label: 'Crypto & Digital Assets',
+    primary: ['risk_appetite','fomo_susceptibility','financial_optimism','herd_susceptibility','impulsivity'],
+    keywords: ['bitcoin','btc','ethereum','eth','crypto','blockchain','defi','nft','token','altcoin','exchange','wallet','mining','halving','staking'],
+    subcategories: ['price_action','protocol_events','regulatory','adoption'] },
+  { id: 'sports', label: 'Sports & Competition',
+    primary: ['herd_susceptibility','risk_appetite','fomo_susceptibility','impulsivity','social_dominance'],
+    keywords: ['game','match','championship','playoff','final','score','win','team','player','coach','season','tournament','league','cup','medal','olympic'],
+    subcategories: ['game_outcomes','championships','player_performance','transfers'] },
+  { id: 'markets', label: 'Financial Markets',
+    primary: ['financial_optimism','loss_aversion','risk_appetite','analytical_depth','herd_susceptibility'],
+    keywords: ['s&p','nasdaq','dow','stock','market','rally','crash','bull','bear','correction','earnings','ipo','merger','acquisition','oil','gold','commodity','forex'],
+    subcategories: ['indices','commodities','forex','corporate_events'] },
+  { id: 'culture', label: 'Culture & Society',
+    primary: ['openness','extraversion','herd_susceptibility','fomo_susceptibility','communication_assertiveness'],
+    keywords: ['oscar','grammy','emmy','billboard','movie','album','viral','trend','celebrity','social media','tiktok','youtube','streaming','cancel','controversy'],
+    subcategories: ['entertainment','social_trends','public_opinion','viral_events'] },
+  { id: 'science', label: 'Science & Technology',
+    primary: ['analytical_depth','openness','patience','risk_appetite','information_sharing'],
+    keywords: ['ai','artificial intelligence','fda','drug','vaccine','space','launch','nasa','spacex','discovery','research','paper','study','climate','energy','quantum','breakthrough'],
+    subcategories: ['ai_ml','space','health_fda','energy_climate','fundamental_research'] },
+  { id: 'geopolitics', label: 'Geopolitics & Conflict',
+    primary: ['authority_compliance','social_dominance','contrarian_tendency','empathy','risk_appetite'],
+    keywords: ['war','warfare','conflict','ceasefire','sanction','nato','u.n.','united nations','alliance','invade','invasion','nuclear','missile','troops','territory','coup','regime','border','refugee','putin','russia','ukraine','china','taiwan','iran','israel','gaza'],
+    subcategories: ['conflicts','diplomacy','sanctions','alliances'] },
+];
+
+function _escapeRegex(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+
+function routeCategory(question) {
+  const q = (question || '').toLowerCase().trim();
+  if (!q) return null;
+  let best = null, bestHits = 0, bestMatched = [];
+  let secondHits = 0;
+  for (const c of PREDICTION_CATEGORIES) {
+    let hits = 0;
+    const matched = [];
+    for (const kw of c.keywords) {
+      const re = new RegExp('\\b' + _escapeRegex(kw) + 's?\\b');
+      if (re.test(q)) { hits++; matched.push(kw); }
+    }
+    if (hits > bestHits) { secondHits = bestHits; best = c; bestHits = hits; bestMatched = matched; }
+    else if (hits > secondHits) { secondHits = hits; }
+  }
+  if (!best || bestHits === 0) return null;
+  let subcategory = null;
+  for (const sub of best.subcategories) {
+    if (q.includes(sub.toLowerCase().replace(/_/g, ' ')) || q.includes(sub.toLowerCase())) {
+      subcategory = sub; break;
+    }
+  }
+  return { id: best.id, label: best.label, primary: best.primary,
+           subcategory, matched: bestMatched, hits: bestHits };
+}
+
+// ======================================================================
+// SIMULATED PREDICTION DATA
+// Normalde FastAPI backend'e bağlanır. Burada demo amaçlı simüle ediliyor.
+// ======================================================================
+const SAMPLE_PREDICTIONS = {
+  politics: {
+    probability: 0.43, confidence: 'medium',
+    answer: 'UNCERTAIN — leaning NO',
+    drivers: [
+      'political_spectrum cluster split: high-PDI countries (MY, RU) lean authority-compliant; low-PDI (DK, NZ) lean contrarian',
+      'authority_compliance positively correlated with herd_susceptibility — base-rate advantage to incumbent narratives',
+      'tradition_vs_progress mean 0.51 — population near-symmetric, no decisive ideology pull',
+    ],
+    dissent: 'Latin-American cluster (12% of agents) shows strong contrarian_tendency + low authority_compliance — possible swing bloc if mobilized',
+    trait_shifts: { political_spectrum: -0.01, authority_compliance: +0.02, herd_susceptibility: +0.03 },
+    agents_supporting: 0.43, agents_opposing: 0.41, agents_neutral: 0.16,
+  },
+  politics_scenario: {
+    probability: 0.58, confidence: 'medium-high',
+    answer: 'UNCERTAIN — leaning YES',
+    drivers: [
+      'injected event shifted authority_compliance +0.08 in news-trusting clusters',
+      'herd_susceptibility cascade pulled 19% of neutral agents into supporting bloc',
+      'contrarian_tendency suppressed −0.05 by stress_crisis drift events',
+    ],
+    dissent: 'Anti-establishment cluster (15% of agents) hardened — political_spectrum dispersed further from mean',
+    trait_shifts: { political_spectrum: +0.02, authority_compliance: +0.08, herd_susceptibility: +0.06, contrarian_tendency: -0.05 },
+    agents_supporting: 0.58, agents_opposing: 0.27, agents_neutral: 0.15,
+  },
+
+  economics: {
+    probability: 0.51, confidence: 'medium',
+    answer: 'TOSS-UP',
+    drivers: [
+      'financial_optimism mean 0.54 — slightly above neutral, cautious not bullish',
+      'loss_aversion high (0.62 mean) — population biased toward defensive readings',
+      'analytical_depth correlated with patience — 38% of agents wait-and-see posture',
+    ],
+    dissent: 'Younger-cohort agents (under-30 demographic, 22%) show sharply higher risk_appetite — willing to position against macro consensus',
+    trait_shifts: { financial_optimism: -0.02, loss_aversion: +0.01, patience: +0.02 },
+    agents_supporting: 0.51, agents_opposing: 0.36, agents_neutral: 0.13,
+  },
+  economics_scenario: {
+    probability: 0.66, confidence: 'medium-high',
+    answer: 'LEANING YES',
+    drivers: [
+      'injected Fed event shifted financial_optimism +0.09 across rate-sensitive clusters',
+      'loss_aversion dropped −0.06 mean — perceived downside reduced after dovish guidance',
+      'risk_appetite spike +0.07 in mortgage / housing-exposed agents',
+    ],
+    dissent: 'Inflation-hawk cluster (11%) flagged authority_compliance + contrarian_tendency mix — skeptical of "transitory" framing',
+    trait_shifts: { financial_optimism: +0.09, loss_aversion: -0.06, risk_appetite: +0.07, patience: -0.03 },
+    agents_supporting: 0.66, agents_opposing: 0.22, agents_neutral: 0.12,
+  },
+
+  crypto: {
+    probability: 0.38, confidence: 'medium',
+    answer: 'UNCERTAIN — leaning NO',
+    drivers: [
+      'risk_appetite cluster split: Asia-Pacific agents bullish (0.84 mean), EU cautious (0.76)',
+      'financial_optimism depressed by recent negative_social drift events',
+      'herd_susceptibility high (0.82) — crowd will amplify whichever direction breaks first',
+      'loss_aversion asymmetry: 62% of agents show loss_aversion > 0.40',
+    ],
+    dissent: 'Minority cluster (18% of agents) shows strong contrarian_tendency + high risk_appetite — potential early movers if catalyst appears',
+    trait_shifts: { risk_appetite: -0.03, financial_optimism: -0.05, herd_susceptibility: +0.02 },
+    agents_supporting: 0.38, agents_opposing: 0.44, agents_neutral: 0.18,
+  },
+  crypto_scenario: {
+    probability: 0.61, confidence: 'medium-high',
+    answer: 'UNCERTAIN — leaning YES',
+    drivers: [
+      'injected feed shifted financial_optimism +0.12 across 71% of agents',
+      'risk_appetite cluster convergence: Asia-Pacific + Americas now aligned bullish',
+      'herd_susceptibility cascade triggered: initial 18% contrarian cluster pulled 23% neutral agents',
+      'loss_aversion dropped −0.08 mean — agents perceive less downside after rate cut signal',
+    ],
+    dissent: 'European cluster (14% of agents) remains cautious — authority_compliance high, skeptical of Fed intervention narrative',
+    trait_shifts: { risk_appetite: +0.06, financial_optimism: +0.12, herd_susceptibility: +0.05, loss_aversion: -0.08 },
+    agents_supporting: 0.61, agents_opposing: 0.25, agents_neutral: 0.14,
+  },
+
+  sports: {
+    probability: 0.46, confidence: 'medium',
+    answer: 'UNCERTAIN',
+    drivers: [
+      'herd_susceptibility dominates — fanbase polling tracks recent results, not season aggregate',
+      'social_dominance cluster (32% of agents) treats prediction as identity signal, not probability',
+      'fomo_susceptibility spike around playoff windows — short-horizon bias',
+    ],
+    dissent: 'Analytical-depth subgroup (9%) decouples from herd: backs underdog when contrarian_tendency > 0.6',
+    trait_shifts: { herd_susceptibility: +0.04, fomo_susceptibility: +0.03, social_dominance: +0.01 },
+    agents_supporting: 0.46, agents_opposing: 0.39, agents_neutral: 0.15,
+  },
+  sports_scenario: {
+    probability: 0.62, confidence: 'medium',
+    answer: 'LEANING YES',
+    drivers: [
+      'injected upset / star-injury event shifted herd_susceptibility +0.06 in fan clusters',
+      'fomo_susceptibility +0.08 — narrative momentum compounds',
+      'risk_appetite spike pulled neutral fans into the supporting bloc',
+    ],
+    dissent: 'Statistician cluster (7%) anchored to base rates — flagged as a noise-immune subgroup',
+    trait_shifts: { herd_susceptibility: +0.06, fomo_susceptibility: +0.08, risk_appetite: +0.04, impulsivity: +0.03 },
+    agents_supporting: 0.62, agents_opposing: 0.26, agents_neutral: 0.12,
+  },
+
+  markets: {
+    probability: 0.49, confidence: 'medium',
+    answer: 'TOSS-UP',
+    drivers: [
+      'financial_optimism + loss_aversion both elevated — split sentiment, low conviction',
+      'herd_susceptibility (0.71) means index moves will accelerate once a direction is set',
+      'analytical_depth cluster (22% of agents) treats current valuation as overextended',
+    ],
+    dissent: 'Retail-leaning cluster (28%) shows fomo_susceptibility > 0.6 — willing to chase late breakouts',
+    trait_shifts: { financial_optimism: -0.01, loss_aversion: +0.02, risk_appetite: -0.02 },
+    agents_supporting: 0.49, agents_opposing: 0.38, agents_neutral: 0.13,
+  },
+  markets_scenario: {
+    probability: 0.64, confidence: 'medium-high',
+    answer: 'LEANING YES',
+    drivers: [
+      'injected earnings beat shifted financial_optimism +0.10 across institutional-proxy agents',
+      'risk_appetite +0.06 — cash-on-sidelines narrative deployed',
+      'loss_aversion suppressed −0.05 — agents revise downside scenarios outward',
+    ],
+    dissent: 'Macro-bear cluster (12%) holds — analytical_depth high, anchored to multiple-compression thesis',
+    trait_shifts: { financial_optimism: +0.10, loss_aversion: -0.05, risk_appetite: +0.06, patience: -0.02 },
+    agents_supporting: 0.64, agents_opposing: 0.24, agents_neutral: 0.12,
+  },
+
+  culture: {
+    probability: 0.55, confidence: 'medium',
+    answer: 'LEANING YES',
+    drivers: [
+      'openness + extraversion combo predicts viral propagation in 64% of agents',
+      'herd_susceptibility amplifies whichever opinion the early majority claims',
+      'fomo_susceptibility (0.69) pulls neutral agents toward whatever feels rising',
+    ],
+    dissent: 'Tradition-leaning cluster (16%) resists — tradition_vs_progress < 0.4 + low openness combination',
+    trait_shifts: { openness: +0.03, extraversion: +0.02, herd_susceptibility: +0.05 },
+    agents_supporting: 0.55, agents_opposing: 0.29, agents_neutral: 0.16,
+  },
+  culture_scenario: {
+    probability: 0.71, confidence: 'high',
+    answer: 'LIKELY YES',
+    drivers: [
+      'viral catalyst shifted fomo_susceptibility +0.11 — TikTok / social-media propagation modeled',
+      'communication_assertiveness +0.07 in opinion-leader clusters → secondary cascade',
+      'openness +0.05 — population baseline pulled toward novelty acceptance',
+    ],
+    dissent: 'Cultural-counterpunch cluster (10%) hardened: high contrarian_tendency + low openness',
+    trait_shifts: { openness: +0.05, extraversion: +0.04, fomo_susceptibility: +0.11, communication_assertiveness: +0.07 },
+    agents_supporting: 0.71, agents_opposing: 0.18, agents_neutral: 0.11,
+  },
+
+  science: {
+    probability: 0.42, confidence: 'medium',
+    answer: 'UNCERTAIN — leaning NO',
+    drivers: [
+      'analytical_depth + patience combo dominant — agents demand more evidence before committing',
+      'authority_compliance positively correlated with information_sharing — institutional channels lead',
+      'risk_appetite asymmetric — agents support exploration but resist committing capital',
+    ],
+    dissent: 'High-openness early-adopter cluster (14%) shows positive bias on speculative breakthroughs',
+    trait_shifts: { analytical_depth: +0.02, openness: +0.01, patience: +0.03 },
+    agents_supporting: 0.42, agents_opposing: 0.40, agents_neutral: 0.18,
+  },
+  science_scenario: {
+    probability: 0.58, confidence: 'medium',
+    answer: 'LEANING YES',
+    drivers: [
+      'injected breakthrough event shifted openness +0.06 across analytical clusters',
+      'information_sharing +0.08 — agents propagate findings, raising consensus',
+      'risk_appetite +0.04 — willingness to commit on early-stage signals',
+    ],
+    dissent: 'Skeptic cluster (13%) wants replication — high analytical_depth + low fomo_susceptibility',
+    trait_shifts: { openness: +0.06, information_sharing: +0.08, risk_appetite: +0.04, patience: -0.03 },
+    agents_supporting: 0.58, agents_opposing: 0.28, agents_neutral: 0.14,
+  },
+
+  geopolitics: {
+    probability: 0.49, confidence: 'medium',
+    answer: 'TOSS-UP — leaning NO',
+    drivers: [
+      'Sprint 16 regime_consolidation + diplomatic_stalemate events bias the population toward status-quo / non-escalation',
+      'authority_compliance + social_dominance combo varies sharply by country block',
+      'empathy cluster modulates attitudes toward refugee / civilian-cost framings',
+      'contrarian_tendency hardened by sanctions_pressure — anti-establishment frame on extended deadlock',
+    ],
+    dissent: 'High-empathy cohort (~17%) prioritizes humanitarian framing over geopolitical realism — vote against the strategic consensus',
+    trait_shifts: { authority_compliance: -0.02, social_dominance: -0.03, contrarian_tendency: +0.02, empathy: -0.02 },
+    agents_supporting: 0.28, agents_opposing: 0.36, agents_neutral: 0.36,
+  },
+  geopolitics_scenario: {
+    probability: 0.57, confidence: 'medium',
+    answer: 'LEANING YES',
+    drivers: [
+      'injected escalation event overrides regime_consolidation pull — social_dominance +0.06 in pro-intervention clusters',
+      'authority_compliance +0.05 — flag-rally effect on news-trusting agents',
+      'risk_appetite +0.04 — agents accept higher cost ceilings under acute threat framing',
+      'Sprint 16 sanctions_pressure event amplified loss_aversion in the dissenting bloc — but does not flip the majority',
+    ],
+    dissent: 'Anti-war cluster (~16%) hardened — empathy + contrarian_tendency mix amplified by negative_social drift',
+    trait_shifts: { authority_compliance: +0.05, social_dominance: +0.06, risk_appetite: +0.04, empathy: +0.02 },
+    agents_supporting: 0.41, agents_opposing: 0.30, agents_neutral: 0.29,
+  },
+
+  balanced: {
+    probability: 0.50, confidence: 'low',
+    answer: 'UNDETERMINED — no category match',
+    drivers: [
+      'no category keywords matched the question',
+      'engine routed to balanced fallback: all 24 traits weighted equally',
+      'consensus is broad but low-conviction without a category emphasis',
+    ],
+    dissent: 'No dissent cluster identified — population is ideologically heterogeneous on this question',
+    trait_shifts: {},
+    agents_supporting: 0.50, agents_opposing: 0.34, agents_neutral: 0.16,
+  },
+  balanced_scenario: {
+    probability: 0.55, confidence: 'low-medium',
+    answer: 'UNDETERMINED — small lift from injected context',
+    drivers: [
+      'injected feed produced broad but shallow trait drift (no single trait dominates)',
+      'herd_susceptibility +0.03 — generic mood-contagion lift across the population',
+      'no category-specific channel was activated by the scenario text',
+    ],
+    dissent: 'Category-undetermined: re-phrasing the baseline question with category keywords would yield a sharper signal',
+    trait_shifts: { herd_susceptibility: +0.03, openness: +0.01 },
+    agents_supporting: 0.55, agents_opposing: 0.30, agents_neutral: 0.15,
+  },
+};
+
+// ======================================================================
+// ABOUT REALM (rendered into 04 About on first tab switch)
+// ======================================================================
+const ABOUT_TEXT = `
+┌──────────────────────────────────────────────────────────────────────┐
+│  ABOUT REALM                                                         │
+│  Astrological Swarm Intelligence Prediction Engine                   │
+└──────────────────────────────────────────────────────────────────────┘
+
+─── 1. WHAT IS REALM? ──────────────────────────────────────────────────
+
+REALM is a collective sentiment simulation platform that models how
+diverse populations react to events, news, and scenarios. It combines
+LLM-powered contextual analysis with agent-based swarm simulation to
+answer two distinct types of questions:
+
+  1. BASELINE: "How likely is X?" — answered primarily by LLM
+     analysis grounded in current data (via optional web research),
+     with swarm sentiment as a secondary signal (Sprint 19 baseline
+     blend: 85-95% LLM / 5-15% sim).
+
+  2. SCENARIO: "If Y happens, how does the likelihood of X change?" —
+     answered primarily by swarm simulation (Sprint 19 scenario blend:
+     40% LLM / 60% sim). Modeling how agent populations with diverse
+     personality traits shift their positions in response to injected
+     events is REALM's unique capability. Prediction markets tell you
+     the current odds; they cannot tell you how those odds would
+     change under hypothetical scenarios.
+
+Honest framing: REALM is NOT a market-beating point-prediction engine.
+Sprint 18 backtesting against Polymarket-resolved markets showed
+simulation alone produces near-random Brier scores (0.247) and the
+LLM-dominant blend (Sprint 19 recalibration) is the right balance
+for baseline accuracy. The simulation's value is in scenario response
+modeling, population sentiment breakdowns, and counterfactual
+analysis — not standalone prediction.
+
+
+─── 2. THE TRAIT DIVERSIFICATION PROBLEM ───────────────────────────────
+
+Random trait assignment fails. It produces gaussian agents with no
+clustering, no cultural inertia, no biographical specificity.
+
+Demographics alone are also insufficient. Two agents with the same
+country and the same age can have radically different personalities.
+Demographics give you the shape of a country; they do not give you the
+shape of a person.
+
+REALM uses a BlendedAdapter that combines three independent signals:
+
+  · Astrological mapping  (60%) — birth-time-deterministic trait
+    vectors via Swiss Ephemeris natal charts. NOT used as a predictive
+    astrology claim. Used as a reproducible, time-seeded diversification
+    mechanism that produces non-random personality distributions.
+
+  · Big Five psychometric mapping  (25%) — OCEAN→24 trait derivation
+    with facet-level granularity, validated against the Johnson
+    IPIP-NEO-120 dataset (N=612,711).
+
+  · Hofstede cultural dimensions  (15%) — country-level cultural
+    modifiers across 66 nations.
+
+Framing: birth-time-seeded trait mapping produces population
+distributions that pass psychometric (BF 8/8 PASS) and biographical
+(Astro DA=0.718, N=22) validity checks. That makes it a viable
+alternative to random or demographic-only approaches. Causation is not
+claimed.
+
+
+─── 3. HOW PREDICTION WORKS ────────────────────────────────────────────
+
+  1. Agents are initialized with traits, placed in a social network
+     topology (small-world + scale-free hybrid).
+
+  2. The question is parsed into simulation parameters — domain,
+     sentiment polarity, time horizon, branches.
+
+  3. Sprint 11 adds CATEGORY ROUTING. The question is routed to one of
+     nine prediction categories (politics, economics, crypto, sports,
+     markets, culture, science, geopolitics, balanced). Each category
+     declares primary / secondary / suppressed trait lists.
+
+  4. Multi-branch simulation runs (default: 5 branches × N ticks).
+
+  5. Agents post, engage, drift — their trait vectors shift via the
+     ExperienceDriftEngine (15 event types — Sprint 16 added regime_consolidation, diplomatic_stalemate, sanctions_pressure to model status-quo geopolitical dynamics).
+
+  6. Transit modulation introduces time-varying collective mood shifts.
+
+  7. Consensus is aggregated as a weighted population mean across the
+     active category's primary / secondary / suppressed traits. Primary
+     traits scale 2×, suppressed scale 0.25×. Different categories
+     therefore produce different consensus numbers from the same
+     population.
+
+  8. Scenario injection: a news feed is parsed into the knowledge graph,
+     mood contagion propagates, and the same question is re-simulated to
+     measure delta.
+
+
+─── 3b. LLM INTEGRATION (Sprint 17) ────────────────────────────────────
+
+  REALM uses the LLM as a partner to the simulation, not a replacement.
+  When REALM_LLM_CATEGORY_BACKEND is set + an API key is configured:
+
+    • Category routing: the LLM classifies the question first (so
+      "Will Musk win his case?" routes to politics, not sports).
+      Keyword matching is the fallback when the LLM times out, errors,
+      or returns low confidence.
+    • Question analysis: the LLM extracts what is being predicted,
+      what YES/NO mean, the relevant traits, and a calibrated factual
+      prior.
+    • Probability blending: final = (1-w)*sim + w*llm_prior, where w
+      is per-category (science 0.7, sports 0.4, crypto 0.3, etc.). The
+      simulation models crowd dynamics; the LLM provides factual
+      context. Both numbers are surfaced separately so divergence is
+      visible.
+    • Scenario analysis: when scenario_feed is provided, the LLM reads
+      it semantically — "US strikes Iran" and "US supports Iran" produce
+      different per-trait perturbations even when their word counts are
+      similar. The pre-Sprint-17 sentiment-word counter is the fallback.
+    • Result narrative: a question-specific headline, drivers,
+      dissenting view, confidence note, and caveat, generated after the
+      simulation runs. The dashboard shows them when present and falls
+      back to template text when the LLM is unavailable.
+
+  Calibration runs (scripts/calibrate_categories.py) explicitly
+  disable the LLM so the Sprint 16 calibration numbers (geopolitics
+  49.20%, spread 4.14pp) stay deterministic.
+
+
+─── 4. VALIDATION ──────────────────────────────────────────────────────
+
+  · Big Five:        8/8 criteria PASS  (Johnson IPIP-NEO-120, N=612,711)
+  · Astrological:    4/4 criteria PASS  (DA=0.718, Pearson r=0.309,
+                                         22-figure celebrity cohort)
+  · Facet-level:     13/13 PASS
+  · Tests:           ${TEST_COUNT} automated tests across 16 sprints
+
+Full methodology: outputs/realm_milestone_report.md.
+
+
+─── 5. LIMITATIONS & HONEST BOUNDARIES ─────────────────────────────────
+
+  · Sprint 18 Polymarket backtest (5 resolved markets, scale 50x10x3)
+    showed: LLM-only Brier 0.117, LLM+sim 0.165, sim-only 0.247
+    (≈random). Sprint 19 recalibrated baseline blend weights to be
+    LLM-dominant (0.85-0.95) and scenario weights to be sim-dominant
+    (0.40 LLM / 0.60 sim). Larger backtests are ongoing; baseline
+    accuracy depends primarily on LLM prior quality and optional
+    web research grounding, not on the simulation.
+
+  · Agent traits are synthetic. They model population-level tendencies,
+    not individual people.
+
+  · Astrological trait mapping is a diversification tool, not a causal
+    claim about astrology.
+
+  · Prediction probabilities are simulation-derived consensus, not
+    statistical forecasts.
+
+  · The engine captures sentiment dynamics, not objective truth. It
+    models how a diverse population would react, not what will happen.
+
+  · political_spectrum was hard-coded to 0.5 in all 66 countries before
+    Sprint 11. Sprint 11 introduced a Hofstede pdi+idv proxy that
+    produces a ~0.41 spread across countries (DK=0.33, MY=0.74); Sprint
+    14 added a V-Dem libdem blend (60% Hofstede + 40% inverted V-Dem)
+    that widened the spread to ~0.55 with Pearson(Hofstede, blend) =
+    0.88. This is still a country-level DISPERSION proxy — not a
+    polarization measurement and not a left/right label.
+
+  · Celebrity cohort (N=22) is small and selection-biased. Validation
+    results should be read as "promising direction", not "proven
+    methodology".
+
+  · The per-branch metric is a yes/no probability over a single
+    threshold; Sprint 12 added the three-way (supporting / opposing /
+    neutral) population breakdown shown alongside each prediction.
+    Sprint 13 sigmoid-calibrated the probability to weighted population
+    deviation (was saturating to 1.0 before). Sprint 15 added per-
+    category drift_volatility / drift_asymmetry / sigmoid sensitivity
+    knobs so different categories have visibly different baselines and
+    scenario response curves. Sprint 16 added a baseline_probability_
+    offset fine-tune knob and three new geopolitics-pool drift events
+    (regime_consolidation, diplomatic_stalemate, sanctions_pressure).
+
+
+─── 6. TECHNICAL SUMMARY ───────────────────────────────────────────────
+
+  Engine:        Python 3.11 + Kerykeion (Swiss Ephemeris)
+  Adapters:      Astrological (60%) + BigFive (25%) + Demographic (15%)
+  Traits:        24 personality dimensions
+  Countries:     66 (population-weighted agent distribution)
+  Categories:    9 (8 prediction + 1 balanced fallback)
+  Drift:         15 event types, config-driven DriftEventBridge
+  Network:       Small-world + Scale-free hybrid topology
+  Validation:    BF 8/8 PASS · Astro 4/4 PASS · ${TEST_COUNT} tests
+  Performance:   10K agents × 30 ticks in 20.4 min (single CPU)
+
+──────────────────────────────────────────────────────────────────────────
+`;
+
+// ======================================================================
+// TYPEWRITER ENGINE
+// ======================================================================
+class Typewriter {
+  constructor(container, speed = 18) {
+    this.container = container;
+    this.speed = speed;
+    this.queue = [];
+    this.running = false;
+  }
+
+  addLine(text, className = '') {
+    this.queue.push({ text, className });
+    if (!this.running) this._next();
+    return this;
+  }
+
+  addHTML(html) {
+    this.queue.push({ html });
+    if (!this.running) this._next();
+    return this;
+  }
+
+  addPause(ms) {
+    this.queue.push({ pause: ms });
+    if (!this.running) this._next();
+    return this;
+  }
+
+  async _next() {
+    if (this.queue.length === 0) { this.running = false; return; }
+    this.running = true;
+    const item = this.queue.shift();
+
+    if (item.pause) {
+      await sleep(item.pause);
+    } else if (item.html) {
+      const div = document.createElement('div');
+      div.innerHTML = item.html;
+      this.container.appendChild(div);
+      this.container.scrollTop = this.container.scrollHeight;
+    } else {
+      const div = document.createElement('div');
+      div.className = 'output-line ' + (item.className || '');
+      this.container.appendChild(div);
+
+      const cursor = document.createElement('span');
+      cursor.className = 'typing-cursor';
+      div.appendChild(cursor);
+
+      for (let i = 0; i < item.text.length; i++) {
+        div.insertBefore(document.createTextNode(item.text[i]), cursor);
+        this.container.scrollTop = this.container.scrollHeight;
+        await sleep(this.speed + Math.random() * 8);
+      }
+      div.removeChild(cursor);
+    }
+    this._next();
+  }
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// ======================================================================
+// BOOT → SESSION
+// ======================================================================
+function startSession() {
+  STATE.agents = parseInt(document.getElementById('cfg-agents').value);
+  STATE.ticks = parseInt(document.getElementById('cfg-ticks').value);
+  STATE.region = document.getElementById('cfg-region').value;
+  STATE.drift = document.getElementById('cfg-drift').value === 'on';
+  STATE.transit = document.getElementById('cfg-transit').value === 'on';
+  STATE.branches = parseInt(document.getElementById('cfg-branches').value);
+  STATE.mode = document.getElementById('cfg-mode').value;
+  STATE.apiUrl = (document.getElementById('cfg-api-url').value || 'http://127.0.0.1:8420').trim().replace(/\/$/, '');
+  STATE.apiHealthy = null;
+
+  document.getElementById('boot-screen').style.display = 'none';
+  document.getElementById('main-screen').style.display = 'block';
+
+  document.getElementById('status-agents').textContent = STATE.agents.toLocaleString();
+  document.getElementById('status-ticks').textContent = STATE.ticks;
+  document.getElementById('status-region').textContent = STATE.region;
+  updateModeIndicator();
+
+  // Initialize agent network
+  initNetwork();
+}
+
+// ======================================================================
+// TAB SWITCHING
+// ======================================================================
+function switchTab(el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('panel-' + el.dataset.panel).classList.add('active');
+
+  if (el.dataset.panel === 'network') {
+    requestAnimationFrame(() => resizeCanvas());
+  }
+  if (el.dataset.panel === 'about' && !STATE.aboutRendered) {
+    renderAbout();
+  }
+}
+
+async function renderAbout() {
+  const target = document.getElementById('about-body');
+  if (!target) return;
+  STATE.aboutRendered = true;
+  target.textContent = '';
+  // Char-by-char typewriter that respects ASCII layout. Speed 6 ms keeps the
+  // 6-section page under ~15 s and avoids janking the rest of the UI.
+  for (const ch of ABOUT_TEXT) {
+    target.textContent += ch;
+    if (ch === '\n') {
+      await sleep(8);
+    } else if (Math.random() < 0.06) {
+      await sleep(2);
+    }
+  }
+}
+
+// ======================================================================
+// ASK PREDICTION
+// ======================================================================
+// ---- Sprint 14 WP5: feed source selector + loader ----------------------
+
+function onFeedSourceChange(value) {
+  document.getElementById('feed-rss-row').style.display = value === 'rss' ? 'block' : 'none';
+  document.getElementById('feed-url-row').style.display = value === 'url' ? 'block' : 'none';
+  if (value === 'rss' && STATE.mode === 'live' && !STATE._feedsLoaded) {
+    populateFeedDropdown();
+  }
+}
+
+async function populateFeedDropdown() {
+  if (STATE.mode !== 'live') return;
+  try {
+    const resp = await fetch(`${STATE.apiUrl}/api/feeds`);
+    if (!resp.ok) return;
+    const data = await resp.json();
+    const sel = document.getElementById('feed-rss-select');
+    if (!sel) return;
+    // Reset first option only, append the rest.
+    sel.innerHTML = '<option value="">— select a feed —</option>';
+    (data.feeds || []).forEach(f => {
+      const opt = document.createElement('option');
+      opt.value = f.url;
+      opt.textContent = `${f.label || f.id} [${f.category_hint || ''}]`;
+      sel.appendChild(opt);
+    });
+    STATE._feedsLoaded = true;
+  } catch (err) {
+    // Mock mode or error — silently leave the dropdown empty.
+  }
+}
+
+async function loadFeedItems() {
+  if (STATE.mode !== 'live') {
+    appendToScenarioText('[mock mode] live feed loading is disabled. Use manual text.');
+    return;
+  }
+  const source = document.querySelector('input[name="feed-source"]:checked')?.value || 'manual';
+  let body = null;
+  let containerId = '';
+  if (source === 'rss') {
+    const url = document.getElementById('feed-rss-select').value;
+    if (!url) return;
+    body = { rss_url: url };
+    containerId = 'feed-items';
+  } else if (source === 'url') {
+    const url = document.getElementById('feed-url-input').value.trim();
+    if (!url) return;
+    body = { rss_url: url };
+    containerId = 'feed-url-items';
+  } else {
+    return;
+  }
+  try {
+    const resp = await fetch(`${STATE.apiUrl}/api/feed/parse`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    if (!resp.ok) {
+      document.getElementById(containerId).textContent = `[error] ${resp.status} ${resp.statusText}`;
+      return;
+    }
+    const data = await resp.json();
+    const items = data.items || [];
+    const container = document.getElementById(containerId);
+    container.innerHTML = '';
+    if (!items.length) {
+      container.textContent = '[no headlines returned]';
+      return;
+    }
+    items.forEach(it => {
+      const row = document.createElement('div');
+      row.style.cursor = 'pointer';
+      row.style.padding = '4px 0';
+      row.style.borderBottom = '1px solid rgba(150,150,150,0.15)';
+      const sentTag = it.sentiment_score >= 0
+        ? `<span style="color:var(--green-bright)">+${it.sentiment_score.toFixed(2)}</span>`
+        : `<span style="color:#b07070">${it.sentiment_score.toFixed(2)}</span>`;
+      row.innerHTML = `${sentTag} ${it.title} <em style="color:#888">[${it.detected_category || '?'}]</em>`;
+      row.onclick = () => {
+        document.getElementById('scenario-text').value = it.content || it.title;
+      };
+      container.appendChild(row);
+    });
+  } catch (err) {
+    document.getElementById(containerId).textContent = `[error] ${err}`;
+  }
+}
+
+function appendToScenarioText(msg) {
+  const ta = document.getElementById('scenario-text');
+  if (!ta) return;
+  ta.value = ta.value ? `${ta.value}\n${msg}` : msg;
+}
+
+async function askQuestion() {
+  const input = document.getElementById('question-input');
+  const q = input.value.trim();
+  if (!q || STATE.running) return;
+  STATE.running = true;
+
+  const output = document.getElementById('ask-output');
+  output.innerHTML = '';
+  const tw = new Typewriter(output, 14);
+
+  // Sprint 11: route question into a prediction category before mocking
+  const cat = routeCategory(q);
+  STATE.activeCategory = cat ? cat.id : 'balanced';
+
+  tw.addLine('', '');
+  tw.addLine(`┌ PREDICTION QUERY`, 'label');
+  tw.addLine(`│ "${q}"`, '');
+  if (cat) {
+    const subPart = cat.subcategory ? ` · subcategory: ${cat.subcategory}` : '';
+    tw.addLine(`│ [category: ${cat.id}${subPart}]`, 'label');
+    tw.addLine(`│ primary traits: ${cat.primary.slice(0, 3).join(', ')}`, '');
+  } else {
+    tw.addLine(`│ [category: balanced — no keywords matched, falling back]`, 'label');
+  }
+  tw.addLine(`│ agents: ${STATE.agents.toLocaleString()}  ticks: ${STATE.ticks}  branches: ${STATE.branches}`, '');
+  // Sprint 19 WP4: hint that the live response may revise the category
+  // (LLM-first routing on the server may pick a different / multi-cat).
+  if (STATE.mode === 'live') {
+    tw.addLine(`│ [server-side: LLM-first routing + analyzers may revise above]`, '');
+  }
+  tw.addLine(`└─────────────────────────────────────`, '');
+  tw.addPause(300);
+
+  // Simulated agent processing
+  const totalAgents = STATE.agents;
+  const shown = Math.min(totalAgents, 80);
+  tw.addLine('', '');
+  tw.addLine('processing agents...', 'label');
+
+  for (let i = 0; i < 5; i++) {
+    const batch = Math.floor((i + 1) * totalAgents / 5);
+    tw.addPause(200 + Math.random() * 300);
+    tw.addLine(`  ${batch.toLocaleString()} / ${totalAgents.toLocaleString()} agents evaluated`, '');
+  }
+
+  tw.addPause(400);
+  tw.addLine('running multi-branch simulation...', 'label');
+
+  for (let b = 1; b <= STATE.branches; b++) {
+    tw.addPause(150);
+    tw.addLine(`  branch ${b}/${STATE.branches}: ${STATE.ticks} ticks completed`, '');
+  }
+
+  tw.addPause(500);
+  tw.addLine('aggregating consensus...', 'label');
+  tw.addPause(600);
+
+  // Sprint 12: live mode hits the FastAPI predict endpoint; mock mode keeps
+  // the Sprint 11 SAMPLE_PREDICTIONS path. Live errors fall back to mock so
+  // the UI never freezes on a network failure.
+  let pred = await fetchPrediction({ question: q })
+            || SAMPLE_PREDICTIONS[STATE.activeCategory]
+            || SAMPLE_PREDICTIONS.balanced;
+  if (pred._fellBackToMock) {
+    tw.addLine(`│  fallback: showing mock data for ${STATE.activeCategory}`, '');
+  }
+
+  tw.addLine('', '');
+  tw.addLine('┌ RESULT', 'label');
+  tw.addLine(`│`, '');
+  // Sprint 17 WP5: LLM headline (if API returned one) sits above the
+  // raw numbers so the user reads the question-specific framing first.
+  if (pred.headline) {
+    tw.addLine(`│  ${pred.headline}`, 'label');
+    tw.addLine(`│`, '');
+  }
+  // Sprint 19 WP4: server-side category resolution (may differ from JS preview)
+  if (pred.category_id && pred.category_id !== STATE.activeCategory) {
+    tw.addLine(`│  routed to      ${pred.category_id}`, 'label');
+  }
+  // Sprint 18 WP2 — web research diagnostic
+  if (pred.web_research_used) {
+    const n = (pred.web_sources && pred.web_sources.length) || 0;
+    tw.addLine(`│  web research   ACTIVE — ${n} source${n === 1 ? '' : 's'} consulted`, '');
+  }
+  tw.addLine(`│  probability    ${(pred.probability * 100).toFixed(1)}%`, '');
+  tw.addLine(`│  answer         ${pred.answer}`, '');
+  tw.addLine(`│  confidence     ${pred.confidence}`, '');
+  // Sprint 17 WP2 + Sprint 19 WP1: surface blending transparency.
+  // For baseline calls the blend leans LLM (≥85%); for scenarios it
+  // flips to sim-dominant (60%). Showing the breakdown lets the user
+  // see exactly how the final number was computed.
+  if (pred.llm_prior !== null && pred.llm_prior !== undefined) {
+    tw.addLine(`│  llm prior      ${(pred.llm_prior * 100).toFixed(1)}%${pred.prior_reasoning ? ' (' + pred.prior_reasoning + ')' : ''}`, '');
+  }
+  if (pred.simulation_probability !== null && pred.simulation_probability !== undefined) {
+    tw.addLine(`│  simulation     ${(pred.simulation_probability * 100).toFixed(1)}%`, '');
+  }
+  if (pred.blended_probability !== null && pred.blended_probability !== undefined) {
+    tw.addLine(`│  blended        ${(pred.blended_probability * 100).toFixed(1)}%`, '');
+  }
+  tw.addLine(`│`, '');
+  tw.addLine(`│  supporting     ${(pred.agents_supporting * 100).toFixed(0)}% of agents`, '');
+  tw.addLine(`│  opposing       ${(pred.agents_opposing * 100).toFixed(0)}% of agents`, '');
+  tw.addLine(`│  neutral        ${(pred.agents_neutral * 100).toFixed(0)}% of agents`, '');
+  tw.addLine(`│`, '');
+  // Sprint 17 WP5: prefer LLM-generated narrative drivers when present;
+  // fall back to template-based drivers otherwise.
+  tw.addLine(`│  KEY DRIVERS`, 'label');
+  const drivers = (pred.narrative_drivers && pred.narrative_drivers.length > 0)
+    ? pred.narrative_drivers : pred.drivers;
+  drivers.forEach(d => {
+    tw.addLine(`│  — ${d}`, '');
+  });
+  tw.addLine(`│`, '');
+  tw.addLine(`│  DISSENTING VIEW`, 'label');
+  tw.addLine(`│  — ${pred.dissent_narrative || pred.dissent}`, '');
+  tw.addLine(`│`, '');
+  tw.addLine(`│  TRAIT SHIFTS (population mean, tick 0 → ${STATE.ticks})`, 'label');
+  Object.entries(pred.trait_shifts).forEach(([k, v]) => {
+    // Sprint 19.2: snap sub-thousandth values to +0 so we don't show
+    // "-0.000" (IEEE 754 signed zero) next to "0.000" inconsistently.
+    const vSnap = Math.abs(v) < 0.0005 ? 0 : v;
+    const sign = vSnap > 0 ? '+' : '';
+    tw.addLine(`│    ${k.padEnd(24)} ${sign}${vSnap.toFixed(3)}`, '');
+  });
+  // Sprint 17 WP4: confidence note + caveat from LLM narrative
+  if (pred.confidence_note) {
+    tw.addLine(`│`, '');
+    tw.addLine(`│  ${pred.confidence_note}`, '');
+  }
+  if (pred.caveat) {
+    tw.addLine(`│  ${pred.caveat}`, '');
+  }
+  tw.addLine(`└─────────────────────────────────────`, '');
+
+  // Save baseline
+  STATE.baselineQuestion = q;
+  STATE.baselineResult = pred;
+
+  // Enable scenario panel
+  document.getElementById('scenario-baseline-info').style.display = 'none';
+  document.getElementById('scenario-form').style.display = 'block';
+  document.getElementById('scenario-q').textContent = `"${q}"`;
+
+  // Animate network
+  animateNetworkPrediction(pred);
+
+  STATE.running = false;
+}
+
+// ======================================================================
+// SCENARIO INJECTION
+// ======================================================================
+async function runScenario() {
+  const feed = document.getElementById('scenario-text').value.trim();
+  if (!feed || STATE.running || !STATE.baselineResult) return;
+  STATE.running = true;
+
+  const output = document.getElementById('scenario-output');
+  output.innerHTML = '';
+  const tw = new Typewriter(output, 14);
+
+  tw.addLine('', '');
+  tw.addLine('┌ SCENARIO INJECTION', 'label');
+  tw.addLine(`│ feed: "${feed.substring(0, 80)}${feed.length > 80 ? '...' : ''}"`, '');
+  tw.addLine(`│ re-running ${STATE.branches} branches with injected context`, '');
+  tw.addLine(`└─────────────────────────────────────`, '');
+  tw.addPause(400);
+
+  tw.addLine('', '');
+  tw.addLine('injecting feed into agent knowledge graph...', 'label');
+  tw.addPause(300);
+  tw.addLine('  news channel: parsed (semantic LLM analysis when active)', '');
+  tw.addPause(200);
+  tw.addLine('  mood contagion: propagating through network', '');
+  tw.addPause(300);
+  // Sprint 19.1: dropped the hardcoded "drift events: financial_gain +
+  // leadership_act triggered" line — it was meaningless template text
+  // that didn't reflect the actual scenario. The real event_summary
+  // appears later in the DELTA ANALYSIS block when present.
+  tw.addPause(400);
+
+  tw.addLine('', '');
+  tw.addLine('re-simulating...', 'label');
+
+  for (let b = 1; b <= STATE.branches; b++) {
+    tw.addPause(150);
+    tw.addLine(`  branch ${b}/${STATE.branches}: ${STATE.ticks} ticks — drift divergence detected at tick ${5 + Math.floor(Math.random() * 8)}`, '');
+  }
+
+  tw.addPause(600);
+
+  // Sprint 12: live mode re-routes the scenario through the FastAPI endpoint
+  // with scenario_feed; mock mode keeps the Sprint 11 _scenario lookup.
+  const scenKey = (STATE.activeCategory || 'balanced') + '_scenario';
+  const liveScen = await fetchPrediction({
+    question: STATE.baselineQuestion,
+    scenarioFeed: feed,
+  });
+  const scenPred = liveScen
+    || SAMPLE_PREDICTIONS[scenKey]
+    || SAMPLE_PREDICTIONS.balanced_scenario;
+  if (scenPred._fellBackToMock) {
+    tw.addLine(`│  fallback: showing mock scenario delta for ${STATE.activeCategory}`, '');
+  }
+  const baseline = STATE.baselineResult;
+  const delta = (scenPred.probability - baseline.probability);
+  const deltaSign = delta > 0 ? '+' : '';
+
+  tw.addLine('', '');
+  tw.addLine('┌ DELTA ANALYSIS', 'label');
+  tw.addLine(`│`, '');
+  // Sprint 19.1: when the LLM scenario analyzer ran, surface its
+  // event_summary so the user knows what the simulation interpreted
+  // the scenario as.
+  if (scenPred.scenario_event_summary) {
+    tw.addLine(`│  ${scenPred.scenario_event_summary}`, 'label');
+    tw.addLine(`│`, '');
+  }
+  tw.addLine(`│  BASELINE        ${(baseline.probability * 100).toFixed(1)}%`, '');
+  tw.addLine(`│  SCENARIO        ${(scenPred.probability * 100).toFixed(1)}%`, '');
+  tw.addLine(`│  DELTA           ${deltaSign}${(delta * 100).toFixed(1)} percentage points`, '');
+  // Sprint 19.2: when the API returns a decomposed delta (LLM active +
+  // scenario), surface the mechanical blend-rebalancing component so
+  // the user can tell it apart from the actual simulation response.
+  // Sprint 19's dual blend weights pull probability toward sim signal
+  // when switching to scenario mode — that pull happens regardless of
+  // scenario content.
+  if (scenPred.delta_blend_shift !== null && scenPred.delta_blend_shift !== undefined &&
+      scenPred.delta_sim_movement !== null && scenPred.delta_sim_movement !== undefined) {
+    const bs = scenPred.delta_blend_shift;
+    const sm = scenPred.delta_sim_movement;
+    const bsSign = bs >= 0 ? '+' : '';
+    const smSign = sm >= 0 ? '+' : '';
+    tw.addLine(`│   of which:`, '');
+    tw.addLine(`│     blend rebalancing   ${bsSign}${(bs * 100).toFixed(1)}pp  (mechanical, from baseline 0.90/0.10 → scenario 0.40/0.60 weight flip)`, '');
+    tw.addLine(`│     simulation response ${smSign}${(sm * 100).toFixed(1)}pp  (actual sim movement under perturbation)`, '');
+  }
+  tw.addLine(`│`, '');
+  tw.addLine(`│  answer shift    ${baseline.answer}`, '');
+  tw.addLine(`│                → ${scenPred.answer}`, '');
+  tw.addLine(`│`, '');
+  tw.addLine(`│  confidence      ${baseline.confidence} → ${scenPred.confidence}`, '');
+  tw.addLine(`│`, '');
+  tw.addLine(`│  WHAT CHANGED`, 'label');
+  // Sprint 19.1: prefer the LLM's narrative_drivers (scenario-specific)
+  // over the template drivers when present.
+  const drivers = (scenPred.narrative_drivers && scenPred.narrative_drivers.length > 0)
+    ? scenPred.narrative_drivers : scenPred.drivers;
+  drivers.forEach(d => {
+    tw.addLine(`│  — ${d}`, '');
+  });
+  tw.addLine(`│`, '');
+  tw.addLine(`│  PERSISTENT DISSENT`, 'label');
+  tw.addLine(`│  — ${scenPred.dissent_narrative || scenPred.dissent}`, '');
+  tw.addLine(`│`, '');
+  // Sprint 19.1: TWO trait sections so the user sees what the
+  // scenario PUSHED separately from what the sim DRIFTED on top.
+  // Sprint 13's trait_shifts deliberately excludes the perturbation
+  // (drift only) — that made scenario trait_shifts look like ±0 even
+  // when probability moved a lot. The new scenario_perturbation
+  // field surfaces the per-trait push directly.
+  if (scenPred.scenario_perturbation && Object.keys(scenPred.scenario_perturbation).length > 0) {
+    tw.addLine(`│  WHAT THE SCENARIO PUSHED (LLM-derived per-trait deltas)`, 'label');
+    Object.entries(scenPred.scenario_perturbation).forEach(([k, v]) => {
+      const vSnap = Math.abs(v) < 0.0005 ? 0 : v;
+      const s = vSnap > 0 ? '+' : '';
+      tw.addLine(`│    ${k.padEnd(24)} ${s}${vSnap.toFixed(3)}`, '');
+    });
+    tw.addLine(`│`, '');
+  }
+  tw.addLine(`│  WHAT THE SIM DRIFTED (post-perturbation drift over ${STATE.ticks} ticks)`, 'label');
+  const baseShifts = baseline.trait_shifts;
+  const scenShifts = scenPred.trait_shifts;
+  const allTraits = new Set([...Object.keys(baseShifts), ...Object.keys(scenShifts)]);
+  allTraits.forEach(t => {
+    const bv = baseShifts[t] || 0;
+    const sv = scenShifts[t] || 0;
+    const d = sv - bv;
+    const dSnap = Math.abs(d) < 0.0005 ? 0 : d;
+    const s = dSnap > 0 ? '+' : '';
+    tw.addLine(`│    ${t.padEnd(24)} ${s}${dSnap.toFixed(3)}`, '');
+  });
+  tw.addLine(`└─────────────────────────────────────`, '');
+
+  // Animate network with new data
+  animateNetworkPrediction(scenPred, true);
+
+  STATE.running = false;
+}
+
+// ======================================================================
+// AGENT NETWORK VISUALIZATION
+// ======================================================================
+function initNetwork() {
+  const n = Math.min(STATE.agents, 80);
+  STATE.agentNodes = [];
+  const regions = ['AS', 'EU', 'AM', 'ME', 'AF'];
+
+  for (let i = 0; i < n; i++) {
+    STATE.agentNodes.push({
+      id: i,
+      x: 0.1 + Math.random() * 0.8,
+      y: 0.1 + Math.random() * 0.8,
+      region: regions[Math.floor(Math.random() * regions.length)],
+      opinion: 0.5,
+      vx: (Math.random() - 0.5) * 0.001,
+      vy: (Math.random() - 0.5) * 0.001,
+      connections: [],
+    });
+  }
+
+  // Create some connections (small-world-ish)
+  for (let i = 0; i < n; i++) {
+    const numConn = 2 + Math.floor(Math.random() * 3);
+    for (let c = 0; c < numConn; c++) {
+      let target;
+      if (Math.random() < 0.7) {
+        // prefer nearby
+        const candidates = STATE.agentNodes
+          .filter((_, j) => j !== i)
+          .sort((a, b) => {
+            const da = Math.hypot(a.x - STATE.agentNodes[i].x, a.y - STATE.agentNodes[i].y);
+            const db = Math.hypot(b.x - STATE.agentNodes[i].x, b.y - STATE.agentNodes[i].y);
+            return da - db;
+          });
+        target = candidates[Math.floor(Math.random() * Math.min(5, candidates.length))].id;
+      } else {
+        target = Math.floor(Math.random() * n);
+      }
+      if (target !== i && !STATE.agentNodes[i].connections.includes(target)) {
+        STATE.agentNodes[i].connections.push(target);
+      }
+    }
+  }
+
+  resizeCanvas();
+  drawNetwork();
+  document.getElementById('net-shown-count').textContent =
+    `${STATE.agents.toLocaleString()} agents simulated, ${n} shown.`;
+}
+
+function resizeCanvas() {
+  const canvas = document.getElementById('network-canvas');
+  const rect = canvas.parentElement.getBoundingClientRect();
+  canvas.width = rect.width;
+  // Match the CSS breakpoints so the canvas stays in sync with viewport.
+  const w = window.innerWidth;
+  canvas.height = w <= 640 ? 260 : (w <= 1024 ? 340 : 400);
+}
+
+// Re-fit the canvas (and re-paint the last network state) on resize. Without
+// this the canvas keeps the boot-time dimensions and visualisations clip.
+window.addEventListener('resize', () => {
+  const visible = document.getElementById('panel-network')?.classList.contains('active');
+  resizeCanvas();
+  if (visible) drawNetwork(STATE.baselineResult ? true : null, _activeColorTrait());
+});
+
+function _activeColorTrait() {
+  // Sprint 14 WP4: pull the dominant primary trait of the active category
+  // so the network panel colors agents by THAT trait's distribution. When
+  // no category is active (empty/balanced fallback), fall back to 'opinion'
+  // so the legacy generic supporting/opposing/neutral tinting still works.
+  const cat = STATE.activeCategory;
+  if (!cat || cat === 'balanced') return 'opinion';
+  const found = (typeof PREDICTION_CATEGORIES !== 'undefined')
+    ? PREDICTION_CATEGORIES.find(c => c.id === cat)
+    : null;
+  if (!found || !found.primary || found.primary.length === 0) return 'opinion';
+  return found.primary[0];
+}
+
+function _updateNetColorTraitLabel(colorTrait) {
+  const el = document.getElementById('net-color-trait');
+  if (!el) return;
+  el.textContent = `coloring by: ${colorTrait || 'opinion'}`;
+}
+
+function drawNetwork(highlights = null, colorTrait = null) {
+  const canvas = document.getElementById('network-canvas');
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width;
+  const h = canvas.height;
+  const nodes = STATE.agentNodes;
+
+  ctx.clearRect(0, 0, w, h);
+
+  // Draw connections
+  nodes.forEach(node => {
+    node.connections.forEach(targetId => {
+      const target = nodes[targetId];
+      if (!target) return;
+      ctx.beginPath();
+      ctx.moveTo(node.x * w, node.y * h);
+      ctx.lineTo(target.x * w, target.y * h);
+      ctx.strokeStyle = 'rgba(100,100,100,0.08)';
+      ctx.lineWidth = 0.5;
+      ctx.stroke();
+    });
+  });
+
+  // Draw nodes
+  nodes.forEach(node => {
+    const px = node.x * w;
+    const py = node.y * h;
+    const r = 2.5;
+    const alpha = 0.4 + Math.abs(node.opinion - 0.5) * 1.0;
+
+    let color;
+    if (highlights) {
+      if (node.opinion > 0.55) color = `rgba(90,138,90,${alpha})`;       // supporting
+      else if (node.opinion < 0.45) color = `rgba(138,90,90,${alpha})`;  // opposing
+      else color = `rgba(100,100,100,${alpha * 0.6})`;                   // neutral
+    } else {
+      color = `rgba(150,150,150,0.3)`;
+    }
+
+    ctx.beginPath();
+    ctx.arc(px, py, r, 0, Math.PI * 2);
+    ctx.fillStyle = color;
+    ctx.fill();
+  });
+}
+
+function animateNetworkPrediction(pred, isScenario = false) {
+  // Sprint 14 WP4: color nodes by the active category's dominant primary
+  // trait (political_spectrum for politics, risk_appetite for crypto, etc.).
+  // The label below the canvas updates so the user can see WHICH trait drives
+  // the green/gray/red split. Mock mode keeps the supporting/opposing/neutral
+  // synthesis — high values become "high <trait>" (supporting), low become
+  // "low <trait>" (opposing).
+  const nodes = STATE.agentNodes;
+  const log = document.getElementById('agent-log');
+  if (!isScenario) log.innerHTML = '';
+  const colorTrait = _activeColorTrait();
+  _updateNetColorTraitLabel(colorTrait);
+
+  // Assign opinions based on prediction
+  nodes.forEach(node => {
+    const r = Math.random();
+    if (r < pred.agents_supporting) node.opinion = 0.6 + Math.random() * 0.3;
+    else if (r < pred.agents_supporting + pred.agents_opposing) node.opinion = 0.1 + Math.random() * 0.3;
+    else node.opinion = 0.4 + Math.random() * 0.2;
+  });
+
+  drawNetwork(true, colorTrait);
+
+  // Add log entries with typewriter delay
+  const prefix = isScenario ? 'scenario' : 'baseline';
+  const entries = [
+    `[${prefix}] consensus: ${(pred.probability * 100).toFixed(1)}% — ${pred.answer}`,
+    `[${prefix}] supporting: ${(pred.agents_supporting * 100).toFixed(0)}% | opposing: ${(pred.agents_opposing * 100).toFixed(0)}% | neutral: ${(pred.agents_neutral * 100).toFixed(0)}%`,
+  ];
+  pred.drivers.slice(0, 2).forEach(d => {
+    entries.push(`[${prefix}] driver: ${d.substring(0, 80)}`);
+  });
+
+  entries.forEach((entry, i) => {
+    setTimeout(() => {
+      const line = document.createElement('div');
+      line.className = 'agent-log-line';
+      line.style.animationDelay = '0s';
+      line.textContent = entry;
+      log.appendChild(line);
+      log.scrollTop = log.scrollHeight;
+    }, i * 200);
+  });
+
+  // Animate signal propagation
+  animateSignals(pred);
+}
+
+function animateSignals(pred) {
+  const canvas = document.getElementById('network-canvas');
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width;
+  const h = canvas.height;
+  const nodes = STATE.agentNodes;
+
+  let signals = [];
+  // Generate some signal particles
+  for (let i = 0; i < 30; i++) {
+    const sourceIdx = Math.floor(Math.random() * nodes.length);
+    const source = nodes[sourceIdx];
+    if (source.connections.length === 0) continue;
+    const targetIdx = source.connections[Math.floor(Math.random() * source.connections.length)];
+    const target = nodes[targetIdx];
+    if (!target) continue;
+    signals.push({
+      sx: source.x, sy: source.y,
+      tx: target.x, ty: target.y,
+      t: 0,
+      delay: i * 80,
+      speed: 0.015 + Math.random() * 0.01,
+      positive: source.opinion > 0.5,
+    });
+  }
+
+  const startTime = performance.now();
+
+  function tick(now) {
+    const elapsed = now - startTime;
+
+    // Redraw base (carry the active color trait so signal repaints don't
+    // overwrite the Sprint 14 WP4 trait-aware coloring)
+    drawNetwork(true, _activeColorTrait());
+
+    // Draw active signals
+    let active = false;
+    signals.forEach(sig => {
+      if (elapsed < sig.delay) { active = true; return; }
+      sig.t += sig.speed;
+      if (sig.t > 1) return;
+      active = true;
+
+      const x = (sig.sx + (sig.tx - sig.sx) * sig.t) * w;
+      const y = (sig.sy + (sig.ty - sig.sy) * sig.t) * h;
+      const alpha = 1 - sig.t;
+      const color = sig.positive ? `rgba(90,138,90,${alpha})` : `rgba(138,90,90,${alpha})`;
+
+      ctx.beginPath();
+      ctx.arc(x, y, 2, 0, Math.PI * 2);
+      ctx.fillStyle = color;
+      ctx.fill();
+    });
+
+    if (active) requestAnimationFrame(tick);
+  }
+
+  requestAnimationFrame(tick);
+}
+
+// ======================================================================
+// KEYBOARD SHORTCUT
+// ======================================================================
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    document.getElementById('main-screen').style.display = 'none';
+    document.getElementById('boot-screen').style.display = 'flex';
+  }
+});
+
+// Render the dynamic test count into the boot screen so the KPI never goes
+// stale. Update TEST_COUNT (top of script) after each pytest run.
+(function _setBootTests() {
+  const el = document.getElementById('boot-tests');
+  if (el) el.textContent = TEST_COUNT.toString();
+})();
+</script>
+</body>
+</html>
