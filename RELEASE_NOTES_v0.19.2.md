@@ -1,6 +1,6 @@
 # REALM v0.19.2
 
-Cumulative release covering Sprints 7-19.2 — the entire post-Sprint-6 development arc, including the LLM-as-brain integration (Sprint 17), Polymarket backtest validation (Sprint 18), and the repositioning that followed (Sprint 19). The codebase is now stable and accompanied by an academic article draft.
+Cumulative release covering Sprints 7-19.2 — the entire post-Sprint-6 development arc, including the LLM-as-brain integration (Sprint 17), Polymarket backtest validation (Sprint 18), and the repositioning that followed (Sprint 19). The codebase is now stable, MIT-licensed (Copyright © 2026 Suvar Ergun), and accompanied by an academic article draft.
 
 📄 **Article:** [`REALM_ARTICLE_DRAFT.md`](./REALM_ARTICLE_DRAFT.md) — *REALM: Collective Sentiment Simulation Through Time-Seeded Trait Diversification*
 
