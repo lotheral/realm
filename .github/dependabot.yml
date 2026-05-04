@@ -1,0 +1,15 @@
+# Dependabot — automated security alerts for Python deps.
+# https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+
+version: 2
+updates:
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    # Showcase repo: only open PRs for security advisories, not routine
+    # version bumps. Keeps the PR list quiet.
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "security"
