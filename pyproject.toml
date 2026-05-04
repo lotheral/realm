@@ -23,7 +23,7 @@ kerykeion = ["kerykeion>=5.12"]
 web = ["fastapi>=0.110", "uvicorn>=0.27"]
 sim = ["networkx>=3.2", "pandas>=2.1", "aiohttp>=3.9", "requests>=2.31", "timezonefinder>=6.0", "feedparser>=6.0"]
 llm = ["anthropic>=0.40", "openai>=1.40", "ollama>=0.4"]
-dev = ["pytest>=8.0", "pytest-asyncio", "pytest-cov", "ruff", "black"]
+dev = ["pytest>=9.0.3", "pytest-asyncio", "pytest-cov", "ruff", "black"]
 
 [build-system]
 requires = ["setuptools>=68"]
