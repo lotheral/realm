@@ -65,6 +65,33 @@ class TestRegimeFlags:
             mod.regime_flags("wide_open")
 
 
+class TestRelationPrediction:
+    def test_rally_event_predicts_positive(self):
+        ev = make_event(
+            event_summary=(
+                "Hijacked airliners strike the towers; thousands are killed "
+                "in the attack."
+            ),
+            question="Will the public approve of the President's job performance?",
+            observed_shift_pp=35.0, before_value=51.0, after_value=86.0,
+        )
+        row = mod.relation_prediction(ev)
+        assert row["predicted_shift_pp"] == 10.0
+        assert row["event_type"] == "external_attack"
+        assert row["question_type"] == "incumbent_standing"
+        assert row["hit"] is True
+        assert row["rationale"]
+
+    def test_unknown_pair_abstains_and_misses(self):
+        ev = make_event(
+            event_summary="The annual flower festival opened this weekend.",
+            question="Will it rain tomorrow?",
+        )
+        row = mod.relation_prediction(ev)
+        assert row["predicted_shift_pp"] == 0.0
+        assert row["hit"] is False
+
+
 class TestEventToRequestKwargs:
     def test_builds_blinded_request_kwargs(self):
         ev = make_event()

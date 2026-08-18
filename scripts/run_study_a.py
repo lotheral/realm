@@ -28,6 +28,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from realm.validation.relation import relation_direction  # noqa: E402
 from realm.validation.retrodiction import (  # noqa: E402
     DirectionalResult,
     breakdown,
@@ -79,6 +80,40 @@ def event_to_request_kwargs(
         "n_branches": n_branches,
         "master_seed": seed,
         **regime_flags(event.blinding_regime),
+    }
+
+
+_RELATION_MAGNITUDE_PP = 10.0  # placeholder magnitude — the relation channel's claim is DIRECTION-ONLY
+
+
+def relation_prediction(event: StudyAEvent) -> dict:
+    """Analytic (no-simulation) prediction from the frozen relation matrix.
+
+    Polarity 0 = honest abstention (counted as a zero-prediction miss by
+    the metrics layer, same rule as a neutral valence parse).
+    """
+    polarity, event_type, question_type, rationale = relation_direction(
+        event.event_summary, event.question,
+    )
+    predicted_pp = polarity * _RELATION_MAGNITUDE_PP
+    return {
+        "event_id": event.event_id,
+        "regime": event.blinding_regime,
+        "confidence": event.confidence,
+        "verified": event.verified,
+        "tags": list(event.tags),
+        "population": event.population.describe(),
+        "predicted_shift_pp": predicted_pp,
+        "observed_shift_pp": event.observed_shift_pp,
+        "hit": (
+            predicted_pp != 0.0
+            and event.observed_shift_pp != 0.0
+            and (predicted_pp > 0) == (event.observed_shift_pp > 0)
+        ),
+        "event_type": event_type,
+        "question_type": question_type,
+        "rationale": rationale,
+        "seconds": 0.0,
     }
 
 
@@ -147,18 +182,36 @@ def render_report(rows: list[dict], events: list[StudyAEvent], args) -> str:
     lines: list[str] = []
     lines.append(f"# Study A Retrodiction — {args.label} run")
     lines.append("")
-    lines.append(
-        f"> {time.strftime('%Y-%m-%d %H:%M')} · n_agents={args.n_agents} "
-        f"n_ticks={args.n_ticks} n_branches={args.n_branches} seed={args.seed} "
-        f"· events={len(rows)}"
-        + (f" (LIMITED subset of {len_all})" if (len_all := args.total_events) != len(rows) else "")
-    )
-    lines.append(">")
-    lines.append(
-        "> Predicted shift = `reaction.shift.support × 100` (Sprint 21 "
-        "pooled stance output). All events ran under their logged blinding "
-        "regime. A negative overall result is a valid study outcome."
-    )
+    if args.channel == "relation":
+        lines.append(
+            f"> {time.strftime('%Y-%m-%d %H:%M')} · channel=relation "
+            f"(analytic, no simulation) · events={len(rows)}"
+        )
+        lines.append(">")
+        lines.append(
+            "> Relation channel: DIRECTION-ONLY claim from the frozen "
+            "literature-prior polarity matrix (commit f2df2de); magnitudes "
+            "are fixed ±10pp placeholders and carry no information. "
+            "Polarity-0 abstentions count as zero-prediction misses."
+        )
+        lines.append(
+            "> EPISTEMICS: results on the 22-event design set are IN-SAMPLE "
+            "AT THE CLASS LEVEL (the failure classes were known when the "
+            "matrix was written); only the held-out set is a clean test."
+        )
+    else:
+        lines.append(
+            f"> {time.strftime('%Y-%m-%d %H:%M')} · n_agents={args.n_agents} "
+            f"n_ticks={args.n_ticks} n_branches={args.n_branches} seed={args.seed} "
+            f"· events={len(rows)}"
+            + (f" (LIMITED subset of {len_all})" if (len_all := args.total_events) != len(rows) else "")
+        )
+        lines.append(">")
+        lines.append(
+            "> Predicted shift = `reaction.shift.support × 100` (Sprint 21 "
+            "pooled stance output). All events ran under their logged blinding "
+            "regime. A negative overall result is a valid study outcome."
+        )
     lines.append("")
     lines.append("## Headline metrics")
     lines.append("")
@@ -188,15 +241,25 @@ def render_report(rows: list[dict], events: list[StudyAEvent], args) -> str:
     lines.append("")
     lines.append("## Per-event results")
     lines.append("")
-    lines.append("| event | regime | conf | ver | tag | predicted pp | observed pp | hit |")
-    lines.append("|---|---|---|---|---|---:|---:|---|")
-    for r in rows:
-        lines.append(
-            f"| {r['event_id']} | {r['regime']} | {r['confidence']} | "
-            f"{'Y' if r['verified'] else 'n'} | {r['tags'][0]} | "
-            f"{r['predicted_shift_pp']:+.2f} | {r['observed_shift_pp']:+.1f} | "
-            f"{'HIT' if r['hit'] else 'miss'} |"
-        )
+    if args.channel == "relation":
+        lines.append("| event | tag | event_type | question_type | predicted pp | observed pp | hit |")
+        lines.append("|---|---|---|---|---:|---:|---|")
+        for r in rows:
+            lines.append(
+                f"| {r['event_id']} | {r['tags'][0]} | {r['event_type']} | "
+                f"{r['question_type']} | {r['predicted_shift_pp']:+.1f} | "
+                f"{r['observed_shift_pp']:+.1f} | {'HIT' if r['hit'] else 'miss'} |"
+            )
+    else:
+        lines.append("| event | regime | conf | ver | tag | predicted pp | observed pp | hit |")
+        lines.append("|---|---|---|---|---|---:|---:|---|")
+        for r in rows:
+            lines.append(
+                f"| {r['event_id']} | {r['regime']} | {r['confidence']} | "
+                f"{'Y' if r['verified'] else 'n'} | {r['tags'][0]} | "
+                f"{r['predicted_shift_pp']:+.2f} | {r['observed_shift_pp']:+.1f} | "
+                f"{'HIT' if r['hit'] else 'miss'} |"
+            )
     lines.append("")
     lines.append("## Caveats")
     lines.append("")
@@ -230,6 +293,11 @@ def main() -> int:
     parser.add_argument("--out", default="outputs/study_a_results.md")
     parser.add_argument("--json", dest="json_out", default="outputs/study_a_results.json")
     parser.add_argument("--label", default="official")
+    parser.add_argument(
+        "--channel", choices=("valence", "relation"), default="valence",
+        help="valence = simulated sentiment channel; relation = analytic "
+             "frozen-matrix direction channel (no simulation)",
+    )
     args = parser.parse_args()
 
     events = load_events(args.events)
@@ -240,7 +308,10 @@ def main() -> int:
     rows: list[dict] = []
     for i, event in enumerate(events, 1):
         print(f"[{i}/{len(events)}] {event.event_id} ({event.blinding_regime}) ...", flush=True)
-        row = run_event(event, args)
+        row = (
+            relation_prediction(event) if args.channel == "relation"
+            else run_event(event, args)
+        )
         print(
             f"    predicted {row['predicted_shift_pp']:+.2f}pp vs "
             f"observed {row['observed_shift_pp']:+.1f}pp -> "
@@ -257,6 +328,7 @@ def main() -> int:
         json.dumps(
             {
                 "label": args.label,
+                "channel": args.channel,
                 "params": {
                     "n_agents": args.n_agents, "n_ticks": args.n_ticks,
                     "n_branches": args.n_branches, "seed": args.seed,
