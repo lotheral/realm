@@ -102,6 +102,7 @@ class TestLoader:
 
 
 REAL_DATASET = Path(__file__).resolve().parents[3] / "data" / "validation" / "study_a_events.json"
+HOLDOUT_DATASET = Path(__file__).resolve().parents[3] / "data" / "validation" / "study_a_holdout_events.json"
 
 KNOWN_TAGS = {"rally", "policy_shift", "confidence_index", "approval_drop"}
 
@@ -142,3 +143,28 @@ class TestRealDataset:
         assert sum(counts.values()) == len(events)
         # At least some events must be high-confidence anchors.
         assert counts["high"] >= 5
+
+
+class TestHoldoutDataset:
+    """Sprint 24 held-out set: authored after the relation matrix froze;
+    every event must be verified (no candidate numbers in a decisive test)
+    and disjoint from the design set."""
+
+    def test_loads_with_at_least_8_verified_events(self):
+        events = load_events(HOLDOUT_DATASET)
+        assert len(events) >= 8
+        assert all(ev.verified for ev in events)
+        assert all(ev.verification_note.strip() for ev in events)
+
+    def test_disjoint_from_design_set(self):
+        design_ids = {ev.event_id for ev in load_events(REAL_DATASET)}
+        holdout_ids = {ev.event_id for ev in load_events(HOLDOUT_DATASET)}
+        assert not (design_ids & holdout_ids)
+
+    def test_same_schema_rules_apply(self):
+        for ev in load_events(HOLDOUT_DATASET):
+            assert ev.tags and set(ev.tags) <= KNOWN_TAGS
+            assert not ev.population.is_unrestricted()
+            lowered = ev.event_summary.lower()
+            for banned in ("poll", "survey", "approval rating", "gallup"):
+                assert banned not in lowered, f"{ev.event_id}: leaks ({banned})"
