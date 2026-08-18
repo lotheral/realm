@@ -79,6 +79,22 @@ from realm.output.predictor import (
     observe_category_consensus,
 )
 
+# Sprint 21: the reaction math moved to realm/output/reaction.py (single
+# owner); re-imported here under the pre-Sprint-21 private names so the
+# synthesis helpers below keep reading naturally.
+from realm.output.reaction import (
+    bucket_three_way as _bucket_three_way,  # noqa: F401  (kept for test compat)
+)
+from realm.output.reaction import (
+    category_weights as _category_weights,
+)
+from realm.output.reaction import (
+    effective_traits as _effective_traits,
+)
+from realm.output.reaction import (
+    per_agent_deviations as _per_agent_deviations,
+)
+
 logger = get_logger(__name__)
 
 @asynccontextmanager
@@ -213,7 +229,6 @@ def _get_feed_parser():
 # Sprint 13 calibration knobs.
 _SIGMOID_SENSITIVITY = 8.0     # ±0.10 deviation -> ~31%-69%
 _PROBABILITY_CLAMP = (0.05, 0.95)
-_BUCKET_MIN_THRESHOLD = 0.005  # avoids all-neutral degenerate split when σ≈0
 _PERTURBATION_RATIO = 0.7      # share of agents affected by scenario_feed
 _PERTURBATION_MAX = 0.15       # cap on per-trait scenario perturbation
 _BRANCH_SEED_OFFSET = 1000     # mirrors PredictionEngine.branch_seed_offset
@@ -436,16 +451,6 @@ def _make_perturbed_agent_builder(
 # ---- Effective-trait helpers --------------------------------------------
 
 
-def _effective_traits(sim: Any, agent: Any):
-    """Return the agent's drift-applied trait vector when an
-    ExperienceDriftEngine is attached to the simulation, else the raw
-    immutable traits. Drift is bounded by ±max_drift_ratio in the engine."""
-    eng = getattr(sim, "drift_engine", None)
-    if eng is not None:
-        return eng.current_traits(agent)
-    return agent.traits
-
-
 def _trait_means(sim: Any, traits: list[str]) -> dict[str, float]:
     if not sim.agents or not traits:
         return {}
@@ -468,23 +473,6 @@ def _trait_stdevs(sim: Any, traits: list[str]) -> dict[str, float]:
     return out
 
 
-def _category_weights(category: CategoryMatch) -> dict[str, float]:
-    weighted: dict[str, float] = {}
-    for trait in category.primary_traits:
-        weighted[trait] = 2.0
-    for trait in category.secondary_traits:
-        weighted.setdefault(trait, 1.0)
-    for trait in category.suppressed_traits:
-        weighted.setdefault(trait, 0.25)
-    if not weighted:
-        # Pure balanced category — equal weight on every TraitVector axis so
-        # the calibrator still has something to compare against.
-        from realm.personality.trait_vector import TraitVector
-
-        weighted = dict.fromkeys(TraitVector.trait_names(), 1.0)
-    return weighted
-
-
 def _weighted_population_deviation(
     sim: Any, baseline_means: Mapping[str, float], weights: Mapping[str, float],
 ) -> float:
@@ -494,33 +482,6 @@ def _weighted_population_deviation(
         w * (post_means.get(t, 0.5) - baseline_means.get(t, 0.5))
         for t, w in weights.items()
     ) / wsum
-
-
-def _per_agent_deviations(
-    sim: Any, baseline_means: Mapping[str, float], weights: Mapping[str, float],
-) -> list[float]:
-    wsum = sum(weights.values()) or 1.0
-    devs: list[float] = []
-    for agent in sim.agents:
-        eff = _effective_traits(sim, agent)
-        score = sum(
-            w * (float(getattr(eff, t, 0.5)) - baseline_means.get(t, 0.5))
-            for t, w in weights.items()
-        ) / wsum
-        devs.append(score)
-    return devs
-
-
-def _bucket_three_way(devs: list[float]) -> tuple[float, float, float]:
-    if not devs:
-        return (0.34, 0.33, 0.33)
-    sigma = statistics.pstdev(devs) if len(devs) > 1 else 0.0
-    threshold = max(_BUCKET_MIN_THRESHOLD, 0.5 * sigma)
-    sup = sum(1 for d in devs if d > threshold)
-    opp = sum(1 for d in devs if d < -threshold)
-    neu = len(devs) - sup - opp
-    n = float(len(devs))
-    return (sup / n, opp / n, neu / n)
 
 
 # ---- Synthesis helpers ---------------------------------------------------
