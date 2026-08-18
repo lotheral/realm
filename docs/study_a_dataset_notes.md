@@ -54,9 +54,28 @@
     simulation's scenario channel exactly as design §4.1 mechanism (b)
     requires.
 
-## Verification log (Task 4)
+## Verification log (Task 4 — 2026-08-18, web search)
 
-Filled during the verification pass; every `verified: true` names its
-source here and in the event's `verification_note`.
+All nine `confidence: high` events were checked against web sources.
+**Result: 9/9 verified; one numeric correction.**
 
-*(pending)*
+| event_id | outcome | source |
+|---|---|---|
+| sept11_bush_approval | confirmed 51→86 exactly | [Gallup 4912](https://news.gallup.com/poll/4912/bush-job-approval-reflects-record-rally-effect.aspx) |
+| gulf_war_bush_sr_approval | confirmed 64→89 (89 = March 1991 post-victory) | [Gallup retrospective](https://news.gallup.com/opinion/gallup/234971/george-bush-retrospective.aspx) |
+| iraq2003_bush_approval | confirmed 58→71 exactly | [Gallup 8074](https://news.gallup.com/poll/8074/iraq-war-triggers-major-rally-effect.aspx) |
+| ford_nixon_pardon | confirmed 71→50 exactly | [Gallup 23995](https://news.gallup.com/poll/23995/gerald-ford-retrospective.aspx) |
+| sandy_hook_gun_laws | confirmed 43→58 exactly (USA Today/Gallup Dec 19-22 2012) | [Gallup 159569](https://news.gallup.com/poll/159569/americans-stricter-gun-laws-oppose-bans.aspx) |
+| parkland_gun_laws | confirmed 60→67 exactly | [Gallup 229562](https://news.gallup.com/poll/229562/preference-stricter-gun-laws-highest-1993.aspx) |
+| ukraine_finland_nato | **CORRECTED** before 28→30 (Taloustutkimus Jan 2022); after 62 confirmed (Yle Mar 9-11) | [Yle](https://yle.fi/a/3-12357832), [NPR](https://www.npr.org/2022/03/03/1084112625/neutral-finland-sweden-warm-to-idea-of-nato-membership) |
+| lehman_consumer_sentiment | confirmed 70.3→57.6 exactly | [UMich ICS table](https://www.sca.isr.umich.edu/files/tbmics.pdf) |
+| covid_consumer_sentiment | confirmed 101.0→71.8 exactly | [Chicago Fed Letter 2023-490](https://www.chicagofed.org/publications/chicago-fed-letter/2023/490) |
+
+Medium/low events (13) remain `verified: false` — their numbers are
+candidates; the harness reports them in a separate tier. Verifying them
+is queued for Sprint 23 before the official run.
+
+Interesting verification finding: the Yle poll fielded Feb 23-25, 2022
+(straddling the invasion's first hours) ALREADY showed 53% — most of the
+Finnish swing happened within days of the event, supporting the tight
+attribution window.
