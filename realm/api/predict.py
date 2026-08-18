@@ -62,6 +62,7 @@ from pydantic import BaseModel, Field
 from realm import __version__ as _realm_version
 from realm.core.config import load_realm_config
 from realm.core.logging import get_logger
+from realm.demographics.population_spec import PopulationSpec
 from realm.ingestion.interfaces import SeedEvent
 
 # Sprint 14 WP5: word lists were lifted out of this module into
@@ -83,16 +84,16 @@ from realm.output.predictor import (
 # owner); re-imported here under the pre-Sprint-21 private names so the
 # synthesis helpers below keep reading naturally.
 from realm.output.reaction import (
-    bucket_three_way as _bucket_three_way,  # noqa: F401  (kept for test compat)
+    ReactionDistribution,
+    StanceShares,
+    compute_reaction_distribution,
+    stance_shift,
 )
 from realm.output.reaction import (
     category_weights as _category_weights,
 )
 from realm.output.reaction import (
     effective_traits as _effective_traits,
-)
-from realm.output.reaction import (
-    per_agent_deviations as _per_agent_deviations,
 )
 
 logger = get_logger(__name__)
@@ -237,6 +238,26 @@ _BRANCH_SEED_OFFSET = 1000     # mirrors PredictionEngine.branch_seed_offset
 # ---- Request / response schemas ------------------------------------------
 
 
+class PopulationSpecModel(BaseModel):
+    """Per-question target population (Sprint 21, design decision #2)."""
+
+    countries: list[str] = Field(default_factory=list)
+    regions: list[str] = Field(default_factory=list)
+    age_min: int | None = Field(default=None, ge=18, le=90)
+    age_max: int | None = Field(default=None, ge=18, le=90)
+    genders: list[str] = Field(default_factory=list)
+    education_levels: list[str] = Field(default_factory=list)
+
+    def to_spec(self) -> PopulationSpec:
+        return PopulationSpec(
+            countries=tuple(c.upper() for c in self.countries),
+            regions=tuple(self.regions),
+            age_min=self.age_min, age_max=self.age_max,
+            genders=tuple(self.genders),
+            education_levels=tuple(self.education_levels),
+        )
+
+
 class PredictRequest(BaseModel):
     question: str = Field(..., min_length=1, max_length=500)
     n_agents: int = Field(default=100, ge=10, le=2000)
@@ -256,6 +277,35 @@ class PredictRequest(BaseModel):
     # informed by current web context. Set False to force training-data-
     # only LLM prior (Sprint 17 behavior, useful for backtest A/B).
     enable_web_research: bool = True
+    # Sprint 21 — per-question target population. None = global (66
+    # countries, all demographics), byte-identical to pre-Sprint-21 runs.
+    population: PopulationSpecModel | None = None
+
+
+class StanceSharesModel(BaseModel):
+    support: float
+    oppose: float
+    neutral: float
+
+
+class SegmentReactionModel(BaseModel):
+    dimension: str
+    segment: str
+    n_agents: int
+    support: float
+    oppose: float
+    neutral: float
+    mean_deviation: float
+
+
+class ReactionDistributionModel(BaseModel):
+    support: float
+    oppose: float
+    neutral: float
+    n_agents: int
+    segments: list[SegmentReactionModel]
+    baseline: StanceSharesModel | None = None
+    shift: StanceSharesModel | None = None
 
 
 class PredictResponse(BaseModel):
@@ -324,6 +374,11 @@ class PredictResponse(BaseModel):
     delta_blend_shift: float | None = None
     delta_sim_movement: float | None = None
     delta_total: float | None = None
+    # Sprint 21 — reaction distribution (the first-class output; the
+    # probability above is the derived view). None on the use_sim=False
+    # fast path. baseline/shift populated only for scenario runs.
+    reaction: ReactionDistributionModel | None = None
+    population_label: str | None = None
 
 
 # ---- Sentiment parsing for scenario perturbation ------------------------
@@ -364,6 +419,7 @@ def _make_perturbed_agent_builder(
     category: CategoryMatch,
     *,
     scenario_analysis: object | None = None,
+    population_spec: PopulationSpec | None = None,
 ):
     """Return an ``agent_builder`` that perturbs agents to reflect the
     user-provided scenario_feed.
@@ -406,7 +462,9 @@ def _make_perturbed_agent_builder(
         from realm.demographics.world_generator import WorldGenerator
 
         agents = AgentFactory(seed_offsets=seed_offsets).build_batch(
-            WorldGenerator(master_seed=seed).generate(n_agents)
+            WorldGenerator(
+                master_seed=seed, population_spec=population_spec,
+            ).generate(n_agents)
         )
 
         # No-op cases: no traits to push (heuristic mode + zero scalar)
@@ -482,6 +540,43 @@ def _weighted_population_deviation(
         w * (post_means.get(t, 0.5) - baseline_means.get(t, 0.5))
         for t, w in weights.items()
     ) / wsum
+
+
+def _reaction_to_model(
+    reaction: ReactionDistribution,
+    baseline: StanceShares | None = None,
+) -> ReactionDistributionModel:
+    shift = stance_shift(reaction.stances, baseline) if baseline is not None else None
+    return ReactionDistributionModel(
+        support=round(reaction.stances.support, 4),
+        oppose=round(reaction.stances.oppose, 4),
+        neutral=round(reaction.stances.neutral, 4),
+        n_agents=reaction.n_agents,
+        segments=[
+            SegmentReactionModel(
+                dimension=s.dimension, segment=s.segment, n_agents=s.n_agents,
+                support=round(s.shares.support, 4),
+                oppose=round(s.shares.oppose, 4),
+                neutral=round(s.shares.neutral, 4),
+                mean_deviation=round(s.mean_deviation, 4),
+            )
+            for s in reaction.segments
+        ],
+        baseline=(
+            StanceSharesModel(
+                support=round(baseline.support, 4),
+                oppose=round(baseline.oppose, 4),
+                neutral=round(baseline.neutral, 4),
+            ) if baseline is not None else None
+        ),
+        shift=(
+            StanceSharesModel(
+                support=round(shift.support, 4),
+                oppose=round(shift.oppose, 4),
+                neutral=round(shift.neutral, 4),
+            ) if shift is not None else None
+        ),
+    )
 
 
 # ---- Synthesis helpers ---------------------------------------------------
@@ -600,6 +695,7 @@ def _capture_baseline_means(
     drift_asymmetry_positive: float = 1.0,
     drift_asymmetry_negative: float = 1.0,
     primary_traits: tuple[str, ...] = (),
+    population_spec: PopulationSpec | None = None,
 ) -> dict[str, float]:
     """Run a 0-tick reference sim with the unperturbed default agent_builder
     and return the trait population means at tick 0. This is the universal
@@ -619,6 +715,7 @@ def _capture_baseline_means(
         drift_asymmetry_positive=drift_asymmetry_positive,
         drift_asymmetry_negative=drift_asymmetry_negative,
         primary_traits=primary_traits,
+        population_spec=population_spec,
     )
     return _trait_means(ref_sim, traits)
 
@@ -633,6 +730,7 @@ def _run_branches(
     drift_asymmetry_positive: float = 1.0,
     drift_asymmetry_negative: float = 1.0,
     primary_traits: tuple[str, ...] = (),
+    population_spec: PopulationSpec | None = None,
 ) -> tuple[list[Any], Any, dict[str, float]]:
     """Run all branches with optional perturbation. Returns
     ``(sims, last_sim, last_tick0_means)`` where ``last_tick0_means`` is the
@@ -655,6 +753,7 @@ def _run_branches(
             drift_asymmetry_positive=drift_asymmetry_positive,
             drift_asymmetry_negative=drift_asymmetry_negative,
             primary_traits=primary_traits,
+            population_spec=population_spec,
         )
         if i == n_branches - 1 and traits_to_capture:
             last_tick0_means = _trait_means(sim, traits_to_capture)
@@ -667,8 +766,10 @@ def _calibrated_outcome(
     *, sims: list[Any], baseline_means: Mapping[str, float],
     category: CategoryMatch,
 ):
-    """Compute calibrated probability + per-agent bucket from a list of
-    completed branch sims and the universal baseline means.
+    """Compute the calibrated probability from a list of completed branch
+    sims and the universal baseline means. (Sprint 21: the per-agent
+    stance bucket moved to realm.output.reaction.compute_reaction_distribution,
+    which pools ALL branches instead of just the last one.)
 
     Sprint 15 WP4: sigmoid sensitivity is scaled per-category by
     ``category.sigmoid_sensitivity_multiplier``. Higher-volatility domains
@@ -698,11 +799,7 @@ def _calibrated_outcome(
             min(_PROBABILITY_CLAMP[1], probability + offset),
         )
 
-    # Per-agent bucket built from the LAST branch's population (which has
-    # both the perturbation and the simulation-induced drift).
-    agent_devs = _per_agent_deviations(sims[-1], baseline_means, weights)
-    sup, opp, neu = _bucket_three_way(agent_devs)
-    return probability, branch_devs, (sup, opp, neu)
+    return probability, branch_devs
 
 
 # ---- Endpoint ------------------------------------------------------------
@@ -796,6 +893,17 @@ def predict_endpoint(req: PredictRequest) -> PredictResponse:
         category = _get_router().route(req.question)
         master_seed = _resolve_seed(req)
 
+        # Sprint 21 — per-question target population (design decision #2).
+        population_spec = req.population.to_spec() if req.population is not None else None
+        if population_spec is not None:
+            try:
+                population_spec.validate()
+            except ValueError as exc:
+                raise HTTPException(status_code=400, detail=str(exc)) from exc
+        population_label = (
+            population_spec.describe() if population_spec is not None else "global"
+        )
+
         # Sprint 17 WP2: LLM question analysis (one call per request).
         # Returns None on any LLM failure path; downstream code treats
         # `None` as "no analysis available, no blending, no narrative."
@@ -868,6 +976,9 @@ def predict_endpoint(req: PredictRequest) -> PredictResponse:
                     [s.url for s in web_result.sources]
                     if web_result is not None else None
                 ),
+                # Sprint 21 — no simulation ran, so no reaction distribution
+                reaction=None,
+                population_label=population_label,
             )
 
         # Baseline means must include every trait the category cares about so
@@ -916,6 +1027,7 @@ def predict_endpoint(req: PredictRequest) -> PredictResponse:
             drift_asymmetry_positive=drift_pos,
             drift_asymmetry_negative=drift_neg,
             primary_traits=primary_traits,
+            population_spec=population_spec,
         )
 
         # Baseline run (no perturbation, no scenario feed).
@@ -930,9 +1042,15 @@ def predict_endpoint(req: PredictRequest) -> PredictResponse:
             drift_asymmetry_positive=drift_pos,
             drift_asymmetry_negative=drift_neg,
             primary_traits=primary_traits,
+            population_spec=population_spec,
         )
-        baseline_probability, baseline_branch_devs, baseline_buckets = _calibrated_outcome(
+        baseline_probability, baseline_branch_devs = _calibrated_outcome(
             sims=baseline_sims, baseline_means=baseline_means, category=category,
+        )
+        # Sprint 21 — pooled reaction distribution across ALL baseline branches.
+        weights = _category_weights(category)
+        baseline_reaction = compute_reaction_distribution(
+            baseline_sims, baseline_means, weights,
         )
         baseline_sim_probability = baseline_probability  # pre-blend snapshot
         baseline_probability, baseline_blended = _blend_with_llm_prior(
@@ -941,7 +1059,7 @@ def predict_endpoint(req: PredictRequest) -> PredictResponse:
 
         # Scenario run (only if a feed was supplied).
         scenario_probability: float | None = None
-        scenario_buckets: tuple[float, float, float] | None = None
+        scenario_reaction: ReactionDistribution | None = None
         scenario_branch_devs: list[float] | None = None
         scenario_last: Any | None = None
         scenario_tick0: dict[str, float] = {}
@@ -969,6 +1087,7 @@ def predict_endpoint(req: PredictRequest) -> PredictResponse:
                     }
             agent_builder = _make_perturbed_agent_builder(
                 req.scenario_feed, category, scenario_analysis=scenario_analysis,
+                population_spec=population_spec,
             )
             seed_event = _seed_event_from_text(req.scenario_feed, datetime.now(UTC))
             scenario_sims, scenario_last, scenario_tick0 = _run_branches(
@@ -984,9 +1103,14 @@ def predict_endpoint(req: PredictRequest) -> PredictResponse:
                 drift_asymmetry_positive=drift_pos,
                 drift_asymmetry_negative=drift_neg,
                 primary_traits=primary_traits,
+                population_spec=population_spec,
             )
-            scenario_probability, scenario_branch_devs, scenario_buckets = _calibrated_outcome(
+            scenario_probability, scenario_branch_devs = _calibrated_outcome(
                 sims=scenario_sims, baseline_means=baseline_means, category=category,
+            )
+            # Sprint 21 — pooled reaction across ALL scenario branches.
+            scenario_reaction = compute_reaction_distribution(
+                scenario_sims, baseline_means, weights,
             )
             scenario_sim_probability = scenario_probability  # pre-blend snapshot
             scenario_probability, scenario_blended = _blend_with_llm_prior(
@@ -995,7 +1119,7 @@ def predict_endpoint(req: PredictRequest) -> PredictResponse:
 
         active_probability = scenario_probability if scenario_probability is not None else baseline_probability
         active_branch_devs = scenario_branch_devs if scenario_branch_devs is not None else baseline_branch_devs
-        active_buckets = scenario_buckets if scenario_buckets is not None else baseline_buckets
+        active_reaction = scenario_reaction if scenario_reaction is not None else baseline_reaction
         active_last = scenario_last if scenario_last is not None else baseline_last
         # Drift baseline = tick-0 means of the ACTIVE branch. For scenario runs
         # this includes the perturbation, so trait_shifts reports drift only
@@ -1038,7 +1162,9 @@ def predict_endpoint(req: PredictRequest) -> PredictResponse:
             t: round(active_means.get(t, 0.5) - active_tick0.get(t, baseline_means.get(t, 0.5)), 4)
             for t in category.primary_traits
         }
-        sup, opp, neu = active_buckets
+        sup = active_reaction.stances.support
+        opp = active_reaction.stances.oppose
+        neu = active_reaction.stances.neutral
         confidence = _confidence_label_from_distance(abs(active_probability - 0.5))
 
         # Sprint 17 WP2: pick which simulation_probability + blended_probability
@@ -1137,6 +1263,15 @@ def predict_endpoint(req: PredictRequest) -> PredictResponse:
                 round(delta_total_value, 4)
                 if delta_total_value is not None else None
             ),
+            # Sprint 21 — first-class reaction distribution + population echo
+            reaction=_reaction_to_model(
+                active_reaction,
+                baseline=(
+                    baseline_reaction.stances
+                    if scenario_reaction is not None else None
+                ),
+            ),
+            population_label=population_label,
         )
     except HTTPException:
         raise
