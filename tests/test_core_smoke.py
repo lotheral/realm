@@ -2,13 +2,13 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytest
 
-from realm.core import config, exceptions, logging as rlog
+from realm.core import config, exceptions
+from realm.core import logging as rlog
 from realm.core.types import (
-    ASPECT_TYPES,
     DIGNITY_SCORE,
     PLANET_DIGNITY,
     PLANETS_ALL_PHASE1,
@@ -18,7 +18,6 @@ from realm.core.types import (
     Aspect,
     NatalChart,
     PlanetPosition,
-    TransitSnapshot,
 )
 
 
@@ -50,7 +49,7 @@ class TestVocabulary:
             "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto",
         }
         assert set(PLANET_DIGNITY.keys()) == classic
-        for p, dignities in PLANET_DIGNITY.items():
+        for _p, dignities in PLANET_DIGNITY.items():
             assert set(dignities.keys()) == {"rulership", "exaltation", "detriment", "fall"}
             # Rulership and detriment signs should be opposite
             assert dignities["rulership"] in SIGNS
@@ -79,7 +78,7 @@ class TestDataclasses:
             is_retrograde=False, speed=13.0,
         )
         chart = NatalChart(
-            birth_datetime=datetime(1990, 1, 1, 12, 0, tzinfo=timezone.utc),
+            birth_datetime=datetime(1990, 1, 1, 12, 0, tzinfo=UTC),
             latitude=0.0, longitude=0.0, timezone="UTC",
             planets=(sun, moon),
             houses=tuple([float(i * 30) for i in range(12)]),
@@ -96,12 +95,12 @@ class TestDataclasses:
         a2 = Aspect("Moon", "Mars", "square", 90.0, 2.0, False)
         a3 = Aspect("Venus", "Mars", "conjunction", 0.0, 0.5, True)
         chart = NatalChart(
-            birth_datetime=datetime(1990, 1, 1, tzinfo=timezone.utc),
+            birth_datetime=datetime(1990, 1, 1, tzinfo=UTC),
             latitude=0.0, longitude=0.0, timezone="UTC",
             planets=(), houses=tuple([0.0] * 12), aspects=(a1, a2, a3),
             ascendant=0.0, midheaven=0.0,
-            element_balance={e: 0.25 for e in ("fire", "earth", "air", "water")},
-            modality_balance={m: 1 / 3 for m in ("cardinal", "fixed", "mutable")},
+            element_balance=dict.fromkeys(("fire", "earth", "air", "water"), 0.25),
+            modality_balance=dict.fromkeys(("cardinal", "fixed", "mutable"), 1 / 3),
         )
         moon_aspects = chart.aspects_for("Moon")
         assert set(moon_aspects) == {a1, a2}
