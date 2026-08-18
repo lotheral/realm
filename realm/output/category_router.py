@@ -26,7 +26,6 @@ from __future__ import annotations
 import concurrent.futures
 import json
 import logging
-import os
 import re
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
@@ -34,7 +33,7 @@ from pathlib import Path
 
 from realm.llm.interfaces import ILLMBackend, LLMBackendError
 from realm.llm.prompts import load_split_prompt
-from realm.llm.router import TASK_CATEGORY, LLMRouter, is_llm_configured
+from realm.llm.router import TASK_CATEGORY
 from realm.personality.trait_vector import TraitVector
 
 logger = logging.getLogger(__name__)
@@ -797,11 +796,10 @@ def default_router(categories_path: Path | None = None) -> CategoryRouter:
     This keeps the test suite hermetic by default — no live LLM calls unless
     explicitly opted in.
     """
-    backend: ILLMBackend | None = None
-    enable = os.environ.get(_LLM_ENABLE_ENV, "").strip().lower()
-    if enable in ("1", "true", "yes", "on") and is_llm_configured():
-        try:
-            backend = LLMRouter().for_task(TASK_CATEGORY)
-        except Exception:
-            backend = None
+    # Sprint 20: the gate parse + graceful construction live in ONE place
+    # (realm.llm.router.backend_for) so this router can never disagree
+    # with the analyzers about whether the LLM is enabled.
+    from realm.llm.router import backend_for
+
+    backend: ILLMBackend | None = backend_for(TASK_CATEGORY, env_var=_LLM_ENABLE_ENV)
     return CategoryRouter(categories_path=categories_path, llm_backend=backend)

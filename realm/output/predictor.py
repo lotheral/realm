@@ -216,7 +216,7 @@ def build_branch_sim(
     # baseline distribution skew (mean - 0.5) instead of actual movement.
     # The drift engine's cumulative cap (max_drift_ratio * original_value,
     # default 0.10) bounds every trait per agent.
-    from realm.simulation.drift import DriftEventBridge, ExperienceDriftEngine
+    from realm.simulation.drift import DriftEventBridge
 
     # Sprint 15: per-category baseline differentiation. drift_volatility
     # scales BOTH the cumulative cap (max_drift_ratio × volatility) AND the
@@ -239,13 +239,13 @@ def build_branch_sim(
     drift_bridge = DriftEventBridge.default()
     if drift_event_weights:
         drift_bridge = drift_bridge.with_weights(drift_event_weights)
-    drift_engine = ExperienceDriftEngine(
-        max_drift_ratio=0.10 * float(drift_volatility),
-        intensity_scale=float(drift_volatility),
+    # Sprint 20: construct through the bridge so the engine can never be
+    # built without the bridge's full event catalog (the Sprint 10 bug).
+    drift_engine = drift_bridge.build_engine(
+        drift_volatility=float(drift_volatility),
         positive_multiplier=float(drift_asymmetry_positive),
         negative_multiplier=float(drift_asymmetry_negative),
-        primary_trait_set=frozenset(primary_traits),
-        event_map=drift_bridge.event_map,
+        primary_traits=frozenset(primary_traits),
     )
 
     return SimulationEngine(

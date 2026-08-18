@@ -35,7 +35,7 @@ from realm.demographics.world_generator import WorldGenerator  # noqa: E402
 from realm.personality.trait_vector import TraitVector  # noqa: E402
 from realm.simulation.climate import ClimateEngine  # noqa: E402
 from realm.simulation.clock import Clock  # noqa: E402
-from realm.simulation.drift import ExperienceDriftEngine  # noqa: E402
+from realm.simulation.drift import DriftEventBridge, ExperienceDriftEngine  # noqa: E402
 from realm.simulation.engine import SimulationEngine  # noqa: E402
 from realm.simulation.network import NetworkConfig, NetworkTopology  # noqa: E402
 from realm.simulation.platforms.social_media import SocialMediaPlatform  # noqa: E402
@@ -84,7 +84,13 @@ def build_simulation(
     platform = SocialMediaPlatform(memory_ticks=5)
     climate = ClimateEngine(modulator, dampening=0.7)
 
-    drift_engine = ExperienceDriftEngine(max_drift_ratio=0.10) if enable_drift else None
+    # Sprint 20 fix: this call site was the last one still constructing a
+    # bare ExperienceDriftEngine — no bridge meant the legacy 6-event map
+    # plus the legacy 2-event decision heuristic, so 9 of the 15 catalog
+    # event types silently never fired in any run_simulation.py benchmark
+    # (including every Sprint 10 10K artifact). Build through the bridge.
+    drift_bridge = DriftEventBridge.default() if enable_drift else None
+    drift_engine = drift_bridge.build_engine() if drift_bridge else None
 
     sim = SimulationEngine(
         agents=agents,
@@ -94,6 +100,7 @@ def build_simulation(
         clock=clock,
         climate=climate,
         drift_engine=drift_engine,
+        drift_bridge=drift_bridge,
     )
     return sim, clock, drift_engine, build_secs
 

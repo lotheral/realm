@@ -32,12 +32,13 @@ Run locally with::
 from __future__ import annotations
 
 import math
-import os
 import random
 import statistics
 from collections.abc import Mapping
+from contextlib import asynccontextmanager
 from dataclasses import replace as _dc_replace
 from datetime import UTC, datetime
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
@@ -58,6 +59,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
+from realm import __version__ as _realm_version
 from realm.core.config import load_realm_config
 from realm.core.logging import get_logger
 from realm.ingestion.interfaces import SeedEvent
@@ -76,10 +78,19 @@ from realm.output.predictor import (
 
 logger = get_logger(__name__)
 
+@asynccontextmanager
+async def _lifespan(_app: FastAPI):
+    # Sprint 20: availability banner moved from import time to app startup
+    # so importing this module has no logging / env-probing side effects.
+    _log_llm_availability()
+    yield
+
+
 app = FastAPI(
     title="REALM Prediction API",
     description="Category-routed multi-branch prediction for the v2 dashboard.",
-    version="0.2.0",
+    version=_realm_version,
+    lifespan=_lifespan,
 )
 
 # CORS — dashboard runs from a file:// origin or localhost; allow all for
@@ -93,23 +104,34 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-_router = default_router()
+# Sprint 20: every component below resolves its optional LLM backend
+# through realm.llm.router.backend_for — ONE strict env-gate parse, one
+# graceful-degradation contract — and is constructed lazily on first use
+# (importing this module no longer probes the environment or builds
+# backends as a side effect). @lru_cache(maxsize=1) keeps the
+# once-per-process singleton behavior the endpoint always had.
 
 
-# Sprint 17 WP6: one-line LLM availability log at import time. Logged once
-# per process (FastAPI app load). Helps the operator see at a glance whether
-# they're running in LLM-active or simulation-only mode.
+@lru_cache(maxsize=1)
+def _get_router():
+    return default_router()
+
+
+# Sprint 17 WP6 (reworked Sprint 20): one-line LLM availability log at app
+# STARTUP (not import). Uses the same strict gate as the components, so
+# the banner can no longer disagree with the router's actual state.
 def _log_llm_availability() -> None:
-
-    from realm.llm.router import is_llm_configured
-    env_set = bool(os.environ.get("REALM_LLM_CATEGORY_BACKEND"))
-    if env_set and is_llm_configured():
+    from realm.llm.router import env_gate_enabled, is_llm_configured
+    gate_on = env_gate_enabled("REALM_LLM_CATEGORY_BACKEND")
+    if gate_on and is_llm_configured():
         logger.info(
             "[REALM] LLM backend ACTIVE — LLM-first routing + question / "
             "scenario / narrative analysis enabled",
         )
     else:
-        reason = "REALM_LLM_CATEGORY_BACKEND not set" if not env_set else "no API key"
+        reason = (
+            "no API key" if gate_on else "REALM_LLM_CATEGORY_BACKEND not enabled"
+        )
         logger.info(
             "[REALM] LLM backend INACTIVE (%s) — running in simulation-only "
             "mode; set REALM_LLM_CATEGORY_BACKEND=1 + an OPENAI_API_KEY / "
@@ -118,73 +140,37 @@ def _log_llm_availability() -> None:
         )
 
 
-_log_llm_availability()
-
-
-def _build_question_analyzer():
-    """Sprint 17 WP2 + Sprint 18 WP2: lazy LLM-backed question analyzer
-    with optional web research.
-
-    Wires the LLM backend only when ``REALM_LLM_CATEGORY_BACKEND`` is
-    set AND ``is_llm_configured()`` reports a usable backend. Sprint
-    18: also wires a ``WebResearcher`` when ``REALM_WEB_SEARCH_PROVIDER``
-    is set (tavily / brave) and the corresponding API key is in env;
-    the researcher silently no-ops otherwise.
-    """
+@lru_cache(maxsize=1)
+def _get_question_analyzer():
+    """Sprint 17 WP2 + Sprint 18 WP2: LLM-backed question analyzer with
+    optional web research (``REALM_WEB_SEARCH_PROVIDER`` + matching key;
+    silently no-ops when unconfigured)."""
+    from realm.llm.router import TASK_CATEGORY, backend_for
     from realm.llm.web_researcher import default_web_researcher
     from realm.output.question_analyzer import QuestionAnalyzer
-    backend = None
-    try:
-        from realm.llm.router import TASK_CATEGORY, LLMRouter, is_llm_configured
-        if os.environ.get("REALM_LLM_CATEGORY_BACKEND") and is_llm_configured():
-            backend = LLMRouter().for_task(TASK_CATEGORY)
-    except Exception:
-        backend = None
+    backend = backend_for(TASK_CATEGORY)
     # Build researcher even when LLM backend is None — analyzer.is_available()
     # correctly reports False in that case so .research() short-circuits.
     web = default_web_researcher(backend)
     return QuestionAnalyzer(backend, web_researcher=web)
 
 
-_question_analyzer = _build_question_analyzer()
-
-
-def _build_scenario_analyzer():
-    """Sprint 17 WP3: lazy LLM-backed scenario analyzer (same env-var
-    gate as the question analyzer)."""
+@lru_cache(maxsize=1)
+def _get_scenario_analyzer():
+    """Sprint 17 WP3: LLM-backed scenario analyzer (same gate as the
+    question analyzer)."""
+    from realm.llm.router import TASK_CATEGORY, backend_for
     from realm.output.scenario_analyzer import ScenarioAnalyzer
-    backend = None
-    try:
-        import os
-
-        from realm.llm.router import TASK_CATEGORY, LLMRouter, is_llm_configured
-        if os.environ.get("REALM_LLM_CATEGORY_BACKEND") and is_llm_configured():
-            backend = LLMRouter().for_task(TASK_CATEGORY)
-    except Exception:
-        backend = None
-    return ScenarioAnalyzer(backend)
+    return ScenarioAnalyzer(backend_for(TASK_CATEGORY))
 
 
-_scenario_analyzer = _build_scenario_analyzer()
-
-
-def _build_prediction_narrator():
-    """Sprint 17 WP4: lazy LLM-backed prediction narrator (same env-var
-    gate as the question + scenario analyzers)."""
+@lru_cache(maxsize=1)
+def _get_narrator():
+    """Sprint 17 WP4: LLM-backed prediction narrator (same gate as the
+    question + scenario analyzers)."""
+    from realm.llm.router import TASK_CATEGORY, backend_for
     from realm.output.prediction_narrator import PredictionNarrator
-    backend = None
-    try:
-        import os
-
-        from realm.llm.router import TASK_CATEGORY, LLMRouter, is_llm_configured
-        if os.environ.get("REALM_LLM_CATEGORY_BACKEND") and is_llm_configured():
-            backend = LLMRouter().for_task(TASK_CATEGORY)
-    except Exception:
-        backend = None
-    return PredictionNarrator(backend)
-
-
-_narrator = _build_prediction_narrator()
+    return PredictionNarrator(backend_for(TASK_CATEGORY))
 
 
 def _blend_with_llm_prior(
@@ -212,24 +198,14 @@ def _blend_with_llm_prior(
     return blended, blended
 
 
-def _build_feed_parser():
-    """Construct a Sprint 14 WP5 FeedParser. Lazily resolves the optional
-    parser-task LLM backend so /api/feed/parse falls back to the heuristic
-    inventory when no LLM is configured."""
+@lru_cache(maxsize=1)
+def _get_feed_parser():
+    """Sprint 14 WP5 FeedParser. Falls back to the heuristic inventory
+    when no parser-task LLM is configured (own gate env var)."""
     from realm.ingestion.feed_parser import FeedParser
-    backend = None
-    try:
-        import os
-
-        from realm.llm.router import TASK_PARSER, LLMRouter, is_llm_configured
-        if os.environ.get("REALM_LLM_PARSER_BACKEND") and is_llm_configured():
-            backend = LLMRouter().for_task(TASK_PARSER)
-    except Exception:
-        backend = None
-    return FeedParser(category_router=_router, llm_backend=backend)
-
-
-_feed_parser = _build_feed_parser()
+    from realm.llm.router import TASK_PARSER, backend_for
+    backend = backend_for(TASK_PARSER, env_var="REALM_LLM_PARSER_BACKEND")
+    return FeedParser(category_router=_get_router(), llm_backend=backend)
 
 # Sprint 13 calibration knobs.
 _SIGMOID_SENSITIVITY = 8.0     # ±0.10 deviation -> ~31%-69%
@@ -763,7 +739,7 @@ def _calibrated_outcome(
 def health() -> dict[str, object]:
     return {
         "status": "ok",
-        "categories": list(_router.category_ids),
+        "categories": list(_get_router().category_ids),
         "default_horizon_ticks": 30,
     }
 
@@ -827,13 +803,13 @@ def parse_feed(req: FeedParseRequest) -> FeedParseListResponse:
     payloads. Sentiment + keyword extraction shared with /api/predict's
     scenario perturbation pipeline."""
     if req.rss_url:
-        items = _feed_parser.parse_rss(req.rss_url, max_items=5)
+        items = _get_feed_parser().parse_rss(req.rss_url, max_items=5)
         return FeedParseListResponse(items=[_parsed_to_response(p) for p in items])
     if req.texts:
-        agg = _feed_parser.parse_multiple(list(req.texts))
+        agg = _get_feed_parser().parse_multiple(list(req.texts))
         return FeedParseListResponse(items=[_parsed_to_response(agg)])
     if req.text:
-        single = _feed_parser.parse_text(req.text)
+        single = _get_feed_parser().parse_text(req.text)
         return FeedParseListResponse(items=[_parsed_to_response(single)])
     raise HTTPException(
         status_code=422,
@@ -844,7 +820,7 @@ def parse_feed(req: FeedParseRequest) -> FeedParseListResponse:
 @app.post("/api/predict", response_model=PredictResponse)
 def predict_endpoint(req: PredictRequest) -> PredictResponse:
     try:
-        category = _router.route(req.question)
+        category = _get_router().route(req.question)
         master_seed = _resolve_seed(req)
 
         # Sprint 17 WP2: LLM question analysis (one call per request).
@@ -855,15 +831,16 @@ def predict_endpoint(req: PredictRequest) -> PredictResponse:
         # Sprint 18 WP2: pass through enable_web_research toggle so
         # backtests can isolate web-research impact independently.
         analysis = (
-            _question_analyzer.analyze(
+            _get_question_analyzer().analyze(
                 req.question, category,
                 enable_web_research=req.enable_web_research,
             )
             if req.use_llm else None
         )
-        # Pull web research metadata for the response (analyzer stashes
-        # the last result on the instance — single-threaded per request).
-        web_result = getattr(_question_analyzer, "_last_web_result", None)
+        # Sprint 20: web research metadata travels inside the returned
+        # analysis (the old instance-attribute side channel leaked stale
+        # results across requests and raced under FastAPI's threadpool).
+        web_result = analysis.web_result if analysis is not None else None
         llm_prior = analysis.llm_prior if analysis is not None else None
         # Sprint 19 WP1: separate baseline vs scenario blend weights.
         # Sprint 18 backtest showed sim adds NEGATIVE value to baseline
@@ -942,7 +919,7 @@ def predict_endpoint(req: PredictRequest) -> PredictResponse:
         # _calibrated_outcome) reads the blended scalars transparently.
         if category.secondary_categories:
             from realm.output.category_router import blend_category_parameters
-            secondary_data = {c["id"]: c for c in _router.categories}
+            secondary_data = {c["id"]: c for c in _get_router().categories}
             blended = blend_category_parameters(category, secondary_data)
             category = _dc_replace(
                 category,
@@ -1003,7 +980,7 @@ def predict_endpoint(req: PredictRequest) -> PredictResponse:
         scenario_event_summary_text: str | None = None
         if req.scenario_feed:
             # Sprint 17 WP3: LLM scenario analysis (None on failure → heuristic)
-            scenario_analysis = _scenario_analyzer.analyze(
+            scenario_analysis = _get_scenario_analyzer().analyze(
                 req.scenario_feed, req.question, category,
             )
             if scenario_analysis is not None:
@@ -1106,7 +1083,7 @@ def predict_endpoint(req: PredictRequest) -> PredictResponse:
         # or narrator returned no usable result). Uses pre-blend
         # simulation_probability AND post-blend probability so the
         # headline can compare the two.
-        narrative = _narrator.narrate(
+        narrative = _get_narrator().narrate(
             question=req.question,
             category=category,
             analysis=analysis,

@@ -165,3 +165,39 @@ def is_llm_configured() -> bool:
         or os.getenv("MOONSHOT_API_KEY")
         or os.getenv("OLLAMA_HOST")     # local Ollama is assumed reachable when set
     )
+
+
+# Sprint 20 — the ONE place that decides whether an LLM enable-gate env var
+# is on. Before this, predict.py used bare truthiness while category_router
+# parsed strictly, so REALM_LLM_CATEGORY_BACKEND=0 produced a half-LLM
+# state (router off, analyzers on) that no test covered.
+_TRUTHY_GATE_VALUES = ("1", "true", "yes", "on")
+
+
+def env_gate_enabled(env_var: str) -> bool:
+    """Strict parse of an LLM enable-gate env var: only 1/true/yes/on
+    (case-insensitive, whitespace-tolerant) count as enabled."""
+    return os.environ.get(env_var, "").strip().lower() in _TRUTHY_GATE_VALUES
+
+
+def backend_for(
+    task: str,
+    env_var: str = "REALM_LLM_CATEGORY_BACKEND",
+):
+    """Resolve the LLM backend for ``task``, or ``None`` when the gate is
+    off, no API key is configured, or backend construction fails.
+
+    This is the single entry point every REALM component uses to obtain
+    an optional LLM backend — graceful degradation (return ``None``,
+    never raise) is part of the contract.
+    """
+    if not (env_gate_enabled(env_var) and is_llm_configured()):
+        return None
+    try:
+        return LLMRouter().for_task(task)
+    except Exception as exc:  # noqa: BLE001 - degrade, never break the caller
+        logger.warning(
+            "LLM backend construction for task %r failed (%s); "
+            "degrading to no-LLM mode", task, exc,
+        )
+        return None

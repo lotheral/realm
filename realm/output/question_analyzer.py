@@ -14,6 +14,7 @@ or schema mismatch. Callers that don't need a full analysis can use
 
 from __future__ import annotations
 
+import dataclasses
 import logging
 from collections.abc import Mapping
 from dataclasses import dataclass
@@ -52,6 +53,13 @@ class QuestionAnalysis:
     time_horizon: str | None = None
     llm_prior: float | None = None
     prior_reasoning: str | None = None
+    # Sprint 20: web research result travels WITH the analysis instead of
+    # through an analyzer instance attribute (the old `_last_web_result`
+    # side channel leaked stale results across requests and raced under
+    # FastAPI's threadpool). Typed as `object` for the same import-cycle
+    # reason as QuestionAnalyzer._web; the runtime contract is
+    # ``.context`` (str) + ``.sources`` (iterable with ``.url``).
+    web_result: object | None = None
 
     @classmethod
     def minimal(cls, question: str, category: CategoryMatch) -> QuestionAnalysis:
@@ -220,12 +228,6 @@ class QuestionAnalyzer:
             )
             return None
 
-        # Attach web research metadata for the API response (frozen
-        # dataclass requires `dataclasses.replace` to add fields, but
-        # the analyzer caller in predict.py reads it via a side
-        # channel — see _last_web_result below).
         if web_result is not None:
-            self._last_web_result = web_result
-        else:
-            self._last_web_result = None
+            analysis = dataclasses.replace(analysis, web_result=web_result)
         return analysis

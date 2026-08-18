@@ -342,3 +342,38 @@ class TestLegacyBehaviourUnchanged:
         assert event_from_decision("post", -0.3) == "negative_social"
         assert event_from_decision("engage", None) == "positive_social"
         assert event_from_decision("lurk", None) is None
+
+
+class TestBuildEngine:
+    """Sprint 20 — DriftEventBridge.build_engine() makes the
+    bridge/engine event_map invariant unbreakable by construction."""
+
+    def test_engine_carries_the_bridges_full_event_map(self, bridge) -> None:
+        engine = bridge.build_engine()
+        assert set(engine.event_map) == set(bridge.event_map)
+        # Full catalog, not the 6-event legacy literal.
+        assert "leadership_act" in engine.event_map
+
+    def test_volatility_couples_cap_and_intensity(self, bridge) -> None:
+        engine = bridge.build_engine(drift_volatility=1.6)
+        assert engine.max_drift_ratio == pytest.approx(0.16)
+        assert engine.intensity_scale == pytest.approx(1.6)
+
+    def test_asymmetry_and_primaries_are_wired(self, bridge) -> None:
+        engine = bridge.build_engine(
+            drift_volatility=0.5,
+            positive_multiplier=1.3,
+            negative_multiplier=0.7,
+            primary_traits=("confidence", "optimism"),
+        )
+        assert engine.positive_multiplier == pytest.approx(1.3)
+        assert engine.negative_multiplier == pytest.approx(0.7)
+        assert engine.primary_trait_set == frozenset({"confidence", "optimism"})
+
+    def test_defaults_preserve_sprint14_neutral_knobs(self, bridge) -> None:
+        engine = bridge.build_engine()
+        assert engine.max_drift_ratio == pytest.approx(0.10)
+        assert engine.intensity_scale == pytest.approx(1.0)
+        assert engine.positive_multiplier == pytest.approx(1.0)
+        assert engine.negative_multiplier == pytest.approx(1.0)
+        assert engine.primary_trait_set == frozenset()

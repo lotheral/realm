@@ -25,12 +25,15 @@ backwards compatibility — every existing test exercises it untouched.
 from __future__ import annotations
 
 import json
+import logging
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 from realm.personality.trait_vector import TraitVector
+
+logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
     from realm.agents.decision import Decision
@@ -124,6 +127,10 @@ class ExperienceDriftEngine:
     _drift: dict[str, dict[str, float]] = field(default_factory=dict)
     # agent_id -> count of recorded events (diagnostic)
     _event_count: dict[str, int] = field(default_factory=dict)
+    # Sprint 20: event types we've already warned about — the silent
+    # unknown-event no-op hid the Sprint 10 wiring bug for six sprints,
+    # so misses now log a WARNING (once per type, to avoid spam).
+    _warned_unknown: set[str] = field(default_factory=set, repr=False)
 
     def record_event(
         self,
@@ -139,6 +146,15 @@ class ExperienceDriftEngine:
         """
         weights = self.event_map.get(event_type)
         if not weights:
+            if event_type not in self._warned_unknown:
+                self._warned_unknown.add(event_type)
+                logger.warning(
+                    "drift: unknown event type %r ignored — engine's event_map "
+                    "has %d entries; if this event should drift traits, build "
+                    "the engine via DriftEventBridge.build_engine() so it "
+                    "carries the full catalog",
+                    event_type, len(self.event_map),
+                )
             return
         intensity = max(0.0, min(1.0, float(intensity)))
         if intensity == 0.0:
@@ -225,16 +241,48 @@ class ExperienceDriftEngine:
         self._event_count.clear()
 
     def to_state(self) -> dict[str, Any]:
-        """Serialisable state for JSON checkpointing."""
+        """Serialisable state for JSON checkpointing.
+
+        Sprint 20: serialises EVERY configuration knob, not just
+        max_drift_ratio — the pre-Sprint-20 shape silently reverted a
+        resumed engine to the legacy 6-event map and neutral multipliers,
+        re-creating the Sprint 10 no-op bug on every checkpoint resume.
+        """
         return {
             "max_drift_ratio": self.max_drift_ratio,
+            "event_map": {ev: dict(w) for ev, w in self.event_map.items()},
+            "positive_multiplier": self.positive_multiplier,
+            "negative_multiplier": self.negative_multiplier,
+            "primary_trait_set": sorted(self.primary_trait_set),
+            "intensity_scale": self.intensity_scale,
             "drift": {aid: dict(d) for aid, d in self._drift.items()},
             "event_count": dict(self._event_count),
         }
 
     @classmethod
     def from_state(cls, state: dict[str, Any]) -> ExperienceDriftEngine:
-        engine = cls(max_drift_ratio=float(state.get("max_drift_ratio", 0.10)))
+        raw_map = state.get("event_map")
+        if raw_map is None:
+            # Legacy (pre-Sprint-20) checkpoint: it was WRITTEN by an
+            # engine whose live map was unrecorded. Restore the legacy
+            # default so behavior matches what actually produced the
+            # checkpoint, and say so.
+            logger.warning(
+                "drift: checkpoint has no event_map (pre-Sprint-20 format); "
+                "restoring the legacy 6-event map — Sprint 10+ event types "
+                "will not accumulate drift in this resumed engine",
+            )
+            event_map: Mapping[str, Mapping[str, float]] = _EVENT_TRAIT_MAP
+        else:
+            event_map = {ev: dict(w) for ev, w in raw_map.items()}
+        engine = cls(
+            max_drift_ratio=float(state.get("max_drift_ratio", 0.10)),
+            event_map=event_map,
+            positive_multiplier=float(state.get("positive_multiplier", 1.0)),
+            negative_multiplier=float(state.get("negative_multiplier", 1.0)),
+            primary_trait_set=frozenset(state.get("primary_trait_set", ())),
+            intensity_scale=float(state.get("intensity_scale", 1.0)),
+        )
         engine._drift = {aid: dict(d) for aid, d in state.get("drift", {}).items()}
         engine._event_count = dict(state.get("event_count", {}))
         return engine
@@ -444,6 +492,40 @@ class DriftEventBridge:
         """Default bridge loaded from config/drift_events.json."""
         cfg_path = Path(__file__).resolve().parent.parent.parent / "config" / "drift_events.json"
         return cls.from_json(cfg_path)
+
+    def build_engine(
+        self,
+        *,
+        drift_volatility: float = 1.0,
+        positive_multiplier: float = 1.0,
+        negative_multiplier: float = 1.0,
+        primary_traits: tuple[str, ...] | frozenset[str] = (),
+        base_max_drift_ratio: float = 0.10,
+    ) -> ExperienceDriftEngine:
+        """Build an :class:`ExperienceDriftEngine` guaranteed to carry THIS
+        bridge's full event catalog.
+
+        Sprint 20: this factory exists because the bridge/engine coupling
+        ("the engine's event_map must come from the same bridge whose rules
+        emit the events") was previously enforced only by convention at
+        call sites — and the one call site that forgot
+        (``scripts/run_simulation.py``) silently no-op'd 9 of 15 event
+        types for six sprints. Constructing through the bridge makes the
+        invariant unbreakable.
+
+        ``drift_volatility`` couples the two per-category speed knobs the
+        way production always has: cumulative cap =
+        ``base_max_drift_ratio * volatility`` and per-event
+        ``intensity_scale = volatility``.
+        """
+        return ExperienceDriftEngine(
+            max_drift_ratio=base_max_drift_ratio * float(drift_volatility),
+            intensity_scale=float(drift_volatility),
+            positive_multiplier=float(positive_multiplier),
+            negative_multiplier=float(negative_multiplier),
+            primary_trait_set=frozenset(primary_traits),
+            event_map=self.event_map,
+        )
 
 
 # Forward reference for the type hint in current_traits without circular import.

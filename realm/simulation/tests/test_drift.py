@@ -164,6 +164,72 @@ class TestStateRoundTrip:
         assert e2.drift_vector("a2") == e1.drift_vector("a2")
         assert e2.event_count("a1") == e1.event_count("a1")
 
+    def test_round_trip_preserves_every_configuration_knob(
+        self, traits: TraitVector,
+    ) -> None:
+        """Sprint 20 regression: pre-Sprint-20 from_state() restored only
+        max_drift_ratio/drift/event_count — a resumed checkpoint silently
+        reverted to the 6-event legacy map and 1.0 multipliers, re-creating
+        the Sprint 10 no-op bug on every resume."""
+        custom_map = {
+            "leadership_act": {"confidence": 1.0},
+            "positive_social": {"optimism": 1.0},
+        }
+        e1 = ExperienceDriftEngine(
+            max_drift_ratio=0.16,
+            event_map=custom_map,
+            intensity_scale=1.6,
+            positive_multiplier=1.3,
+            negative_multiplier=0.7,
+            primary_trait_set=frozenset({"confidence", "optimism"}),
+        )
+        e1.record_event("a1", "leadership_act", 0.9, traits)
+        e2 = ExperienceDriftEngine.from_state(e1.to_state())
+        assert e2.max_drift_ratio == pytest.approx(0.16)
+        assert {k: dict(v) for k, v in e2.event_map.items()} == custom_map
+        assert e2.intensity_scale == pytest.approx(1.6)
+        assert e2.positive_multiplier == pytest.approx(1.3)
+        assert e2.negative_multiplier == pytest.approx(0.7)
+        assert e2.primary_trait_set == frozenset({"confidence", "optimism"})
+        assert e2.drift_vector("a1") == e1.drift_vector("a1")
+        # And the restored engine must keep ACCUMULATING identically —
+        # the Sprint 10 class of bug was a restored/basic engine treating
+        # non-legacy events as unknown no-ops.
+        e1.record_event("a1", "leadership_act", 0.9, traits)
+        e2.record_event("a1", "leadership_act", 0.9, traits)
+        assert e2.drift_vector("a1") == e1.drift_vector("a1")
+
+    def test_from_state_legacy_checkpoint_still_loads(
+        self, traits: TraitVector,
+    ) -> None:
+        """Old checkpoints (no event_map key) must still load and behave
+        as they did when written (legacy 6-event map, neutral knobs)."""
+        legacy_state = {
+            "max_drift_ratio": 0.10,
+            "drift": {"a1": {"optimism": 0.01}},
+            "event_count": {"a1": 3},
+        }
+        engine = ExperienceDriftEngine.from_state(legacy_state)
+        assert engine.event_count("a1") == 3
+        assert "positive_social" in engine.event_map
+        assert engine.intensity_scale == 1.0
+
+
+class TestUnknownEventWarning:
+    def test_unknown_event_warns_once_per_type(
+        self, traits: TraitVector, caplog: pytest.LogCaptureFixture,
+    ) -> None:
+        """Sprint 20: unknown event types must be VISIBLE. Silent no-op
+        hid the Sprint 10 wiring bug for six sprints."""
+        engine = ExperienceDriftEngine()
+        with caplog.at_level("WARNING", logger="realm.simulation.drift"):
+            engine.record_event("a1", "not_a_real_event", 0.5, traits)
+            engine.record_event("a1", "not_a_real_event", 0.5, traits)
+            engine.record_event("a1", "second_fake_event", 0.5, traits)
+        messages = [r.message for r in caplog.records]
+        assert sum("not_a_real_event" in m for m in messages) == 1
+        assert sum("second_fake_event" in m for m in messages) == 1
+
 
 class TestEventFromDecision:
     def test_post_positive_sentiment_is_positive_social(self) -> None:

@@ -137,6 +137,70 @@ def test_analyze_returns_none_on_malformed_json_schema() -> None:
     assert QuestionAnalyzer(backend).analyze("q", _category()) is None
 
 
+# ---- Web research attachment (Sprint 20) ------------------------------------
+#
+# Sprint 18 delivered web research metadata to predict.py through an
+# instance-attribute side channel (`_last_web_result`) that leaked stale
+# results across requests (early-return paths never cleared it) and raced
+# under FastAPI's threadpool. Sprint 20 moves the result INTO the returned
+# QuestionAnalysis so the side channel can be deleted.
+
+
+class _FakeWebSource:
+    def __init__(self, url: str):
+        self.url = url
+
+
+class _FakeWebResult:
+    def __init__(self, context: str, urls: list[str]):
+        self.context = context
+        self.sources = [_FakeWebSource(u) for u in urls]
+
+
+class _FakeWebResearcher:
+    def __init__(self, result: _FakeWebResult | None):
+        self._result = result
+
+    def research(self, question: str, category_id: str):
+        return self._result
+
+
+def test_web_result_attached_to_returned_analysis() -> None:
+    web = _FakeWebResult("Transit collapsed 90%", ["https://example.com/a"])
+    analyzer = QuestionAnalyzer(
+        _ScriptedBackend(_VALID_RESPONSE), web_researcher=_FakeWebResearcher(web),
+    )
+    a = analyzer.analyze("q", _category())
+    assert a is not None
+    assert a.web_result is web
+
+
+def test_web_result_none_when_research_unavailable() -> None:
+    analyzer = QuestionAnalyzer(
+        _ScriptedBackend(_VALID_RESPONSE), web_researcher=_FakeWebResearcher(None),
+    )
+    a = analyzer.analyze("q", _category())
+    assert a is not None
+    assert a.web_result is None
+
+
+def test_no_stale_web_result_side_channel_after_failed_analysis() -> None:
+    """Regression: a successful analysis followed by a failed one must not
+    leave the earlier web result readable anywhere on the analyzer."""
+    web = _FakeWebResult("ctx", ["https://example.com/a"])
+    ok_backend = _ScriptedBackend(_VALID_RESPONSE)
+    analyzer = QuestionAnalyzer(ok_backend, web_researcher=_FakeWebResearcher(web))
+    first = analyzer.analyze("q1", _category())
+    assert first is not None and first.web_result is web
+
+    # Sabotage the backend so the next analysis fails after web research ran.
+    analyzer._llm = _ScriptedBackend(raises=LLMBackendError("boom"))
+    assert analyzer.analyze("q2", _category()) is None
+    # The side channel must be gone entirely — callers can only learn about
+    # web research from a returned QuestionAnalysis.
+    assert not hasattr(analyzer, "_last_web_result")
+
+
 # ---- Minimal degradation construction --------------------------------------
 
 
