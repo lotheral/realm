@@ -1,7 +1,22 @@
-# REALM — Collective Sentiment Simulation Platform
+# REALM — Population-Reaction Simulation Engine
 
+> Given an event and a defined target population, REALM simulates how the
+> population reacts: stance shares, their shift against the no-event
+> baseline, and segment breakdowns. Personality diversity is pluggable
+> (Big Five real-data / demographic / astrological-procedural / blended);
+> the ephemeris mode is a diversification tool, not the project's
+> identity.
+>
 > **Status:** v0.23.0 (Sprint 23 — official Study A retrodiction run: honest NEGATIVE result for the LLM-free scenario channel, DA 6/22, published with failure-mode analysis) · **Tests:** 998 passing · **CI:** active
-> · **Article:** [`REALM_ARTICLE_DRAFT.md`](./REALM_ARTICLE_DRAFT.md) — *REALM: Collective Sentiment Simulation Through Time-Seeded Trait Diversification*
+> · **Article:** [`REALM_ARTICLE_DRAFT.md`](./REALM_ARTICLE_DRAFT.md) — *REALM: A Population-Reaction Simulation Engine*
+>
+> **Validation status (honest):** population realism 8/8 PASS (Johnson
+> IPIP-NEO, N=612,711) · baseline sim channel is question-blind by
+> construction (diagnosed) · Study A blinded retrodiction: **negative**
+> for the valence scenario channel (DA 6/22; rally 0/9) —
+> [`outputs/study_a_analysis.md`](./outputs/study_a_analysis.md) ·
+> Study B forward diary: accumulating
+> ([`outputs/prediction_diary/`](./outputs/prediction_diary/README.md)).
 >
 > **License:** MIT — Copyright © 2026 Suvar Ergun. See [`LICENSE`](./LICENSE).
 
@@ -13,8 +28,7 @@ REALM is published as a research artifact accompanying the
 forthcoming article above. The codebase reflects the state at
 article publication and is **not actively maintained for external
 contributions**. Issues / PRs are disabled at the repo level. Fork
-freely; please cite `REALM v0.20.0, Ergun (2026)` if you reference
-the work.
+freely; please cite `REALM, Ergun (2026)` if you reference the work.
 
 ---
 

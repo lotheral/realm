@@ -135,3 +135,25 @@ onward; costs almost nothing to maintain.
 
 No renaming, no README identity rewrite, no article edits beyond factual corrections —
 all repositioning surface work waits for Study A numbers (decision #3: proof first).
+
+## 7. Sprint 24 closure — naming decision and roadmap completion (2026-08-19)
+
+Study A delivered its numbers (negative for the valence channel;
+`outputs/study_a_analysis.md`), unlocking §6. Decisions taken under the
+standing full delegation:
+
+- **Name: REALM stays.** The name itself is astrology-neutral; what had
+  drifted was the surface framing. Changed surfaces: observatory
+  dashboard title ("Astrological Swarm Intelligence" → "Population-
+  Reaction Observatory"), README heading + honest validation-status
+  block, v2 About heuristic-mode caveat. The article title was already
+  rewritten in Sprint 23.
+- **Product posture:** the heuristic scenario channel is presented as
+  event-valence propagation, never as poll-shift prediction. The
+  referent-relation channel (frozen literature-prior matrix, commit
+  f2df2de) failed its pre-stated held-out bar (DA 4/8, needed >50% with
+  p<0.1) and therefore stays research-only, NOT wired into the API.
+  The full LLM pipeline's evidence channel is Study B (forward diary).
+- This closes the §5 sprint table. Post-roadmap work (growing Study B,
+  a possible matrix v2 with victory/compound-event classes tested on a
+  THIRD event set, magnitude de-quantization) proceeds evidence-first.
