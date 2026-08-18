@@ -1,4 +1,4 @@
-# REALM v0.19.2+ dependency surface (Sprint 20 hygiene pass, 2026-08-18).
+# REALM v0.20.0 dependency surface (Sprint 20 hygiene pass, 2026-08-18).
 #
 # This file pins the production-relevant Python packages REALM imports.
 # `pyproject.toml` is the source of truth for declared dependencies + extras;
@@ -6,6 +6,10 @@
 #
 # Generated 2026-08-18 from `pip freeze` filtered to declared imports.
 # Update whenever pyproject.toml changes.
+
+# The realm package itself (editable) — without this, importlib.metadata
+# cannot resolve the version and realm.__version__ reports 0.0.0.dev0.
+-e .
 
 # ---- core ----------------------------------------------------------------
 skyfield==1.54

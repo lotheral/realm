@@ -33,7 +33,7 @@ jobs:
 
       - name: Download JPL ephemeris
         if: steps.ephemeris-cache.outputs.cache-hit != 'true'
-        run: curl -sSL -o de421.bsp https://ssd.jpl.nasa.gov/ftp/eph/planets/bsp/de421.bsp
+        run: curl -fsSL -o de421.bsp https://ssd.jpl.nasa.gov/ftp/eph/planets/bsp/de421.bsp
 
       - name: Ruff
         run: ruff check .

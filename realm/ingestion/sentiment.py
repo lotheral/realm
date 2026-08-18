@@ -45,9 +45,13 @@ _POSITIVE_WORDS_DOMAIN: tuple[str, ...] = (
     # culture / sports / science
     "viral", "headline", "championship", "discovery",
     # Sprint 20 — generic affect terms the diagnosis found missing
-    # (bullish/bearish feeds parsed as neutral without them).
-    "optimism", "optimistic", "confidence", "confident", "hope",
-    "hopeful", "relief", "celebrate", "milestone", "stabilize",
+    # (bullish/bearish feeds parsed as neutral without them). NOTE:
+    # bare nouns that routinely appear as the SUBJECT of a negative verb
+    # ("confidence collapses", "hopes dashed") are deliberately excluded —
+    # the verification pass showed they cancel the verb's signal in this
+    # token counter and neutralize clearly-bearish feeds.
+    "optimism", "optimistic", "hopeful", "relief", "celebrate",
+    "milestone", "stabilize",
 )
 _NEGATIVE_WORDS_DOMAIN: tuple[str, ...] = (
     # crypto
@@ -64,8 +68,10 @@ _NEGATIVE_WORDS_DOMAIN: tuple[str, ...] = (
     "pessimism", "pessimistic", "distress", "default",
 )
 
-# Public combined inventory used by parse_sentiment(). Predict.py's existing
-# behaviour is preserved when the caller imports only the BASE tuples.
+# Public combined inventory used by parse_sentiment(). Since Sprint 20 this
+# full inventory is what realm/api/predict.py uses for scenario perturbation;
+# the *_BASE tuples remain for callers that want the historical Sprint 13
+# behavior.
 POSITIVE_WORDS: tuple[str, ...] = _POSITIVE_WORDS_BASE + _POSITIVE_WORDS_DOMAIN
 NEGATIVE_WORDS: tuple[str, ...] = _NEGATIVE_WORDS_BASE + _NEGATIVE_WORDS_DOMAIN
 
@@ -95,8 +101,10 @@ def parse_sentiment(
 
 def parse_sentiment_strict(feed: str) -> float:
     """Sprint 13 contract — base inventory only, no domain extensions.
-    Used by realm/api/predict.py to keep the existing scenario calibration
-    bit-identical to the Sprint 13 acceptance numbers."""
+    HISTORICAL as of Sprint 20: realm/api/predict.py now uses the full
+    inventory (`parse_sentiment`); this variant is retained only for
+    reproducing the Sprint 13 acceptance numbers and has no production
+    callers."""
     return parse_sentiment(
         feed,
         positive_words=_POSITIVE_WORDS_BASE,

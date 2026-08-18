@@ -1,6 +1,6 @@
 # REALM — Collective Sentiment Simulation Platform
 
-> **Status:** v0.19.2 (Sprint 19.2 — delta decomposition hotfix) · **Tests:** 887 passing
+> **Status:** v0.20.0 (Sprint 20 — revival: reaction-distribution repositioning, question-blindness diagnosis, scenario direction fix) · **Tests:** 918 passing · **CI:** active
 > · **Article:** [`REALM_ARTICLE_DRAFT.md`](./REALM_ARTICLE_DRAFT.md) — *REALM: Collective Sentiment Simulation Through Time-Seeded Trait Diversification*
 >
 > **License:** MIT — Copyright © 2026 Suvar Ergun. See [`LICENSE`](./LICENSE).
@@ -13,7 +13,7 @@ REALM is published as a research artifact accompanying the
 forthcoming article above. The codebase reflects the state at
 article publication and is **not actively maintained for external
 contributions**. Issues / PRs are disabled at the repo level. Fork
-freely; please cite `REALM v0.19.2, Ergun (2026)` if you reference
+freely; please cite `REALM v0.20.0, Ergun (2026)` if you reference
 the work.
 
 ---
@@ -98,7 +98,8 @@ Manual setup if you prefer:
 python -m venv .venv
 .venv\Scripts\activate          # Windows
 # source .venv/bin/activate     # Linux/macOS
-pip install -e .[web,sim,kerykeion]
+# Sprint 20: web/sim deps are core now; extras are kerykeion / llm / dev
+pip install -e .[kerykeion,llm,dev]
 
 # Run server (auto-loads .env at module import)
 .venv\Scripts\python.exe -m uvicorn realm.api.predict:app --host 127.0.0.1 --port 8420 --reload
@@ -339,7 +340,7 @@ pass. 200 agents × 30 ticks × 5 branches × 10 runs/category. See
 If you reference REALM in academic work:
 
 ```
-Ergun, S. (2026). REALM v0.19.2: Collective Sentiment Simulation
+Ergun, S. (2026). REALM v0.20.0: Collective Sentiment Simulation
 Through Time-Seeded Trait Diversification.
 https://github.com/lotheral/realm
 ```

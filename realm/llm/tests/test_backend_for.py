@@ -15,14 +15,21 @@ from realm.llm.router import backend_for, env_gate_enabled
 _GATE = "REALM_LLM_CATEGORY_BACKEND"
 
 
-@pytest.mark.parametrize("value", ["1", "true", "TRUE", "yes", "on", " 1 "])
-def test_gate_truthy_values_enable(monkeypatch, value) -> None:
+# Backend names count as enabled: the same vars double as backend
+# selectors (REALM_LLM_<TASK>_BACKEND=openai is documented in router.py
+# and honored by _resolve_backend_name). The Sprint 20 verification pass
+# caught the first strict-allowlist version of this gate silently
+# disabling those documented values.
+@pytest.mark.parametrize(
+    "value", ["1", "true", "TRUE", "yes", "on", " 1 ", "openai", "moonshot", "ollama"],
+)
+def test_gate_truthy_and_backend_name_values_enable(monkeypatch, value) -> None:
     monkeypatch.setenv(_GATE, value)
     assert env_gate_enabled(_GATE) is True
 
 
-@pytest.mark.parametrize("value", ["0", "false", "off", "no", "", "  ", "enabled"])
-def test_gate_other_values_disable(monkeypatch, value) -> None:
+@pytest.mark.parametrize("value", ["0", "false", "off", "no", "none", "disabled", "", "  "])
+def test_gate_falsy_values_disable(monkeypatch, value) -> None:
     monkeypatch.setenv(_GATE, value)
     assert env_gate_enabled(_GATE) is False
 

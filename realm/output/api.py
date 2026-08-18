@@ -16,6 +16,7 @@ from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
+from realm import __version__ as _realm_version
 from realm.core.logging import get_logger
 from realm.output.dashboard_service import DashboardService
 from realm.output.predictor import PredictionEngine, QuestionParser
@@ -86,7 +87,7 @@ def create_app(service: DashboardService) -> FastAPI:
     app = FastAPI(
         title="REALM Dashboard",
         description="Astrological Swarm Intelligence Prediction Engine — API + live UI",
-        version="0.1.0",
+        version=_realm_version,
     )
 
     static_dir = Path(__file__).resolve().parent / "static"

@@ -2620,3 +2620,20 @@ refreshed.
 
 887 (at freeze) → **918**, all green; repo-wide ruff clean (previously
 only per-sprint files were linted).
+
+### §26.7 Ultracode verification pass (same session)
+
+A 22-agent multi-dimension review (correctness / concurrency-state /
+compat-deps / docs-consistency, each finding adversarially verified)
+ran over the full Sprint 20 diff: 18 raw findings, 12 confirmed, 6
+refuted. All 12 confirmed findings were fixed in the same session,
+including two behavioral regressions the sprint itself had introduced:
+(1) the first strict-allowlist LLM gate silently disabled documented
+backend-name values (=openai / =moonshot) — the gate is now
+falsy-value-based so backend names enable AND pin; (2) newly-added
+bare affect nouns ("confidence") cancelled negative verbs in the
+token counter ("consumer confidence collapses" parsed neutral) —
+collision-prone nouns removed, regression test added. Remaining 10:
+doc/version/changelog staleness (README, CHANGELOG v0.20.0 entry,
+gpt-5.4 code defaults, v1-API/build_dashboard hardcoded versions,
+requirements.txt -e ., stale docstrings/comments) — all synced.

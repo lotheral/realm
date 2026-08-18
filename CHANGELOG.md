@@ -4,6 +4,41 @@ All notable changes since the initial release. Per-sprint detail lives
 in `REALM_CLAUDE.md` § 0 (CURRENT BUILD STATE) and
 `outputs/realm_milestone_report.md` (full historical narrative).
 
+## v0.20.0 — Sprint 20: revival + reaction-distribution repositioning (2026-08-18)
+
+First release after a 106-day freeze. Full detail: milestone report §26
+and `docs/superpowers/specs/2026-08-18-reaction-distribution-repositioning-design.md`.
+
+- **Repositioned:** REALM is a population-reaction simulation engine;
+  astrology is one of four pluggable diversification modes. Proof-first
+  roadmap (polling retrodiction studies) approved; renaming deferred
+  until evidence.
+- **Diagnosed:** baseline sim output is question-blind by construction
+  (identical output for different questions in a category) — the Sprint
+  18 "sim adds negative value" result was structural dilution, not a
+  defeat of the scenario channel (`outputs/sprint20_question_blindness.md`).
+- **Changed (behavior):** heuristic scenario perturbation now uses the
+  full sentiment inventory and applies ZERO perturbation on a neutral
+  parse (was: fabricated +0.08 positive nudge). Post-fix at 50×10×3,
+  LLM off: bullish +21.3pp / bearish −23.1pp / neutral 0.0pp.
+- **Changed (behavior):** one strict-but-name-aware LLM env gate
+  (`realm.llm.router.backend_for`); `=0/false/off` disables everywhere,
+  backend names (`=openai`) enable AND pin. predict.py components are
+  lazy; no import side effects.
+- **Fixed:** web-research result cross-request leak / threadpool race
+  (result now travels inside `QuestionAnalysis`); drift-engine
+  checkpoint round-trip losing event_map + Sprint 15 knobs;
+  `run_simulation.py` still constructing a bridge-less drift engine
+  (9 of 15 events silently no-op since Sprint 10); unknown drift events
+  now warn instead of vanishing.
+- **Ops:** OpenAI default model gpt-5.4 → gpt-5.6-sol (gpt-5.4 returns
+  403 model_not_found); `scripts/smoke_external.py` revival check; CI
+  (ruff + pytest) added; dependencies aligned with actual imports
+  (httpx declared; fastapi/uvicorn/networkx/feedparser now core;
+  pandas/aiohttp/requests/timezonefinder dropped); single version
+  source via package metadata.
+- Tests: 887 → **918**; entire repo ruff-clean.
+
 ## v0.19.2 — Delta decomposition hotfix (2026-05-04)
 
 - **Fixed:** scenario delta now decomposed into `delta_blend_shift`

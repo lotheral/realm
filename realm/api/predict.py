@@ -313,7 +313,7 @@ class PredictResponse(BaseModel):
 
 # ---- Sentiment parsing for scenario perturbation ------------------------
 
-_MIN_PERTURBATION = 0.08  # ensure scenario_feed always moves the needle
+_MIN_PERTURBATION = 0.08  # magnitude floor once a DIRECTION is resolved (neutral parses apply zero — Sprint 20)
 
 
 def _perturbation_for_feed(feed: str) -> float:

@@ -5,7 +5,8 @@ chat-completions API — we just swap the base_url and API key.
 
 Env vars:
     OPENAI_API_KEY          — OpenAI credential
-    REALM_OPENAI_MODEL      — model id (default: "gpt-5.4")
+    REALM_OPENAI_MODEL      — model id (default: "gpt-5.6-sol"; Sprint 20 —
+                              gpt-5.4 began returning 403 model_not_found)
     REALM_OPENAI_BASE_URL   — override base URL if hitting a proxy
     MOONSHOT_API_KEY        — Moonshot credential
     REALM_MOONSHOT_MODEL    — model id (default: "kimi-k2.6")
@@ -109,7 +110,7 @@ class OpenAICompatibleBackend(ILLMBackend):
     """Shared base for OpenAI + Moonshot (+ any other OpenAI-compatible provider)."""
 
     _backend_name: str = "openai"
-    _model: str = "gpt-5.4"
+    _model: str = "gpt-5.6-sol"
     api_key: str | None = None
     base_url: str | None = None
     cache: InMemoryCache | None = field(default_factory=InMemoryCache)
@@ -216,7 +217,7 @@ class OpenAIBackend(OpenAICompatibleBackend):
     ):
         super().__init__(
             _backend_name="openai",
-            _model=model or os.getenv("REALM_OPENAI_MODEL", "gpt-5.4"),
+            _model=model or os.getenv("REALM_OPENAI_MODEL", "gpt-5.6-sol"),
             api_key=api_key or os.getenv("OPENAI_API_KEY"),
             base_url=base_url or os.getenv("REALM_OPENAI_BASE_URL"),
             cache=cache if cache is not None else InMemoryCache(),

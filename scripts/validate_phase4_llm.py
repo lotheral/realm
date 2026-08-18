@@ -49,7 +49,7 @@ No LLM backend key detected. To enable Phase 4 LLM features:
 
 Expected env vars:
     MOONSHOT_API_KEY   - Moonshot (Kimi k2.6) API key
-    OPENAI_API_KEY     - OpenAI (gpt-5.4) API key
+    OPENAI_API_KEY     - OpenAI (gpt-5.6-sol) API key
     OLLAMA_HOST        - http://localhost:11434 (if running local Ollama)
 """
 

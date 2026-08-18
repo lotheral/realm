@@ -20,6 +20,12 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
+
+try:
+    from realm import __version__ as _realm_version
+except ImportError:  # pragma: no cover - raw checkout without install
+    _realm_version = "0.0.0.dev0"
 
 # Prefer Sprint 10 run data (post WP1 cache fix) if present; fall back to
 # Sprint 9 run so the dashboard is always renderable without a full re-run.
@@ -152,7 +158,7 @@ def main() -> int:
 
     payload = {
         "generated_at": "2026-04-24",
-        "version": "0.10.0",
+        "version": _realm_version,
         "trait_names": trait_names,
         "trait_dist": trait_dist,
         "drift_summary": drift_summary,

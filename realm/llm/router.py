@@ -171,13 +171,23 @@ def is_llm_configured() -> bool:
 # is on. Before this, predict.py used bare truthiness while category_router
 # parsed strictly, so REALM_LLM_CATEGORY_BACKEND=0 produced a half-LLM
 # state (router off, analyzers on) that no test covered.
-_TRUTHY_GATE_VALUES = ("1", "true", "yes", "on")
+#
+# Semantics (settled after the Sprint 20 verification pass): these vars
+# double as BACKEND SELECTORS — the module docstring documents
+# REALM_LLM_<TASK>_BACKEND=openai / =moonshot as valid, and
+# _resolve_backend_name() honors them — so an allowlist of truthy words
+# would silently disable documented configurations. The gate is therefore
+# OFF only for explicitly-falsy values (or unset); any other non-empty
+# value (1/true/yes/on, or a backend name) counts as enabled.
+_FALSY_GATE_VALUES = ("", "0", "false", "no", "off", "none", "disabled")
 
 
 def env_gate_enabled(env_var: str) -> bool:
-    """Strict parse of an LLM enable-gate env var: only 1/true/yes/on
-    (case-insensitive, whitespace-tolerant) count as enabled."""
-    return os.environ.get(env_var, "").strip().lower() in _TRUTHY_GATE_VALUES
+    """Return True unless the env var is unset or holds an explicitly
+    falsy value (0/false/no/off/none/disabled, case-insensitive,
+    whitespace-tolerant). Backend names like ``openai`` count as
+    enabled — they both open the gate and pin the task's backend."""
+    return os.environ.get(env_var, "").strip().lower() not in _FALSY_GATE_VALUES
 
 
 def backend_for(

@@ -53,3 +53,12 @@ def test_opposite_feeds_produce_opposite_signs() -> None:
     up = _perturbation_for_feed(BULLISH_FEED)
     down = _perturbation_for_feed(BEARISH_FEED)
     assert up > 0 > down
+
+
+def test_positive_noun_does_not_cancel_negative_verb() -> None:
+    """Verification-pass regression: 'confidence' as a positive word
+    cancelled 'collapses' in the token counter, turning a clearly bearish
+    feed neutral (and thus into zero perturbation). Bare subject-nouns
+    are excluded from the inventory so the verb's direction wins."""
+    scalar = _perturbation_for_feed("Consumer confidence collapses across markets")
+    assert scalar <= -_MIN_PERTURBATION
