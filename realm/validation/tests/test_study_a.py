@@ -99,3 +99,46 @@ class TestLoader:
         path = write_dataset(tmp_path, [make_event(event_summary="  ")])
         with pytest.raises(ValueError, match="event_summary"):
             load_events(path)
+
+
+REAL_DATASET = Path(__file__).resolve().parents[3] / "data" / "validation" / "study_a_events.json"
+
+KNOWN_TAGS = {"rally", "policy_shift", "confidence_index", "approval_drop"}
+
+
+class TestRealDataset:
+    """The shipped Study A dataset must satisfy design §4.1 requirements."""
+
+    def test_loads_with_at_least_15_events(self):
+        events = load_events(REAL_DATASET)
+        assert len(events) >= 15
+
+    def test_every_event_has_known_tags_and_population(self):
+        events = load_events(REAL_DATASET)
+        for ev in events:
+            assert ev.tags, f"{ev.event_id}: needs at least one tag"
+            assert set(ev.tags) <= KNOWN_TAGS, f"{ev.event_id}: unknown tag"
+            assert not ev.population.is_unrestricted(), (
+                f"{ev.event_id}: Study A events must define a target population"
+            )
+
+    def test_no_outcome_leakage_in_summaries(self):
+        # The scenario feed must not mention polls/surveys — the harness
+        # feeds it to the sim, and poll mentions would leak the measured
+        # outcome into the input channel.
+        events = load_events(REAL_DATASET)
+        for ev in events:
+            lowered = ev.event_summary.lower()
+            for banned in ("poll", "survey", "approval rating", "gallup"):
+                assert banned not in lowered, (
+                    f"{ev.event_id}: event_summary leaks outcome ({banned!r})"
+                )
+
+    def test_confidence_ratio_reportable(self):
+        events = load_events(REAL_DATASET)
+        counts = {"high": 0, "medium": 0, "low": 0}
+        for ev in events:
+            counts[ev.confidence] += 1
+        assert sum(counts.values()) == len(events)
+        # At least some events must be high-confidence anchors.
+        assert counts["high"] >= 5
