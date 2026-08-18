@@ -1,0 +1,386 @@
+{
+  "label": "design-relation",
+  "channel": "relation",
+  "params": {
+    "n_agents": 100,
+    "n_ticks": 30,
+    "n_branches": 5,
+    "seed": 42
+  },
+  "rows": [
+    {
+      "event_id": "fukushima_de_nuclear",
+      "regime": "sim_delta_isolated",
+      "confidence": "medium",
+      "verified": true,
+      "tags": [
+        "policy_shift"
+      ],
+      "population": "DE",
+      "predicted_shift_pp": 10.0,
+      "observed_shift_pp": 9.0,
+      "hit": true,
+      "event_type": "disaster",
+      "question_type": "hazard_policy",
+      "rationale": "Hazard salience raises support for hazard-limiting policy (e.g. nuclear accident -> phase-out support).",
+      "seconds": 0.0
+    },
+    {
+      "event_id": "sept11_bush_approval",
+      "regime": "sim_delta_isolated",
+      "confidence": "high",
+      "verified": true,
+      "tags": [
+        "rally"
+      ],
+      "population": "US",
+      "predicted_shift_pp": 10.0,
+      "observed_shift_pp": 35.0,
+      "hit": true,
+      "event_type": "external_attack",
+      "question_type": "incumbent_standing",
+      "rationale": "Rally-round-the-flag: external attacks raise incumbent approval (Mueller 1970).",
+      "seconds": 0.0
+    },
+    {
+      "event_id": "gulf_war_bush_sr_approval",
+      "regime": "sim_delta_isolated",
+      "confidence": "high",
+      "verified": true,
+      "tags": [
+        "rally"
+      ],
+      "population": "US",
+      "predicted_shift_pp": 10.0,
+      "observed_shift_pp": 25.0,
+      "hit": true,
+      "event_type": "external_attack",
+      "question_type": "incumbent_standing",
+      "rationale": "Rally-round-the-flag: external attacks raise incumbent approval (Mueller 1970).",
+      "seconds": 0.0
+    },
+    {
+      "event_id": "iraq2003_bush_approval",
+      "regime": "sim_delta_isolated",
+      "confidence": "high",
+      "verified": true,
+      "tags": [
+        "rally"
+      ],
+      "population": "US",
+      "predicted_shift_pp": 10.0,
+      "observed_shift_pp": 13.0,
+      "hit": true,
+      "event_type": "external_attack",
+      "question_type": "incumbent_standing",
+      "rationale": "Rally-round-the-flag: external attacks raise incumbent approval (Mueller 1970).",
+      "seconds": 0.0
+    },
+    {
+      "event_id": "ford_nixon_pardon",
+      "regime": "sim_delta_isolated",
+      "confidence": "high",
+      "verified": true,
+      "tags": [
+        "approval_drop"
+      ],
+      "population": "US",
+      "predicted_shift_pp": -10.0,
+      "observed_shift_pp": -21.0,
+      "hit": true,
+      "event_type": "self_inflicted",
+      "question_type": "incumbent_standing",
+      "rationale": "Self-authored controversial acts are blamed on the incumbent (no rally without an external adversary).",
+      "seconds": 0.0
+    },
+    {
+      "event_id": "falklands_thatcher",
+      "regime": "sim_delta_isolated",
+      "confidence": "medium",
+      "verified": true,
+      "tags": [
+        "rally"
+      ],
+      "population": "GB",
+      "predicted_shift_pp": 10.0,
+      "observed_shift_pp": 34.0,
+      "hit": true,
+      "event_type": "external_attack",
+      "question_type": "incumbent_standing",
+      "rationale": "Rally-round-the-flag: external attacks raise incumbent approval (Mueller 1970).",
+      "seconds": 0.0
+    },
+    {
+      "event_id": "cuban_missile_kennedy",
+      "regime": "sim_delta_isolated",
+      "confidence": "medium",
+      "verified": true,
+      "tags": [
+        "rally"
+      ],
+      "population": "US",
+      "predicted_shift_pp": 10.0,
+      "observed_shift_pp": 13.0,
+      "hit": true,
+      "event_type": "external_attack",
+      "question_type": "incumbent_standing",
+      "rationale": "Rally-round-the-flag: external attacks raise incumbent approval (Mueller 1970).",
+      "seconds": 0.0
+    },
+    {
+      "event_id": "charlie_hebdo_hollande",
+      "regime": "sim_delta_isolated",
+      "confidence": "medium",
+      "verified": true,
+      "tags": [
+        "rally"
+      ],
+      "population": "FR",
+      "predicted_shift_pp": 10.0,
+      "observed_shift_pp": 21.0,
+      "hit": true,
+      "event_type": "external_attack",
+      "question_type": "incumbent_standing",
+      "rationale": "Rally-round-the-flag: external attacks raise incumbent approval (Mueller 1970).",
+      "seconds": 0.0
+    },
+    {
+      "event_id": "nov2015_paris_hollande",
+      "regime": "sim_delta_isolated",
+      "confidence": "medium",
+      "verified": true,
+      "tags": [
+        "rally"
+      ],
+      "population": "FR",
+      "predicted_shift_pp": 10.0,
+      "observed_shift_pp": 7.0,
+      "hit": true,
+      "event_type": "external_attack",
+      "question_type": "incumbent_standing",
+      "rationale": "Rally-round-the-flag: external attacks raise incumbent approval (Mueller 1970).",
+      "seconds": 0.0
+    },
+    {
+      "event_id": "coup2016_erdogan",
+      "regime": "sim_delta_isolated",
+      "confidence": "low",
+      "verified": true,
+      "tags": [
+        "rally"
+      ],
+      "population": "TR",
+      "predicted_shift_pp": 10.0,
+      "observed_shift_pp": 21.0,
+      "hit": true,
+      "event_type": "external_attack",
+      "question_type": "incumbent_standing",
+      "rationale": "Rally-round-the-flag: external attacks raise incumbent approval (Mueller 1970).",
+      "seconds": 0.0
+    },
+    {
+      "event_id": "covid_johnson_approval",
+      "regime": "sim_delta_isolated",
+      "confidence": "medium",
+      "verified": true,
+      "tags": [
+        "rally"
+      ],
+      "population": "GB",
+      "predicted_shift_pp": -10.0,
+      "observed_shift_pp": 20.0,
+      "hit": false,
+      "event_type": "self_inflicted",
+      "question_type": "incumbent_standing",
+      "rationale": "Self-authored controversial acts are blamed on the incumbent (no rally without an external adversary).",
+      "seconds": 0.0
+    },
+    {
+      "event_id": "katrina_bush_approval",
+      "regime": "sim_delta_isolated",
+      "confidence": "low",
+      "verified": true,
+      "tags": [
+        "approval_drop"
+      ],
+      "population": "US",
+      "predicted_shift_pp": -10.0,
+      "observed_shift_pp": -3.0,
+      "hit": true,
+      "event_type": "disaster",
+      "question_type": "incumbent_standing",
+      "rationale": "Disasters trigger blame attribution for preparedness/response.",
+      "seconds": 0.0
+    },
+    {
+      "event_id": "jan6_trump_approval",
+      "regime": "sim_delta_isolated",
+      "confidence": "medium",
+      "verified": true,
+      "tags": [
+        "approval_drop"
+      ],
+      "population": "US",
+      "predicted_shift_pp": 0.0,
+      "observed_shift_pp": -5.0,
+      "hit": false,
+      "event_type": "rights_threat",
+      "question_type": "incumbent_standing",
+      "rationale": "no literature prior for this pair",
+      "seconds": 0.0
+    },
+    {
+      "event_id": "truss_minibudget_con_support",
+      "regime": "sim_delta_isolated",
+      "confidence": "low",
+      "verified": true,
+      "tags": [
+        "approval_drop"
+      ],
+      "population": "GB",
+      "predicted_shift_pp": -10.0,
+      "observed_shift_pp": -7.0,
+      "hit": true,
+      "event_type": "self_inflicted",
+      "question_type": "incumbent_standing",
+      "rationale": "Self-authored controversial acts are blamed on the incumbent (no rally without an external adversary).",
+      "seconds": 0.0
+    },
+    {
+      "event_id": "sandy_hook_gun_laws",
+      "regime": "sim_delta_isolated",
+      "confidence": "high",
+      "verified": true,
+      "tags": [
+        "policy_shift"
+      ],
+      "population": "US",
+      "predicted_shift_pp": 10.0,
+      "observed_shift_pp": 15.0,
+      "hit": true,
+      "event_type": "external_attack",
+      "question_type": "hazard_policy",
+      "rationale": "Salient harm raises support for policy limiting the instrument of harm (e.g. mass shooting -> stricter firearm laws).",
+      "seconds": 0.0
+    },
+    {
+      "event_id": "parkland_gun_laws",
+      "regime": "sim_delta_isolated",
+      "confidence": "high",
+      "verified": true,
+      "tags": [
+        "policy_shift"
+      ],
+      "population": "US",
+      "predicted_shift_pp": 10.0,
+      "observed_shift_pp": 7.0,
+      "hit": true,
+      "event_type": "external_attack",
+      "question_type": "hazard_policy",
+      "rationale": "Salient harm raises support for policy limiting the instrument of harm (e.g. mass shooting -> stricter firearm laws).",
+      "seconds": 0.0
+    },
+    {
+      "event_id": "dobbs_leak_prochoice",
+      "regime": "sim_delta_isolated",
+      "confidence": "medium",
+      "verified": true,
+      "tags": [
+        "policy_shift"
+      ],
+      "population": "US",
+      "predicted_shift_pp": 10.0,
+      "observed_shift_pp": 6.0,
+      "hit": true,
+      "event_type": "rights_threat",
+      "question_type": "rights_policy",
+      "rationale": "Threat-to-status-quo mobilization: threatening a right raises its support.",
+      "seconds": 0.0
+    },
+    {
+      "event_id": "ukraine_finland_nato",
+      "regime": "sim_delta_isolated",
+      "confidence": "high",
+      "verified": true,
+      "tags": [
+        "policy_shift"
+      ],
+      "population": "FI",
+      "predicted_shift_pp": 10.0,
+      "observed_shift_pp": 32.0,
+      "hit": true,
+      "event_type": "external_attack",
+      "question_type": "protective_policy",
+      "rationale": "Attacks raise support for protective/security policy.",
+      "seconds": 0.0
+    },
+    {
+      "event_id": "ukraine_sweden_nato",
+      "regime": "sim_delta_isolated",
+      "confidence": "medium",
+      "verified": false,
+      "tags": [
+        "policy_shift"
+      ],
+      "population": "SE",
+      "predicted_shift_pp": 10.0,
+      "observed_shift_pp": 14.0,
+      "hit": true,
+      "event_type": "external_attack",
+      "question_type": "protective_policy",
+      "rationale": "Attacks raise support for protective/security policy.",
+      "seconds": 0.0
+    },
+    {
+      "event_id": "lehman_consumer_sentiment",
+      "regime": "sim_delta_isolated",
+      "confidence": "high",
+      "verified": true,
+      "tags": [
+        "confidence_index"
+      ],
+      "population": "US",
+      "predicted_shift_pp": -10.0,
+      "observed_shift_pp": -12.7,
+      "hit": true,
+      "event_type": "economic_shock",
+      "question_type": "confidence_index",
+      "rationale": "Economic shocks depress consumer confidence (valence and referent coincide).",
+      "seconds": 0.0
+    },
+    {
+      "event_id": "covid_consumer_sentiment",
+      "regime": "sim_delta_isolated",
+      "confidence": "high",
+      "verified": true,
+      "tags": [
+        "confidence_index"
+      ],
+      "population": "US",
+      "predicted_shift_pp": -10.0,
+      "observed_shift_pp": -29.2,
+      "hit": true,
+      "event_type": "economic_shock",
+      "question_type": "confidence_index",
+      "rationale": "Economic shocks depress consumer confidence (valence and referent coincide).",
+      "seconds": 0.0
+    },
+    {
+      "event_id": "refugee2015_merkel",
+      "regime": "sim_delta_isolated",
+      "confidence": "medium",
+      "verified": true,
+      "tags": [
+        "approval_drop"
+      ],
+      "population": "DE",
+      "predicted_shift_pp": -10.0,
+      "observed_shift_pp": -9.0,
+      "hit": true,
+      "event_type": "self_inflicted",
+      "question_type": "incumbent_standing",
+      "rationale": "Self-authored controversial acts are blamed on the incumbent (no rally without an external adversary).",
+      "seconds": 0.0
+    }
+  ]
+}

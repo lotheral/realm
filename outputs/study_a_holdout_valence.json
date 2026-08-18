@@ -1,0 +1,148 @@
+{
+  "label": "holdout-valence",
+  "channel": "valence",
+  "params": {
+    "n_agents": 100,
+    "n_ticks": 30,
+    "n_branches": 5,
+    "seed": 42
+  },
+  "rows": [
+    {
+      "event_id": "binladen_obama_approval",
+      "regime": "sim_delta_isolated",
+      "confidence": "high",
+      "verified": true,
+      "tags": [
+        "rally"
+      ],
+      "population": "US",
+      "predicted_shift_pp": -0.2,
+      "observed_shift_pp": 6.0,
+      "hit": false,
+      "oppose_shift_pp": 0.0,
+      "probability_delta": -0.0,
+      "category_id": "politics",
+      "seconds": 13.6
+    },
+    {
+      "event_id": "iran_hostage_carter",
+      "regime": "sim_delta_isolated",
+      "confidence": "high",
+      "verified": true,
+      "tags": [
+        "rally"
+      ],
+      "population": "US",
+      "predicted_shift_pp": -0.2,
+      "observed_shift_pp": 19.0,
+      "hit": false,
+      "oppose_shift_pp": 0.0,
+      "probability_delta": 0.0,
+      "category_id": "politics",
+      "seconds": 10.8
+    },
+    {
+      "event_id": "lewinsky_clinton_approval",
+      "regime": "sim_delta_isolated",
+      "confidence": "medium",
+      "verified": true,
+      "tags": [
+        "rally"
+      ],
+      "population": "US",
+      "predicted_shift_pp": -0.2,
+      "observed_shift_pp": 9.0,
+      "hit": false,
+      "oppose_shift_pp": 0.0,
+      "probability_delta": 0.0,
+      "category_id": "politics",
+      "seconds": 10.9
+    },
+    {
+      "event_id": "crimea_putin_approval",
+      "regime": "sim_delta_isolated",
+      "confidence": "medium",
+      "verified": true,
+      "tags": [
+        "rally"
+      ],
+      "population": "RU",
+      "predicted_shift_pp": 0.6,
+      "observed_shift_pp": 21.0,
+      "hit": true,
+      "oppose_shift_pp": 0.2,
+      "probability_delta": 0.0,
+      "category_id": "politics",
+      "seconds": 17.8
+    },
+    {
+      "event_id": "afghanistan_biden_approval",
+      "regime": "sim_delta_isolated",
+      "confidence": "high",
+      "verified": true,
+      "tags": [
+        "approval_drop"
+      ],
+      "population": "US",
+      "predicted_shift_pp": -0.2,
+      "observed_shift_pp": -6.0,
+      "hit": true,
+      "oppose_shift_pp": 0.0,
+      "probability_delta": -0.0,
+      "category_id": "politics",
+      "seconds": 16.9
+    },
+    {
+      "event_id": "covid_trump_approval",
+      "regime": "sim_delta_isolated",
+      "confidence": "high",
+      "verified": true,
+      "tags": [
+        "rally"
+      ],
+      "population": "US",
+      "predicted_shift_pp": -24.2,
+      "observed_shift_pp": 5.0,
+      "hit": false,
+      "oppose_shift_pp": 41.0,
+      "probability_delta": -0.0414,
+      "category_id": "politics",
+      "seconds": 18.7
+    },
+    {
+      "event_id": "brexit_gfk_confidence",
+      "regime": "sim_delta_isolated",
+      "confidence": "high",
+      "verified": true,
+      "tags": [
+        "confidence_index"
+      ],
+      "population": "GB",
+      "predicted_shift_pp": 0.0,
+      "observed_shift_pp": -11.0,
+      "hit": false,
+      "oppose_shift_pp": -0.2,
+      "probability_delta": 0.0001,
+      "category_id": "balanced",
+      "seconds": 19.7
+    },
+    {
+      "event_id": "kuwait_invasion_us_sentiment",
+      "regime": "sim_delta_isolated",
+      "confidence": "medium",
+      "verified": true,
+      "tags": [
+        "confidence_index"
+      ],
+      "population": "US",
+      "predicted_shift_pp": -0.2,
+      "observed_shift_pp": -11.8,
+      "hit": true,
+      "oppose_shift_pp": 0.0,
+      "probability_delta": 0.0,
+      "category_id": "economics",
+      "seconds": 16.6
+    }
+  ]
+}

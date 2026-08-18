@@ -1,0 +1,148 @@
+{
+  "label": "holdout-relation",
+  "channel": "relation",
+  "params": {
+    "n_agents": 100,
+    "n_ticks": 30,
+    "n_branches": 5,
+    "seed": 42
+  },
+  "rows": [
+    {
+      "event_id": "binladen_obama_approval",
+      "regime": "sim_delta_isolated",
+      "confidence": "high",
+      "verified": true,
+      "tags": [
+        "rally"
+      ],
+      "population": "US",
+      "predicted_shift_pp": 10.0,
+      "observed_shift_pp": 6.0,
+      "hit": true,
+      "event_type": "external_attack",
+      "question_type": "incumbent_standing",
+      "rationale": "Rally-round-the-flag: external attacks raise incumbent approval (Mueller 1970).",
+      "seconds": 0.0
+    },
+    {
+      "event_id": "iran_hostage_carter",
+      "regime": "sim_delta_isolated",
+      "confidence": "high",
+      "verified": true,
+      "tags": [
+        "rally"
+      ],
+      "population": "US",
+      "predicted_shift_pp": 10.0,
+      "observed_shift_pp": 19.0,
+      "hit": true,
+      "event_type": "external_attack",
+      "question_type": "incumbent_standing",
+      "rationale": "Rally-round-the-flag: external attacks raise incumbent approval (Mueller 1970).",
+      "seconds": 0.0
+    },
+    {
+      "event_id": "lewinsky_clinton_approval",
+      "regime": "sim_delta_isolated",
+      "confidence": "medium",
+      "verified": true,
+      "tags": [
+        "rally"
+      ],
+      "population": "US",
+      "predicted_shift_pp": 0.0,
+      "observed_shift_pp": 9.0,
+      "hit": false,
+      "event_type": "unknown",
+      "question_type": "incumbent_standing",
+      "rationale": "no literature prior for this pair",
+      "seconds": 0.0
+    },
+    {
+      "event_id": "crimea_putin_approval",
+      "regime": "sim_delta_isolated",
+      "confidence": "medium",
+      "verified": true,
+      "tags": [
+        "rally"
+      ],
+      "population": "RU",
+      "predicted_shift_pp": 0.0,
+      "observed_shift_pp": 21.0,
+      "hit": false,
+      "event_type": "unknown",
+      "question_type": "incumbent_standing",
+      "rationale": "no literature prior for this pair",
+      "seconds": 0.0
+    },
+    {
+      "event_id": "afghanistan_biden_approval",
+      "regime": "sim_delta_isolated",
+      "confidence": "high",
+      "verified": true,
+      "tags": [
+        "approval_drop"
+      ],
+      "population": "US",
+      "predicted_shift_pp": 10.0,
+      "observed_shift_pp": -6.0,
+      "hit": false,
+      "event_type": "external_attack",
+      "question_type": "incumbent_standing",
+      "rationale": "Rally-round-the-flag: external attacks raise incumbent approval (Mueller 1970).",
+      "seconds": 0.0
+    },
+    {
+      "event_id": "covid_trump_approval",
+      "regime": "sim_delta_isolated",
+      "confidence": "high",
+      "verified": true,
+      "tags": [
+        "rally"
+      ],
+      "population": "US",
+      "predicted_shift_pp": 0.0,
+      "observed_shift_pp": 5.0,
+      "hit": false,
+      "event_type": "unknown",
+      "question_type": "incumbent_standing",
+      "rationale": "no literature prior for this pair",
+      "seconds": 0.0
+    },
+    {
+      "event_id": "brexit_gfk_confidence",
+      "regime": "sim_delta_isolated",
+      "confidence": "high",
+      "verified": true,
+      "tags": [
+        "confidence_index"
+      ],
+      "population": "GB",
+      "predicted_shift_pp": -10.0,
+      "observed_shift_pp": -11.0,
+      "hit": true,
+      "event_type": "self_inflicted",
+      "question_type": "confidence_index",
+      "rationale": "Policy-induced market turmoil depresses confidence.",
+      "seconds": 0.0
+    },
+    {
+      "event_id": "kuwait_invasion_us_sentiment",
+      "regime": "sim_delta_isolated",
+      "confidence": "medium",
+      "verified": true,
+      "tags": [
+        "confidence_index"
+      ],
+      "population": "US",
+      "predicted_shift_pp": -10.0,
+      "observed_shift_pp": -11.8,
+      "hit": true,
+      "event_type": "external_attack",
+      "question_type": "confidence_index",
+      "rationale": "Violent shocks depress economic confidence.",
+      "seconds": 0.0
+    }
+  ]
+}
