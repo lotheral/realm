@@ -1,17 +1,65 @@
-# REALM — Astrological Swarm Intelligence Prediction Engine
+# REALM — Population-Reaction Simulation Engine
 
 ## CLAUDE.md — Project Blueprint & Development Guide
 
-> **Version:** 0.19.0
+> **Version:** 0.20.0
 > **Created:** 2026-04-22
-> **Last Updated:** 2026-05-04 (v0.19.0 — Repositioning: baseline LLM-dominant + scenario sim-dominant blend + multi-cat full parameter blending + About panel reframe)
+> **Last Updated:** 2026-08-18 (v0.20.0 — Sprint 20 revival: reaction-distribution repositioning design, question-blindness diagnosis, scenario direction fix, critical-fix clusters, CI)
+> **Identity note (2026-08-18):** the founding intent is population-reaction
+> simulation — detecting opinions/tendencies toward events in advance.
+> Astrology is ONE of four pluggable temperament-diversification modes
+> (astrological / big_five real-data / demographic / blended), never the
+> project's focus. See
+> `docs/superpowers/specs/2026-08-18-reaction-distribution-repositioning-design.md`.
 > **Author:** Loth + Claude (Anthropic)
 > **License:** MIT — Copyright © 2026 Suvar Ergun. See `LICENSE`.
-> **Status:** Phase 1-6 + LLM + scenario panel + Sprints 1-19 complete. **881 tests passing**, all Sprint 19 files ruff clean. Sprint 16 added 3 geopolitics-pool drift event types (regime_consolidation, diplomatic_stalemate, sanctions_pressure) and a per-category `baseline_probability_offset` fine-tuning knob, but the headline finding was a **latent engine bug since Sprint 10**: `ExperienceDriftEngine._EVENT_TRAIT_MAP` only ever held the 6 Sprint 9 events, and `build_branch_sim` never passed `bridge.event_map` into the engine — so all Sprint 10 events (leadership_act, group_conformity, group_dissent, financial_loss, financial_gain, cultural_experience) had been silently no-op'd by `engine.event_map.get(event_type)` returning None for 6 sprints. Two-line fix in `realm/output/predictor.py`: load bridge first, then pass `event_map=drift_bridge.event_map`. Sprint 14/15 baseline differentiation calibrations had been running on only 6 events; Sprint 16 is the first calibration where all 15 events actually contribute to drift accumulation.
+> **Status:** Phase 1-6 + LLM + scenario panel + Sprints 1-20 complete. **918 tests passing**, entire repo ruff clean, CI active. Sprint 16 added 3 geopolitics-pool drift event types (regime_consolidation, diplomatic_stalemate, sanctions_pressure) and a per-category `baseline_probability_offset` fine-tuning knob, but the headline finding was a **latent engine bug since Sprint 10**: `ExperienceDriftEngine._EVENT_TRAIT_MAP` only ever held the 6 Sprint 9 events, and `build_branch_sim` never passed `bridge.event_map` into the engine — so all Sprint 10 events (leadership_act, group_conformity, group_dissent, financial_loss, financial_gain, cultural_experience) had been silently no-op'd by `engine.event_map.get(event_type)` returning None for 6 sprints. Two-line fix in `realm/output/predictor.py`: load bridge first, then pass `event_map=drift_bridge.event_map`. Sprint 14/15 baseline differentiation calibrations had been running on only 6 events; Sprint 16 is the first calibration where all 15 events actually contribute to drift accumulation.
 
 ---
 
-## 0. CURRENT BUILD STATE (2026-05-04)
+## 0. CURRENT BUILD STATE (2026-08-18)
+
+### Sprint 20 — Revival + Repositioning Design + Question-Blindness Diagnosis (2026-08-18)
+
+First session after a 106-day freeze. **918 tests green, repo-wide
+ruff clean.** Full detail in milestone report §26; design in
+`docs/superpowers/specs/2026-08-18-reaction-distribution-repositioning-design.md`.
+
+**Scientific headline — the Sprint 18 finding reinterpreted.**
+`scripts/diagnose_question_blindness.py` proved baseline sim output is
+**question-blind by construction** (three crypto questions →
+bit-for-bit identical 0.5024; categories differ only by calibrated
+offset). So "sim adds negative value (+0.048 Brier)" was a structural
+tautology — diluting a question-aware LLM prior toward a per-category
+constant — NOT evidence about the scenario channel, which the backtest
+never exercised. All validation effort now targets the scenario DELTA
+(reaction distribution), matching the founding intent.
+
+**Second finding, fixed:** the heuristic (LLM-off) scenario path was
+direction-blind — strict sentiment inventory missed panic / fear /
+insolvency / optimism, and neutral parses fabricated a +0.08 positive
+nudge. Now: full inventory + expanded affect terms; neutral → zero
+perturbation + warning. Post-fix (50×10×3, LLM off): bullish +21.3pp,
+bearish −23.1pp, neutral 0.0pp.
+
+**Critical fixes:** web-research result now travels inside
+`QuestionAnalysis` (was a cross-request race-prone side channel);
+`DriftEventBridge.build_engine()` + full state round-trip + unknown-
+event warnings (kills the Sprint 10 bug class — `run_simulation.py`
+had still been no-opping 9 of 15 events); one strict LLM gate
+(`realm.llm.router.backend_for`) replaces five copy-pasted factories,
+predict.py components now lazy with no import side effects.
+
+**Ops:** `scripts/smoke_external.py` (run after any dormant period!);
+OpenAI model switched gpt-5.4 → gpt-5.6-sol (403 after freeze);
+Polymarket Gamma is ISP-blocked from this network (VPN/cloud needed);
+CI workflow added (ruff + pytest); deps now match actual imports;
+single version source via package metadata.
+
+**Sprint 21+ (per the design):** reaction-distribution output layer
+(PopulationSpec + stance shares + segment breakdown) → Study A
+(polling retrodiction, 15-30 events, blinded) + Study B (forward
+diary) → article rewrite → evidence-gated renaming.
 
 ### Sprint 19 — Repositioning + Calibration + Multi-cat Full Blend (2026-05-04)
 
@@ -80,9 +128,9 @@ Sprint 20 work (50 markets × 3 modes × ~20s each = ~50 min).
 `test_per_category_weight_loaded_from_config` updated for new values.
 
 **WP7 — Docs.** This block, milestone § 25, REALM_CLAUDE.md v0.19.0,
-Sprint 19 memory observation. README still pointing at Sprint 17/18
-narrative — explicit note in milestone that the next session should
-align README to v0.19.0 positioning.
+Sprint 19 memory observation. ~~README still pointing at Sprint 17/18
+narrative~~ — the README was in fact realigned to v0.19.2 later the
+same night (2026-05-04 02:53); this backlog note outlived the fix.
 
 **Known follow-ups (Sprint 20+):**
 - Larger backtest run (50+ markets) with the new blend weights to
@@ -578,8 +626,10 @@ The baseline-spread gate is the only one not met at 200×30×5. The honest reaso
 ```bash
 cd C:\Users\loth\desktop\realm
 .venv\Scripts\activate
-python -m pytest -q                                         # expect 598 passing
-python scripts/serve_dashboard.py 500                       # http://127.0.0.1:8888/
+python scripts/smoke_external.py                            # Sprint 20: ALWAYS run first after a dormant period
+python -m pytest -q                                         # expect 918 passing (Sprint 20)
+realm_start.bat                                             # v2 dashboard + FastAPI :8420 (production path)
+python scripts/serve_dashboard.py 500                       # LEGACY v1 dashboard — pre-Sprint-13 algorithm, retire/merge pending
 python scripts/demo_butterfly.py                            # offline butterfly proof
 python scripts/diag_variance.py 2000                        # variance sweep diagnostic
 python scripts/validate_trait_distribution.py 10000         # calibration report (astrological)

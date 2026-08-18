@@ -2378,6 +2378,55 @@ numbers — proves the heuristic path is bit-for-bit preserved.
   science narrative styles, and graceful degrade with LLM disabled.
 
 
+## §24 Sprint 18 — Polymarket Backtesting, Web Research, Multi-Category Routing (2026-05-04)
+
+> *Written retroactively on 2026-08-18: Sprint 18 shipped and was fully
+> documented in `REALM_CLAUDE.md`, but this report jumped from §23 to §25 —
+> the sprint that produced the project's single most consequential empirical
+> finding had no section in the historical narrative.*
+
+Sprint 17's live testing exposed three failures Sprint 18 addressed:
+no external validation of accuracy, LLM priors stuck on training-data
+base rates (Strait of Hormuz: REALM 58.1% vs Polymarket 32%), and
+cross-domain questions collapsing to "balanced".
+
+**WP1 — Polymarket backtesting infrastructure.** `realm/validation/
+polymarket.py` (sync httpx Gamma client, `ResolvedMarket` /
+`BrierResult`, clean YES/NO + min-volume filters) +
+`scripts/backtest_polymarket.py` (3-way A/B: blended vs LLM-only vs
+sim-only) + `use_llm`/`use_sim` toggles on `PredictRequest`.
+**First result (5 markets, 50×10×3):** LLM+sim Brier 0.165, LLM-only
+0.117, sim-only 0.247 → the blend scored WORSE than LLM alone
+(+0.048 Brier). Reported honestly in
+`outputs/polymarket_backtest_smoke.md`.
+
+**Methodology caveats** (documented at the time in the generator, added
+to the shipped artifact and sharpened on 2026-08-18): the Polymarket
+row uses settlement price (an answer key, not a forecast); N=5 carries
+no significance; all 5 markets resolved in 2020, inside the LLM's
+training data (memorization confound inflating the LLM-only score);
+and — established by the Sprint 20 diagnosis — the sim column was
+~constant 0.50-0.52 because baseline sim output is question-blind by
+construction, so the negative-value finding is structural dilution,
+not evidence about the scenario channel.
+
+**WP2 — Web research prior enhancement.** `realm/llm/web_researcher.py`
+with pluggable Tavily/Brave backends; LLM generates 2-3 queries →
+snippets injected into the question-analyzer prompt. Gated by
+`REALM_WEB_SEARCH_PROVIDER`; silently no-ops when unconfigured. New
+`enable_web_research` request flag + `web_research_used` /
+`web_sources[]` response fields.
+
+**WP3 — Multi-category routing.** LLM router may return weighted
+category sets; `CategoryMatch.secondary_categories` +
+`blend_drift_event_weights()` blend event physics across the set
+(Hormuz-type questions pull geopolitics + economics + markets).
+Single-category routing bit-for-bit unchanged.
+
+**Tests:** 826 → 869. Root `conftest.py` added to keep the suite
+hermetic against the Sprint 17 module-level dotenv load.
+
+
 ## §25 Sprint 19 — Repositioning + Calibration + Multi-cat Full Blend (2026-05-04)
 
 Sprint 18 backtesting against 5 Polymarket-resolved markets revealed
@@ -2479,3 +2528,95 @@ ruff-clean. Calibration regression
 - Per-category Brier breakdown + calibration curves in the report
 - Stat-sig comparison (paired t-test / Wilcoxon) once N >= 30
 - Optional Tavily/Brave search key in user .env to unlock web research
+
+
+## §26 Sprint 20 — Revival, Repositioning Design, Question-Blindness Diagnosis (2026-08-18)
+
+First session after a 106-day freeze (v0.19.2, 2026-05-04). Full deep
+review (two parallel audits: architecture + project state), then a
+revival sprint executed under the new repositioning design.
+
+### §26.1 Repositioning design (approved)
+
+`docs/superpowers/specs/2026-08-18-reaction-distribution-repositioning-design.md`.
+The founding intent stated by the product owner: simulate populations
+to detect reactions / opinions / tendencies toward events in advance;
+astrology was always a temperament-diversification convenience, never
+the focus. Three decisions: (1) core output = reaction distribution
+(stance shares + shift + segment breakdown), probability is derived;
+(2) per-question target population; (3) proof first, then product.
+Validation plan: Study A = historical retrodiction vs polling data
+(15-30 events, blinding protocol); Study B = forward prediction diary.
+Sprint roadmap: 21 = reaction-distribution output layer, 22 = Study A
+dataset + harness, 23 = run study + article rewrite, 24 =
+evidence-gated renaming/product work.
+
+### §26.2 External-surface revival (scripts/smoke_external.py)
+
+New permanent smoke test through production code paths. Findings:
+gpt-5.4 lost project access (403) — the only GPT model the key still
+resolves is gpt-5.6-sol; switched and verified live. Moonshot
+kimi-k2.6, Tavily, GeoNames all healthy. Polymarket Gamma is
+TLS-reset from this network (regional ISP block) — backtests need a
+proxy/VPN or cloud runner.
+
+### §26.3 Critical fixes from the review
+
+- **Web-research side channel (R5):** `QuestionAnalysis.web_result`
+  field replaces the `_last_web_result` instance attribute that leaked
+  stale results across requests and raced under the FastAPI threadpool.
+- **Drift engine hardening (R2):** `DriftEventBridge.build_engine()`
+  factory makes the bridge/engine event_map invariant unbreakable;
+  `to_state`/`from_state` round-trip every knob (the old shape reverted
+  resumed checkpoints to the 6-event legacy map — the Sprint 10 bug
+  class on every resume); unknown event types now WARN once per type
+  instead of vanishing silently; `scripts/run_simulation.py` (the last
+  bare-engine call site, silently no-opping 9 of 15 events in every
+  benchmark since Sprint 10) now builds through the bridge.
+- **One LLM gate (R3):** `realm.llm.router.env_gate_enabled()` +
+  `backend_for(task)` replace five copy-pasted factories and two
+  divergent gate parses; `REALM_LLM_CATEGORY_BACKEND=0` can no longer
+  produce a half-LLM state. predict.py components are lazy
+  (`lru_cache`); import side effects removed; availability banner
+  moved to FastAPI lifespan startup.
+- **Hygiene (R6):** httpx declared (was undeclared transitive);
+  networkx/feedparser/fastapi/uvicorn promoted to core deps;
+  pandas/aiohttp/requests/timezonefinder dropped (imported nowhere);
+  requirements.txt regenerated; CI workflow added (ruff + pytest +
+  ephemeris cache) so Dependabot PRs finally have a gate; single
+  version source via importlib.metadata (was 0.1.0 / 0.19.2 / 0.2.0 /
+  0.10.0 across four files).
+
+### §26.4 Question-blindness diagnosis (the scientific headline)
+
+`scripts/diagnose_question_blindness.py` →
+`outputs/sprint20_question_blindness.md`:
+
+1. **H1 CONFIRMED.** Baseline sim output is question-blind by
+   construction: three different crypto questions → bit-for-bit
+   identical sim-only probability (0.5024). Cross-category spread is
+   category offsets only (0.4938-0.5128). Sprint 18's "sim adds
+   negative value (+0.048 Brier)" is a structural tautology — blending
+   a question-aware prior toward a per-category constant can only
+   dilute it. It is NOT evidence about the scenario channel, which the
+   backtest never exercised.
+2. **Direction-blindness found and FIXED.** The heuristic (LLM-off)
+   scenario path produced +0.125 for bullish, bearish AND neutral
+   feeds: the strict base-only sentiment inventory missed obvious
+   affect words (panic, fear, insolvency, optimism...), and a neutral
+   parse fabricated a +0.08 positive nudge. Fix: full inventory +
+   expanded affect terms; neutral parse now applies zero perturbation
+   with a warning. Post-fix at 50×10×3 with LLM disabled:
+   bullish +21.3pp, bearish −23.1pp, neutral 0.0pp.
+
+### §26.5 Docs
+
+Sprint 18 section (§24) written retroactively into this report;
+Polymarket smoke report annotated with the caveats that never shipped;
+dashboard TEST_COUNT 777 → 918; requirements/pyproject headers
+refreshed.
+
+### §26.6 Tests
+
+887 (at freeze) → **918**, all green; repo-wide ruff clean (previously
+only per-sprint files were linted).
