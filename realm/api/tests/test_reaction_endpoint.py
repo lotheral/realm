@@ -62,6 +62,31 @@ class TestScenarioShift:
             assert rx["shift"][key] == pytest.approx(rx[key] - rx["baseline"][key], abs=2e-4)
 
 
+class TestBlindingGate:
+    def test_use_llm_false_never_touches_scenario_analyzer_or_narrator(self, monkeypatch):
+        """Sprint 22 regression: use_llm=False must gate the scenario
+        analyzer and the narrator too, not just the question analyzer.
+        The Study A smoke run showed the LLM scenario analyzer running on
+        a use_llm=False request — a blinding leak (the LLM knows the
+        historical outcome of famous events)."""
+        import realm.api.predict as predict_mod
+
+        def _explode():
+            raise AssertionError("LLM component constructed under use_llm=False")
+
+        monkeypatch.setattr(predict_mod, "_get_scenario_analyzer", _explode)
+        monkeypatch.setattr(predict_mod, "_get_narrator", _explode)
+        r = client.post("/api/predict", json={
+            **BASE,
+            "scenario_feed": "Markets crash as panic selling accelerates",
+        })
+        assert r.status_code == 200
+        body = r.json()
+        # Heuristic scenario path still works and reports a perturbation.
+        assert body["reaction"]["shift"] is not None
+        assert body["headline"] is None
+
+
 class TestPopulationTargeting:
     def test_population_restricts_segments_to_spec(self):
         r = client.post("/api/predict", json={

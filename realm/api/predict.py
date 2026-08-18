@@ -1070,9 +1070,18 @@ def predict_endpoint(req: PredictRequest) -> PredictResponse:
         scenario_perturbation_dict: dict[str, float] | None = None
         scenario_event_summary_text: str | None = None
         if req.scenario_feed:
-            # Sprint 17 WP3: LLM scenario analysis (None on failure → heuristic)
-            scenario_analysis = _get_scenario_analyzer().analyze(
-                req.scenario_feed, req.question, category,
+            # Sprint 17 WP3: LLM scenario analysis (None on failure → heuristic).
+            # Sprint 22: gated on use_llm — the Sprint 18 A/B toggle only
+            # gated the QUESTION analyzer, so a use_llm=False request with a
+            # scenario_feed still ran the LLM scenario analyzer. That both
+            # broke the A/B isolation contract and leaked outcome knowledge
+            # into Study A's sim_delta_isolated blinding regime (the LLM
+            # knows how famous historical events turned out).
+            scenario_analysis = (
+                _get_scenario_analyzer().analyze(
+                    req.scenario_feed, req.question, category,
+                )
+                if req.use_llm else None
             )
             if scenario_analysis is not None:
                 # LLM mode — per-trait deltas + event_summary
@@ -1182,7 +1191,9 @@ def predict_endpoint(req: PredictRequest) -> PredictResponse:
         # or narrator returned no usable result). Uses pre-blend
         # simulation_probability AND post-blend probability so the
         # headline can compare the two.
-        narrative = _get_narrator().narrate(
+        # Sprint 22: gated on use_llm (same reasoning as the scenario
+        # analyzer gate above — use_llm=False must mean NO LLM calls).
+        narrative = None if not req.use_llm else _get_narrator().narrate(
             question=req.question,
             category=category,
             analysis=analysis,

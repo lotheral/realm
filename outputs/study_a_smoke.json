@@ -1,0 +1,113 @@
+{
+  "label": "smoke",
+  "params": {
+    "n_agents": 40,
+    "n_ticks": 10,
+    "n_branches": 2,
+    "seed": 42
+  },
+  "rows": [
+    {
+      "event_id": "fukushima_de_nuclear",
+      "regime": "sim_delta_isolated",
+      "confidence": "medium",
+      "verified": false,
+      "tags": [
+        "policy_shift"
+      ],
+      "population": "DE",
+      "predicted_shift_pp": -27.5,
+      "observed_shift_pp": -14.0,
+      "hit": true,
+      "oppose_shift_pp": 36.25,
+      "probability_delta": -0.0414,
+      "category_id": "geopolitics",
+      "seconds": 7.6
+    },
+    {
+      "event_id": "sept11_bush_approval",
+      "regime": "sim_delta_isolated",
+      "confidence": "high",
+      "verified": true,
+      "tags": [
+        "rally"
+      ],
+      "population": "US",
+      "predicted_shift_pp": -21.25,
+      "observed_shift_pp": 35.0,
+      "hit": false,
+      "oppose_shift_pp": 38.75,
+      "probability_delta": -0.0626,
+      "category_id": "politics",
+      "seconds": 5.2
+    },
+    {
+      "event_id": "gulf_war_bush_sr_approval",
+      "regime": "sim_delta_isolated",
+      "confidence": "high",
+      "verified": true,
+      "tags": [
+        "rally"
+      ],
+      "population": "US",
+      "predicted_shift_pp": -22.5,
+      "observed_shift_pp": 25.0,
+      "hit": false,
+      "oppose_shift_pp": 38.75,
+      "probability_delta": -0.0711,
+      "category_id": "politics",
+      "seconds": 3.3
+    },
+    {
+      "event_id": "iraq2003_bush_approval",
+      "regime": "sim_delta_isolated",
+      "confidence": "high",
+      "verified": true,
+      "tags": [
+        "rally"
+      ],
+      "population": "US",
+      "predicted_shift_pp": -21.25,
+      "observed_shift_pp": 13.0,
+      "hit": false,
+      "oppose_shift_pp": 38.75,
+      "probability_delta": -0.0626,
+      "category_id": "politics",
+      "seconds": 1.5
+    },
+    {
+      "event_id": "ford_nixon_pardon",
+      "regime": "sim_delta_isolated",
+      "confidence": "high",
+      "verified": true,
+      "tags": [
+        "approval_drop"
+      ],
+      "population": "US",
+      "predicted_shift_pp": 48.75,
+      "observed_shift_pp": -21.0,
+      "hit": false,
+      "oppose_shift_pp": -28.75,
+      "probability_delta": 0.0593,
+      "category_id": "politics",
+      "seconds": 4.5
+    },
+    {
+      "event_id": "falklands_thatcher",
+      "regime": "sim_delta_isolated",
+      "confidence": "medium",
+      "verified": false,
+      "tags": [
+        "rally"
+      ],
+      "population": "GB",
+      "predicted_shift_pp": 0.0,
+      "observed_shift_pp": 17.0,
+      "hit": false,
+      "oppose_shift_pp": -1.25,
+      "probability_delta": -0.0,
+      "category_id": "balanced",
+      "seconds": 5.6
+    }
+  ]
+}
