@@ -2,6 +2,25 @@
 
 Markets evaluated: **5**  ·  Scale: 50 agents × 10 ticks × 3 branches  ·  Wall-clock: 90.0s (18.0s/market)
 
+> **Methodology caveats (added 2026-08-18 — Sprint 19 WP2 wrote these into
+> the report *generator* but this shipped artifact was never regenerated):**
+>
+> 1. **The Polymarket row is not a forecast.** Its "prediction" is the
+>    settlement price, which equals the resolved outcome — an answer key
+>    scored against itself. The 0.0000 Brier is meaningless; a fair
+>    comparison needs the last pre-resolution CLOB trading price
+>    (Sprint 20+ backlog).
+> 2. **N=5 — no statistical significance is possible or claimed.**
+> 3. **All 5 markets resolved in 2020**, years inside the LLM's training
+>    data. The LLM-only score likely reflects memorized outcomes, not
+>    forecasting skill, which inflates the sim's relative penalty.
+> 4. **The sim column is ~constant (0.50-0.52 across all markets).** See
+>    `outputs/sprint20_question_blindness.md`: baseline sim output is
+>    question-blind by construction, so "sim adds negative value" here is
+>    structural dilution of the LLM prior toward 0.5 — not evidence about
+>    the simulation's scenario-delta channel, which this backtest never
+>    exercised.
+
 ## Brier scores (lower is better; perfect = 0, worst = 1)
 
 | Method          | Mean   | Median | Std    | n  |

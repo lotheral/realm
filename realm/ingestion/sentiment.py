@@ -44,6 +44,10 @@ _POSITIVE_WORDS_DOMAIN: tuple[str, ...] = (
     "mandate", "endorsement", "ratify", "reform",
     # culture / sports / science
     "viral", "headline", "championship", "discovery",
+    # Sprint 20 — generic affect terms the diagnosis found missing
+    # (bullish/bearish feeds parsed as neutral without them).
+    "optimism", "optimistic", "confidence", "confident", "hope",
+    "hopeful", "relief", "celebrate", "milestone", "stabilize",
 )
 _NEGATIVE_WORDS_DOMAIN: tuple[str, ...] = (
     # crypto
@@ -54,6 +58,10 @@ _NEGATIVE_WORDS_DOMAIN: tuple[str, ...] = (
     "scandal", "impeachment", "indictment", "censure",
     # culture / sports / science
     "cancel", "boycott", "recall", "outage", "outbreak",
+    # Sprint 20 — generic affect terms the diagnosis found missing.
+    "panic", "fear", "insolvency", "insolvent", "plunge", "plunges",
+    "tumble", "turmoil", "meltdown", "contagion", "crackdown",
+    "pessimism", "pessimistic", "distress", "default",
 )
 
 # Public combined inventory used by parse_sentiment(). Predict.py's existing

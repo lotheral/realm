@@ -66,9 +66,12 @@ from realm.ingestion.interfaces import SeedEvent
 
 # Sprint 14 WP5: word lists were lifted out of this module into
 # `realm/ingestion/sentiment.py` so the dashboard's RSS feed parser shares
-# them. The Sprint 13 acceptance numbers depend on the BASE inventory only
-# (no domain extensions), so /api/predict still calls the strict variant.
-from realm.ingestion.sentiment import parse_sentiment_strict as _parse_sentiment
+# them. Sprint 20: switched from the strict base-only variant to the FULL
+# inventory — the Sprint 20 diagnosis showed the strict list misreading
+# clearly-bearish feeds as neutral, and direction correctness of the
+# scenario channel now outranks bit-compatibility with the Sprint 13
+# acceptance numbers (see outputs/sprint20_question_blindness.md).
+from realm.ingestion.sentiment import parse_sentiment as _parse_sentiment
 from realm.output.category_router import CategoryMatch, default_router
 from realm.output.predictor import (
     BranchSpec,
@@ -316,9 +319,15 @@ _MIN_PERTURBATION = 0.08  # ensure scenario_feed always moves the needle
 def _perturbation_for_feed(feed: str) -> float:
     """Convert a scenario_feed string into a per-trait perturbation in
     [-_PERTURBATION_MAX, +_PERTURBATION_MAX]. Magnitude is floored at
-    ``_MIN_PERTURBATION`` so every scenario produces a visible delta;
-    direction comes from the sentiment-word balance (with a default of
-    +1 when the feed is supplied but parses as exactly neutral)."""
+    ``_MIN_PERTURBATION`` when a direction is resolved.
+
+    Sprint 20: a neutral parse now returns 0.0. The old behavior — a
+    +0.08 positive nudge whenever the feed parsed neutral — fabricated
+    a direction the feed never expressed, which the Sprint 20 diagnosis
+    caught treating clearly-bearish feeds as bullish. With the scenario
+    delta as REALM's primary product, no movement is more honest than
+    invented movement; operators wanting semantic direction on ambiguous
+    feeds should enable the LLM scenario analyzer."""
     sentiment = _parse_sentiment(feed)
     if sentiment > 0:
         magnitude = max(_MIN_PERTURBATION, min(_PERTURBATION_MAX, sentiment * 2.0))
@@ -326,10 +335,13 @@ def _perturbation_for_feed(feed: str) -> float:
     if sentiment < 0:
         magnitude = max(_MIN_PERTURBATION, min(_PERTURBATION_MAX, -sentiment * 2.0))
         return -magnitude
-    # Neutral parse but feed was supplied — fall back to a small positive
-    # nudge so the scenario branch still moves. (The caller can override
-    # by including stronger sentiment words.)
-    return _MIN_PERTURBATION
+    logger.warning(
+        "scenario_feed parsed as sentiment-neutral — applying NO population "
+        "perturbation (direction would be fabricated). Enable the LLM "
+        "scenario analyzer or use clearer sentiment wording for a "
+        "directional scenario.",
+    )
+    return 0.0
 
 
 def _make_perturbed_agent_builder(

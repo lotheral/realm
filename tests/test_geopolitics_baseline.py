@@ -12,9 +12,16 @@ from __future__ import annotations
 from realm.api.predict import PredictRequest, predict_endpoint
 
 GEOPOLITICS_QUESTION = "Will NATO expand further before 2030?"
+# Sprint 20: the scenario text must carry lexically-clear sentiment.
+# The old wording ("military exercises... carrier groups") parsed as
+# neutral, and the pre-Sprint-20 code masked that by fabricating a +0.08
+# positive nudge on neutral parses. That fabrication is gone (neutral →
+# zero perturbation, honestly no delta), so this test's escalation
+# scenario now says what an escalation headline actually says.
 GEOPOLITICS_SCENARIO = (
     "China launches major military exercises around Taiwan, US deploys "
-    "three carrier groups in response."
+    "three carrier groups in response; fears of open conflict and a "
+    "threat of regional war escalate."
 )
 
 
