@@ -464,6 +464,20 @@ select.config-input { cursor: pointer; -webkit-appearance: none; appearance: non
           <option value="africa">Africa</option>
         </select>
       </div>
+      <div class="config-group">
+        <div class="config-label">Countries (ISO2, optional)</div>
+        <input class="config-input" id="cfg-countries" placeholder="e.g. TR,DE,US" style="width:150px;">
+      </div>
+      <div class="config-group">
+        <div class="config-label">Age Band</div>
+        <select class="config-input" id="cfg-age">
+          <option value="" selected>All (18-90)</option>
+          <option value="18-29">18-29</option>
+          <option value="30-44">30-44</option>
+          <option value="45-59">45-59</option>
+          <option value="60-90">60+</option>
+        </select>
+      </div>
     </div>
   </div>
 
@@ -646,6 +660,31 @@ function onModeChange(value) {
   if (grp) grp.style.display = value === 'live' ? 'block' : 'none';
 }
 
+// Sprint 21 — coarse dashboard regions -> country-data region keys
+const REGION_MAP = {
+  global:   [],
+  asia:     ['asia_east', 'asia_south', 'asia_southeast', 'oceania'],
+  europe:   ['europe_east', 'europe_north', 'europe_south', 'europe_west'],
+  americas: ['america_north', 'america_south'],
+  mena:     ['mena'],
+  africa:   ['africa_central', 'africa_east', 'africa_south', 'africa_west'],
+};
+
+// Sprint 21 — build the /api/predict `population` payload from the setup
+// panel state; null = unrestricted (global).
+function buildPopulationPayload() {
+  const pop = {};
+  const regions = REGION_MAP[STATE.region] || [];
+  if (regions.length) pop.regions = regions;
+  const countries = (STATE.countries || '').split(',').map(s => s.trim().toUpperCase()).filter(Boolean);
+  if (countries.length) pop.countries = countries;
+  if (STATE.ageBand) {
+    const [lo, hi] = STATE.ageBand.split('-').map(Number);
+    pop.age_min = lo; pop.age_max = hi;
+  }
+  return Object.keys(pop).length ? pop : null;
+}
+
 // Generic predict-endpoint caller. Returns:
 //   - the parsed JSON object (with extra _fellBackToMock=false) on success,
 //   - null in MOCK mode (caller should pull from SAMPLE_PREDICTIONS),
@@ -660,6 +699,8 @@ async function fetchPrediction({ question, scenarioFeed = null }) {
       n_ticks: STATE.ticks,
       n_branches: STATE.branches,
     };
+    const population = buildPopulationPayload();
+    if (population) body.population = population;
     if (scenarioFeed) body.scenario_feed = scenarioFeed;
     const resp = await fetch(`${STATE.apiUrl}/api/predict`, {
       method: 'POST',
@@ -788,6 +829,17 @@ const SAMPLE_PREDICTIONS = {
     dissent: 'Latin-American cluster (12% of agents) shows strong contrarian_tendency + low authority_compliance — possible swing bloc if mobilized',
     trait_shifts: { political_spectrum: -0.01, authority_compliance: +0.02, herd_susceptibility: +0.03 },
     agents_supporting: 0.43, agents_opposing: 0.41, agents_neutral: 0.16,
+    population_label: 'global',
+    reaction: {
+      support: 0.43, oppose: 0.41, neutral: 0.16, n_agents: 500,
+      baseline: null, shift: null,
+      segments: [
+        { dimension: 'country', segment: 'US', n_agents: 62, support: 0.40, oppose: 0.45, neutral: 0.15, mean_deviation: -0.004 },
+        { dimension: 'country', segment: 'IN', n_agents: 88, support: 0.47, oppose: 0.37, neutral: 0.16, mean_deviation: 0.006 },
+        { dimension: 'age_band', segment: '18-29', n_agents: 141, support: 0.49, oppose: 0.36, neutral: 0.15, mean_deviation: 0.008 },
+        { dimension: 'age_band', segment: '60+', n_agents: 96, support: 0.36, oppose: 0.47, neutral: 0.17, mean_deviation: -0.007 },
+      ],
+    },
   },
   politics_scenario: {
     probability: 0.58, confidence: 'medium-high',
@@ -800,6 +852,18 @@ const SAMPLE_PREDICTIONS = {
     dissent: 'Anti-establishment cluster (15% of agents) hardened — political_spectrum dispersed further from mean',
     trait_shifts: { political_spectrum: +0.02, authority_compliance: +0.08, herd_susceptibility: +0.06, contrarian_tendency: -0.05 },
     agents_supporting: 0.58, agents_opposing: 0.27, agents_neutral: 0.15,
+    population_label: 'global',
+    reaction: {
+      support: 0.58, oppose: 0.27, neutral: 0.15, n_agents: 500,
+      baseline: { support: 0.43, oppose: 0.41, neutral: 0.16 },
+      shift: { support: 0.15, oppose: -0.14, neutral: -0.01 },
+      segments: [
+        { dimension: 'country', segment: 'US', n_agents: 62, support: 0.55, oppose: 0.31, neutral: 0.14, mean_deviation: 0.011 },
+        { dimension: 'country', segment: 'IN', n_agents: 88, support: 0.62, oppose: 0.24, neutral: 0.14, mean_deviation: 0.016 },
+        { dimension: 'age_band', segment: '18-29', n_agents: 141, support: 0.64, oppose: 0.22, neutral: 0.14, mean_deviation: 0.018 },
+        { dimension: 'age_band', segment: '60+', n_agents: 96, support: 0.49, oppose: 0.36, neutral: 0.15, mean_deviation: 0.005 },
+      ],
+    },
   },
 
   economics: {
@@ -992,6 +1056,15 @@ const SAMPLE_PREDICTIONS = {
     dissent: 'No dissent cluster identified — population is ideologically heterogeneous on this question',
     trait_shifts: {},
     agents_supporting: 0.50, agents_opposing: 0.34, agents_neutral: 0.16,
+    population_label: 'global',
+    reaction: {
+      support: 0.50, oppose: 0.34, neutral: 0.16, n_agents: 500,
+      baseline: null, shift: null,
+      segments: [
+        { dimension: 'age_band', segment: '18-29', n_agents: 141, support: 0.52, oppose: 0.32, neutral: 0.16, mean_deviation: 0.004 },
+        { dimension: 'age_band', segment: '60+', n_agents: 96, support: 0.46, oppose: 0.38, neutral: 0.16, mean_deviation: -0.003 },
+      ],
+    },
   },
   balanced_scenario: {
     probability: 0.55, confidence: 'low-medium',
@@ -1280,6 +1353,8 @@ function startSession() {
   STATE.agents = parseInt(document.getElementById('cfg-agents').value);
   STATE.ticks = parseInt(document.getElementById('cfg-ticks').value);
   STATE.region = document.getElementById('cfg-region').value;
+  STATE.countries = document.getElementById('cfg-countries').value;
+  STATE.ageBand = document.getElementById('cfg-age').value;
   STATE.drift = document.getElementById('cfg-drift').value === 'on';
   STATE.transit = document.getElementById('cfg-transit').value === 'on';
   STATE.branches = parseInt(document.getElementById('cfg-branches').value);
@@ -1293,6 +1368,15 @@ function startSession() {
   document.getElementById('status-agents').textContent = STATE.agents.toLocaleString();
   document.getElementById('status-ticks').textContent = STATE.ticks;
   document.getElementById('status-region').textContent = STATE.region;
+  // Sprint 21 — show the resolved target population in the status bar
+  const popPreview = buildPopulationPayload();
+  if (popPreview) {
+    const bits = [];
+    if (popPreview.countries) bits.push(popPreview.countries.join('+'));
+    else if (popPreview.regions) bits.push(STATE.region);
+    if (popPreview.age_min) bits.push(`${popPreview.age_min}-${popPreview.age_max}`);
+    document.getElementById('status-region').textContent = bits.join(' · ') || 'global';
+  }
   updateModeIndicator();
 
   // Initialize agent network
@@ -1534,9 +1618,29 @@ async function askQuestion() {
     tw.addLine(`│  blended        ${(pred.blended_probability * 100).toFixed(1)}%`, '');
   }
   tw.addLine(`│`, '');
-  tw.addLine(`│  supporting     ${(pred.agents_supporting * 100).toFixed(0)}% of agents`, '');
-  tw.addLine(`│  opposing       ${(pred.agents_opposing * 100).toFixed(0)}% of agents`, '');
-  tw.addLine(`│  neutral        ${(pred.agents_neutral * 100).toFixed(0)}% of agents`, '');
+  // Sprint 21 — reaction distribution is the first-class output.
+  const bar = (share) => '█'.repeat(Math.round(share * 24)).padEnd(24, '·');
+  const pp = (v) => `${v >= 0 ? '+' : ''}${(v * 100).toFixed(1)}pp`;
+  const rx = pred.reaction;
+  if (rx) {
+    tw.addLine(`│  REACTION DISTRIBUTION${pred.population_label && pred.population_label !== 'global' ? '  —  ' + pred.population_label : ''}`, 'label');
+    const shiftFor = (k) => (rx.shift ? `  ${pp(rx.shift[k])} vs baseline` : '');
+    tw.addLine(`│    support  ${bar(rx.support)} ${(rx.support * 100).toFixed(0)}%${shiftFor('support')}`, '');
+    tw.addLine(`│    oppose   ${bar(rx.oppose)} ${(rx.oppose * 100).toFixed(0)}%${shiftFor('oppose')}`, '');
+    tw.addLine(`│    neutral  ${bar(rx.neutral)} ${(rx.neutral * 100).toFixed(0)}%${shiftFor('neutral')}`, '');
+    const segs = (rx.segments || []).filter(s => s.dimension === 'country' || s.dimension === 'age_band').slice(0, 6);
+    if (segs.length) {
+      tw.addLine(`│`, '');
+      tw.addLine(`│  SEGMENTS (pooled n=${rx.n_agents})`, 'label');
+      segs.forEach(s => {
+        tw.addLine(`│    ${(s.dimension + ':' + s.segment).padEnd(22)} S ${(s.support * 100).toFixed(0).padStart(3)}%  O ${(s.oppose * 100).toFixed(0).padStart(3)}%  N ${(s.neutral * 100).toFixed(0).padStart(3)}%  (n=${s.n_agents})`, '');
+      });
+    }
+  } else {
+    tw.addLine(`│  supporting     ${(pred.agents_supporting * 100).toFixed(0)}% of agents`, '');
+    tw.addLine(`│  opposing       ${(pred.agents_opposing * 100).toFixed(0)}% of agents`, '');
+    tw.addLine(`│  neutral        ${(pred.agents_neutral * 100).toFixed(0)}% of agents`, '');
+  }
   tw.addLine(`│`, '');
   // Sprint 17 WP5: prefer LLM-generated narrative drivers when present;
   // fall back to template-based drivers otherwise.
