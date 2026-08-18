@@ -4,6 +4,38 @@ All notable changes since the initial release. Per-sprint detail lives
 in `REALM_CLAUDE.md` § 0 (CURRENT BUILD STATE) and
 `outputs/realm_milestone_report.md` (full historical narrative).
 
+## v0.21.0 — Sprint 21: reaction-distribution output layer (2026-08-18)
+
+Implements design doc §5 row 21 (the first-class output surface for the
+repositioned engine). Full detail:
+`docs/superpowers/plans/2026-08-18-sprint21-reaction-distribution.md`.
+
+- **Added:** `PopulationSpec` (`realm/demographics/population_spec.py`) —
+  per-question target population: country/region restriction (union
+  semantics), age band, gender, and education filters. `WorldGenerator`
+  honors it via bounded rejection resampling (deterministic; an
+  unrestricted spec stays byte-identical to the legacy pipeline), and
+  `build_branch_sim` forwards it so every branch + the calibration
+  baseline run on the target population.
+- **Added:** `realm/output/reaction.py` — `ReactionDistribution`: stance
+  shares pooled across ALL branch sims (previously the API bucketed only
+  the last branch), one global bucket threshold, and segment breakdowns
+  along country / region / age-band / gender. The four former private
+  helpers of `api/predict.py` (`category_weights`, `effective_traits`,
+  `per_agent_deviations`, `bucket_three_way`) moved here.
+- **Added (API):** `/api/predict` accepts `population` (spec above;
+  invalid values → 400) and returns `reaction` (stance shares +
+  segments; for scenario runs also `baseline` stances and `shift`) plus
+  `population_label`. The probability field remains as the derived view.
+- **Changed (behavior):** `agents_supporting/opposing/neutral` now
+  mirror the pooled all-branch reaction stances instead of the
+  last-branch-only bucket — a strictly larger sample of the same
+  statistic.
+- **Added (dashboard):** v2 dashboard sends the target population
+  (Region Focus select is now live; new Countries + Age Band inputs) and
+  renders a REACTION DISTRIBUTION block — stance bars, shift-vs-baseline
+  in pp, and top segments — in both live and mock modes.
+
 ## v0.20.0 — Sprint 20: revival + reaction-distribution repositioning (2026-08-18)
 
 First release after a 106-day freeze. Full detail: milestone report §26

@@ -1,6 +1,6 @@
 [project]
 name = "realm"
-version = "0.20.0"
+version = "0.21.0"
 description = "Population-reaction simulation engine — pluggable trait diversification + scenario-delta reaction analysis"
 authors = [{ name = "Suvar Ergun" }]
 license = { text = "MIT" }

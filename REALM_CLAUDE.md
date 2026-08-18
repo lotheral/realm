@@ -4,7 +4,7 @@
 
 > **Version:** 0.20.0
 > **Created:** 2026-04-22
-> **Last Updated:** 2026-08-18 (v0.20.0 — Sprint 20 revival: reaction-distribution repositioning design, question-blindness diagnosis, scenario direction fix, critical-fix clusters, CI)
+> **Last Updated:** 2026-08-18 (v0.21.0 — Sprint 21: reaction-distribution output layer — PopulationSpec targeting, pooled stance distribution + segment breakdown, API + dashboard surface)
 > **Identity note (2026-08-18):** the founding intent is population-reaction
 > simulation — detecting opinions/tendencies toward events in advance.
 > Astrology is ONE of four pluggable temperament-diversification modes
@@ -18,6 +18,39 @@
 ---
 
 ## 0. CURRENT BUILD STATE (2026-08-18)
+
+### Sprint 21 — Reaction-Distribution Output Layer (2026-08-18)
+
+Implements design doc §5 row 21. **963 tests green, repo-wide ruff
+clean.** Plan + step detail:
+`docs/superpowers/plans/2026-08-18-sprint21-reaction-distribution.md`.
+
+- **`PopulationSpec`** (`realm/demographics/population_spec.py`) — the
+  per-question target population of design decision #2: countries/regions
+  (union), age band, gender, education. `WorldGenerator` enforces it via
+  bounded rejection resampling (200-draw cap + deterministic fallback);
+  an unrestricted spec is byte-identical to the legacy pipeline.
+  `build_branch_sim(..., population_spec=)` forwards it to every branch
+  AND the 0-tick calibration baseline AND the scenario-perturbed builder.
+- **`realm/output/reaction.py`** — `compute_reaction_distribution` pools
+  per-agent weighted deviations across ALL branch sims (the old API
+  bucket read only the last branch) and emits `ReactionDistribution`:
+  stance shares, one global bucket threshold, and segments along
+  country / region / age-band / gender (min 5 pooled samples, top 6 per
+  dimension). `category_weights` / `effective_traits` /
+  `per_agent_deviations` / `bucket_three_way` moved here from
+  `api/predict.py`.
+- **API:** `/api/predict` request gains `population`
+  (`PopulationSpecModel`; invalid → 400), response gains `reaction`
+  (+`baseline` stances and `shift` on scenario runs) and
+  `population_label`. `agents_supporting/opposing/neutral` now mirror
+  the pooled reaction stances (semantics change — larger sample, same
+  statistic). `use_sim=False` fast path: `reaction=None`.
+- **Dashboard v2:** Region Focus select is now LIVE (was cosmetic since
+  Sprint 12) via `REGION_MAP` → `population.regions`; new Countries
+  (ISO2) + Age Band inputs; result card renders a REACTION DISTRIBUTION
+  block (stance bars, shift-vs-baseline in pp, top segments) in live and
+  mock modes.
 
 ### Sprint 20 — Revival + Repositioning Design + Question-Blindness Diagnosis (2026-08-18)
 
@@ -416,7 +449,7 @@ stack info: "12 event types" → "15 event types" in 3 places.
 - ✅ **Sprint 8 (2026-04-24)** — Mapping fix + calibration methodology + observatory dashboard. **WP1:** added semantic counter-planet contributors to `loss_aversion` in `data/astro/planet_trait_map.json` — Mars −0.45, Jupiter −0.25, Uranus −0.30 (Saturn kept at +0.55 as the principled anchor); **loss_aversion DA 0.05 → 1.00** without any calibration. **WP2+WP3:** added three-mode `--calibration=` flag (`none` default, `variance`, `full`) to the generate script with an adaptive-boundary variance expander; grid search revealed that *any* calibration mode degrades celebrity-validation metrics because celebrities are a selection-biased subsample — **calibration is a simulation tool, not a validation tool**, decided and documented. **WP4a:** Sprint 7→8 lift — DA +0.040, Pearson +0.054, Extreme +0.036, CW-DA +0.035, non-fallback +0.051. **WP4b:** `outputs/realm_dashboard.html` — 47 KB single-file Neural Observatory dashboard. D3.js v7 force-directed Agent Synapse Network (8 hand-authored archetypes, bioluminescent signal particles along gradient edges), sticky scoreboard with glow badges, per-trait DA grid, per-person ranked bars, sprint-comparison strip, BF validity checklist — dark space theme + cyan/magenta/amber/violet accents, JetBrains Mono display + DM Sans body. 598 tests green.
 - ⏳ Phase 7 — POLYLIQ/ARGUS stubs (deferred)
 
-**Current test total: 918 passing (+31 in Sprint 20, +12 in Sprint 19, +43 in Sprint 18, +49 in Sprint 17, +35 in Sprint 16, +17 in Sprint 15, +37 in Sprint 14). Sprint 20: entire repo ruff clean (the ~8 pre-existing errors in `tests/test_core_smoke.py` were fixed for CI) and `ruff check .` + `pytest -q` now run on every push via `.github/workflows/ci.yml`.**
+**Current test total: 963 passing (+40 in Sprint 21, +36 in Sprint 20, +12 in Sprint 19, +43 in Sprint 18, +49 in Sprint 17, +35 in Sprint 16, +17 in Sprint 15, +37 in Sprint 14). Sprint 20: entire repo ruff clean (the ~8 pre-existing errors in `tests/test_core_smoke.py` were fixed for CI) and `ruff check .` + `pytest -q` now run on every push via `.github/workflows/ci.yml`.**
 
 ### v0.15.1 hotfix — Geopolitics asymmetry retune (2026-04-26)
 
@@ -627,7 +660,7 @@ The baseline-spread gate is the only one not met at 200×30×5. The honest reaso
 cd C:\Users\loth\desktop\realm
 .venv\Scripts\activate
 python scripts/smoke_external.py                            # Sprint 20: ALWAYS run first after a dormant period
-python -m pytest -q                                         # expect 918 passing (Sprint 20)
+python -m pytest -q                                         # expect 963 passing (Sprint 21)
 realm_start.bat                                             # v2 dashboard + FastAPI :8420 (production path)
 python scripts/serve_dashboard.py 500                       # LEGACY v1 dashboard — pre-Sprint-13 algorithm, retire/merge pending
 python scripts/demo_butterfly.py                            # offline butterfly proof

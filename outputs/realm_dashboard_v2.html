@@ -744,7 +744,7 @@ function updateModeIndicator() {
 
 // Sprint 16 metric — keep this in sync with the live test count after
 // running pytest. Boot screen reads it via #boot-tests.
-const TEST_COUNT = 918;
+const TEST_COUNT = 963;
 
 // ======================================================================
 // PREDICTION CATEGORIES (mirrors config/prediction_categories.json)
@@ -1255,6 +1255,14 @@ Full methodology: outputs/realm_milestone_report.md.
   · Celebrity cohort (N=22) is small and selection-biased. Validation
     results should be read as "promising direction", not "proven
     methodology".
+
+  · Sprint 21 made the reaction distribution the first-class output:
+    each prediction defines its own target population (countries /
+    regions / age band / gender / education via PopulationSpec), and the
+    API returns stance shares pooled across ALL simulation branches,
+    their shift vs the no-event baseline, and segment breakdowns by
+    country, region, age band, and gender. The probability number is a
+    derived view of that distribution.
 
   · The per-branch metric is a yes/no probability over a single
     threshold; Sprint 12 added the three-way (supporting / opposing /
