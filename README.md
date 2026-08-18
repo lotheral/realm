@@ -7,7 +7,7 @@
 > the ephemeris mode is a diversification tool, not the project's
 > identity.
 >
-> **Status:** v0.23.0 (Sprint 23 — official Study A retrodiction run: honest NEGATIVE result for the LLM-free scenario channel, DA 6/22, published with failure-mode analysis) · **Tests:** 998 passing · **CI:** active
+> **Status:** v0.24.0 (Sprint 24 — roadmap complete: relation channel evaluated on a frozen-matrix held-out protocol (research-only), repositioning surface shipped, Study B forward diary live) · **Tests:** 1022 passing · **CI:** active
 > · **Article:** [`REALM_ARTICLE_DRAFT.md`](./REALM_ARTICLE_DRAFT.md) — *REALM: A Population-Reaction Simulation Engine*
 >
 > **Validation status (honest):** population realism 8/8 PASS (Johnson

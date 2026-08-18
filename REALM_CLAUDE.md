@@ -4,7 +4,7 @@
 
 > **Version:** 0.20.0
 > **Created:** 2026-04-22
-> **Last Updated:** 2026-08-18 (v0.23.0 — Sprint 23: official Study A run — NEGATIVE result published (DA 6/22, rally 0/9, ρ=−0.357); dataset 21/22 verified; article rewritten around reaction-distribution thesis)
+> **Last Updated:** 2026-08-19 (v0.24.0 — Sprint 24: relation channel fails pre-stated held-out bar (4/8) → research-only; repositioning surface shipped (REALM name stays); Study B live with 3 open forward predictions. §5 roadmap COMPLETE.)
 > **Identity note (2026-08-18):** the founding intent is population-reaction
 > simulation — detecting opinions/tendencies toward events in advance.
 > Astrology is ONE of four pluggable temperament-diversification modes
@@ -17,7 +17,36 @@
 
 ---
 
-## 0. CURRENT BUILD STATE (2026-08-18)
+## 0. CURRENT BUILD STATE (2026-08-19)
+
+### Sprint 24 — Relation Channel + Repositioning + Study B Live (2026-08-19)
+
+Closes the design doc §5 roadmap. Plan:
+`docs/superpowers/plans/2026-08-19-sprint24-relation-layer-repositioning.md`.
+
+- **Relation channel (research-only):** `realm/validation/relation.py`
+  — archetype rules + literature-prior polarity matrix, FROZEN at
+  commit f2df2de BEFORE the held-out set existed (auditable in git
+  history). Harness `--channel valence|relation`.
+- **2×2 evaluation:** valence 6/22 design, 3/8 held-out (mostly
+  ±0.2pp neutral-parse noise); relation 20/22 design (IN-SAMPLE at
+  class level — not evidence), **held-out 4/8 (p=0.637) → pre-stated
+  bar (>50%, p<0.1) NOT met → not wired into the API.** Secondary:
+  4/5 when committed, 3 abstentions from missing archetypes (military
+  success, incumbent-initiated conquest, personal scandal) + one
+  compound-event mis-sign (Afghanistan). Matrix v2 would need a THIRD
+  event set (`outputs/study_a_relation_analysis.md`).
+- **Repositioning (§6 unlocked):** REALM name KEPT (astrology-neutral);
+  observatory title → "Population-Reaction Observatory"; README
+  identity + validation-status block; v2 About heuristic caveat;
+  decision recorded in design doc §7.
+- **Study B live:** three open forward entries (US House 2026 P=0.698;
+  UMich Sept 2026 direction P=0.563; DeutschlandTrend direction
+  P=0.392). Score them as polls resolve via
+  `python scripts/diary.py score <id> --observed-shift-pp X --source "..."`.
+- **Post-roadmap queue:** grow Study B; matrix v2 (victory/compound
+  classes) on a third event set; magnitude de-quantization; verify the
+  Sweden NATO baseline.
 
 ### Sprint 23 — Official Study A Run: Published Negative Result (2026-08-18)
 
@@ -518,7 +547,7 @@ stack info: "12 event types" → "15 event types" in 3 places.
 - ✅ **Sprint 8 (2026-04-24)** — Mapping fix + calibration methodology + observatory dashboard. **WP1:** added semantic counter-planet contributors to `loss_aversion` in `data/astro/planet_trait_map.json` — Mars −0.45, Jupiter −0.25, Uranus −0.30 (Saturn kept at +0.55 as the principled anchor); **loss_aversion DA 0.05 → 1.00** without any calibration. **WP2+WP3:** added three-mode `--calibration=` flag (`none` default, `variance`, `full`) to the generate script with an adaptive-boundary variance expander; grid search revealed that *any* calibration mode degrades celebrity-validation metrics because celebrities are a selection-biased subsample — **calibration is a simulation tool, not a validation tool**, decided and documented. **WP4a:** Sprint 7→8 lift — DA +0.040, Pearson +0.054, Extreme +0.036, CW-DA +0.035, non-fallback +0.051. **WP4b:** `outputs/realm_dashboard.html` — 47 KB single-file Neural Observatory dashboard. D3.js v7 force-directed Agent Synapse Network (8 hand-authored archetypes, bioluminescent signal particles along gradient edges), sticky scoreboard with glow badges, per-trait DA grid, per-person ranked bars, sprint-comparison strip, BF validity checklist — dark space theme + cyan/magenta/amber/violet accents, JetBrains Mono display + DM Sans body. 598 tests green.
 - ⏳ Phase 7 — POLYLIQ/ARGUS stubs (deferred)
 
-**Current test total: 998 passing (+35 in Sprint 22, +40 in Sprint 21, +36 in Sprint 20, +12 in Sprint 19, +43 in Sprint 18, +49 in Sprint 17, +35 in Sprint 16, +17 in Sprint 15, +37 in Sprint 14). Sprint 20: entire repo ruff clean (the ~8 pre-existing errors in `tests/test_core_smoke.py` were fixed for CI) and `ruff check .` + `pytest -q` now run on every push via `.github/workflows/ci.yml`.**
+**Current test total: 1022 passing (+24 in Sprint 24, +35 in Sprint 22, +40 in Sprint 21, +36 in Sprint 20, +12 in Sprint 19, +43 in Sprint 18, +49 in Sprint 17, +35 in Sprint 16, +17 in Sprint 15, +37 in Sprint 14). Sprint 20: entire repo ruff clean (the ~8 pre-existing errors in `tests/test_core_smoke.py` were fixed for CI) and `ruff check .` + `pytest -q` now run on every push via `.github/workflows/ci.yml`.**
 
 ### v0.15.1 hotfix — Geopolitics asymmetry retune (2026-04-26)
 
@@ -729,7 +758,7 @@ The baseline-spread gate is the only one not met at 200×30×5. The honest reaso
 cd C:\Users\loth\desktop\realm
 .venv\Scripts\activate
 python scripts/smoke_external.py                            # Sprint 20: ALWAYS run first after a dormant period
-python -m pytest -q                                         # expect 998 passing (Sprint 22)
+python -m pytest -q                                         # expect 1022 passing (Sprint 24)
 realm_start.bat                                             # v2 dashboard + FastAPI :8420 (production path)
 python scripts/serve_dashboard.py 500                       # LEGACY v1 dashboard — pre-Sprint-13 algorithm, retire/merge pending
 python scripts/demo_butterfly.py                            # offline butterfly proof

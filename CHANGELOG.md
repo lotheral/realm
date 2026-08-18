@@ -4,6 +4,34 @@ All notable changes since the initial release. Per-sprint detail lives
 in `REALM_CLAUDE.md` § 0 (CURRENT BUILD STATE) and
 `outputs/realm_milestone_report.md` (full historical narrative).
 
+## v0.24.0 — Sprint 24: relation-channel evaluation, repositioning surface, Study B live (2026-08-19)
+
+Closes the design doc §5 roadmap.
+
+- **Added (research-only):** referent-relation direction channel
+  (`realm/validation/relation.py`) — deterministic archetype
+  classification + literature-prior polarity matrix (Mueller 1970 rally,
+  threat→alliance, hazard→hazard-limiting policy…), FROZEN at commit
+  f2df2de before the held-out set was authored. Harness gained
+  `--channel valence|relation`.
+- **Added:** held-out dataset (`data/validation/study_a_holdout_events.json`)
+  — 8 new events, all verified, disjoint from the design set.
+- **Evaluated (2×2):** valence 6/22 design / 3/8 held-out; relation
+  20/22 design (in-sample at class level, not evidence) / **4/8
+  held-out — fails the pre-stated promotion bar (>50%, p<0.1)** →
+  relation stays research-only, NOT in the API. Secondary: 4/5 correct
+  when committed, 3 abstentions (`outputs/study_a_relation_analysis.md`).
+- **Repositioned (§6 unlock, evidence in hand):** name REALM stays;
+  observatory dashboard title "Astrological Swarm Intelligence" →
+  "Population-Reaction Observatory"; README identity + honest
+  validation-status block; v2 About heuristic-mode caveat (valence
+  deltas are not poll-shift predictions); decision recorded in design
+  doc §7.
+- **Study B live:** first three forward predictions appended to the
+  diary (US House 2026 P=0.698, UMich Sept direction P=0.563, ARD
+  DeutschlandTrend direction P=0.392), full pipeline, resolve-by dates
+  set.
+
 ## v0.23.0 — Sprint 23: official Study A run (negative result) + article rewrite (2026-08-18)
 
 - **Ran:** the official Study A retrodiction (22 events, n_agents=100,
