@@ -26,6 +26,7 @@ from realm.agents.factory import AgentFactory
 from realm.astro.factory import get_astro_engine
 from realm.core.config import load_realm_config
 from realm.core.logging import get_logger
+from realm.demographics.population_spec import PopulationSpec
 from realm.demographics.world_generator import WorldGenerator
 from realm.output.category_router import CategoryMatch
 from realm.simulation.climate import ClimateEngine
@@ -154,6 +155,7 @@ def build_branch_sim(
     drift_asymmetry_positive: float = 1.0,
     drift_asymmetry_negative: float = 1.0,
     primary_traits: tuple[str, ...] = (),
+    population_spec: PopulationSpec | None = None,
 ) -> SimulationEngine:
     """Construct a fresh SimulationEngine for one branch.
 
@@ -173,12 +175,18 @@ def build_branch_sim(
     population reflects the question's domain. ``seed_offsets`` is ignored
     when a custom ``agent_builder`` is supplied — that builder is responsible
     for any offsets it wants to apply.
+
+    Sprint 21: ``population_spec`` restricts the default WorldGenerator sample
+    to the question's target population; ignored when a custom
+    ``agent_builder`` is supplied (the builder owns population construction).
     """
     if agent_builder is not None:
         agents = agent_builder(seed, n_agents)
     else:
         agents = AgentFactory(seed_offsets=seed_offsets).build_batch(
-            WorldGenerator(master_seed=seed).generate(n_agents),
+            WorldGenerator(
+                master_seed=seed, population_spec=population_spec,
+            ).generate(n_agents),
         )
     clock = Clock.from_config()
     clock.master_seed = seed
