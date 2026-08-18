@@ -71,9 +71,32 @@ All nine `confidence: high` events were checked against web sources.
 | lehman_consumer_sentiment | confirmed 70.3→57.6 exactly | [UMich ICS table](https://www.sca.isr.umich.edu/files/tbmics.pdf) |
 | covid_consumer_sentiment | confirmed 101.0→71.8 exactly | [Chicago Fed Letter 2023-490](https://www.chicagofed.org/publications/chicago-fed-letter/2023/490) |
 
-Medium/low events (13) remain `verified: false` — their numbers are
-candidates; the harness reports them in a separate tier. Verifying them
-is queued for Sprint 23 before the official run.
+## Verification log — second pass (Sprint 23, 2026-08-18, web search)
+
+The remaining 13 medium/low events were checked before the official run.
+**Result: 12/13 now verified; 5 numeric corrections; 1 metric switch;
+Sweden stays unverified (baseline unconfirmed).**
+
+| event_id | outcome |
+|---|---|
+| fukushima_de_nuclear | **METRIC SWITCHED** — authored "continued use 40→26" unverifiable; replaced with verified Infratest phase-out support 62→71 (+9). Now a referent-inversion hard case. |
+| falklands_thatcher | **CORRECTED** 34→51 became 25→59 ([Ipsos-MORI via UPI](https://www.upi.com/Archives/1983/06/04/Falklands-The-war-that-saved-Margaret-Thatcher/1953423547200/)); Jan baseline predates invasion by 3 months (noted). |
+| cuban_missile_kennedy | confirmed 61→74 exactly ([Gallup 6979](https://news.gallup.com/poll/6979/cuban-missile-crisis-years-later.aspx)) |
+| charlie_hebdo_hollande | **CORRECTED** 21→29 became 19→40 (+21, record jump; [France24](https://www.france24.com/en/20150119-hollande-approval-rate-doubles-wake-terror-attacks-ifop-poll-france)) |
+| nov2015_paris_hollande | **CORRECTED** 20→33 became 20→27 (Ifop/JDD conservative series; pollster variance noted) |
+| coup2016_erdogan | confirmed 46.6→67.6 ([Metropoll via Bloomberg/AFP](https://www.bloomberg.com/news/articles/2016-08-11/erdogan-s-approval-rating-soars-in-turkey-following-coup-attempt)) |
+| covid_johnson_approval | confirmed 46→66 exactly ([YouGov via Fortune](https://fortune.com/2020/10/05/boris-johnson-trump-approval-rating-covid-hospitalized-coronavirus)) |
+| katrina_bush_approval | **REVISED to monthly averages** 44→41 (−3), downgraded to low confidence — Gallup's own headline: ["Little Impact of Katrina on Bush's Overall Job Ratings"](https://news.gallup.com/poll/24283/little-impact-katrina-bushs-overall-job-ratings.aspx). Weakest attribution in the set. |
+| jan6_trump_approval | **CORRECTED** 46→34 became 39→34 (−5; [Gallup 328637](https://news.gallup.com/poll/328637/last-trump-job-approval-average-record-low.aspx): "down five points from December"). Poll window starts Jan 4 (straddle noted). |
+| truss_minibudget_con_support | **REVISED** to confirmed YouGov endpoints 28 (Sept 23-25) → 21 (Sept 28-29, [YouGov](https://yougov.co.uk/politics/articles/43901-voting-intention-con-21-lab-54-28-29-sep-2022)); both post-announcement (noted). |
+| dobbs_leak_prochoice | confirmed 49→55 exactly ([Gallup 393104](https://news.gallup.com/poll/393104/pro-choice-identification-rises-near-record-high.aspx)) |
+| ukraine_sweden_nato | after=51 confirmed ([Novus via The Local](https://www.thelocal.se/20220422/majority-of-swedes-now-in-favour-of-joining-nato-poll/)); January baseline 37 UNCONFIRMED → stays `verified: false`. |
+| refugee2015_merkel | **CORRECTED** 67→54 became 63→54 (−9; [Infratest dimap via Bloomberg](https://www.bloomberg.com/news/articles/2015-10-02/merkel-approval-rating-drops-to-four-year-low-on-refugee-crisis)) |
+
+Post-pass dataset status: **21/22 verified**, 1 unverified (Sweden).
+Authorship-confidence lesson (recorded honestly): of 13 authored
+medium/low value-pairs, 5 needed correction and 1 was unverifiable —
+authored numbers are candidates, never data.
 
 Interesting verification finding: the Yle poll fielded Feb 23-25, 2022
 (straddling the invasion's first hours) ALREADY showed 53% — most of the
