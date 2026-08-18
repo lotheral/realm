@@ -4,6 +4,25 @@ All notable changes since the initial release. Per-sprint detail lives
 in `REALM_CLAUDE.md` § 0 (CURRENT BUILD STATE) and
 `outputs/realm_milestone_report.md` (full historical narrative).
 
+## v0.23.0 — Sprint 23: official Study A run (negative result) + article rewrite (2026-08-18)
+
+- **Ran:** the official Study A retrodiction (22 events, n_agents=100,
+  n_ticks=30, n_branches=5, seed=42, all `sim_delta_isolated`).
+  **Result: directional accuracy 6/22 (27%), signed Spearman −0.357 —
+  a published negative result for the LLM-free scenario channel.**
+  Breakdown: rally 0/9, approval_drop 2/5, policy_shift 2/6,
+  confidence_index 2/2. Failure modes: referent blindness, parse
+  instability, magnitude quantization
+  (`outputs/study_a_results.md`, `outputs/study_a_analysis.md`).
+- **Data:** second verification pass — 21/22 events now confirmed
+  against named sources (5 corrections, 1 metric switch; Sweden
+  baseline honestly left unverified). `docs/study_a_dataset_notes.md`
+  carries the full log.
+- **Rewrote:** `REALM_ARTICLE_DRAFT.md` around the reaction-distribution
+  thesis with actual numbers (population realism 8/8 PASS,
+  question-blindness diagnosis, Study A negative result + failure-mode
+  analysis, Study B forward diary). All placeholder metrics removed.
+
 ## v0.22.0 — Sprint 22: Study A dataset + retrodiction harness, Study B diary (2026-08-18)
 
 Implements design doc §4.1/§4.2/§5 row 22. The OFFICIAL Study A run +

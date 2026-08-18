@@ -4,7 +4,7 @@
 
 > **Version:** 0.20.0
 > **Created:** 2026-04-22
-> **Last Updated:** 2026-08-18 (v0.22.0 — Sprint 22: Study A dataset (22 events, 9 verified) + blinded retrodiction harness + use_llm blinding-gate fix + Study B diary bootstrap)
+> **Last Updated:** 2026-08-18 (v0.23.0 — Sprint 23: official Study A run — NEGATIVE result published (DA 6/22, rally 0/9, ρ=−0.357); dataset 21/22 verified; article rewritten around reaction-distribution thesis)
 > **Identity note (2026-08-18):** the founding intent is population-reaction
 > simulation — detecting opinions/tendencies toward events in advance.
 > Astrology is ONE of four pluggable temperament-diversification modes
@@ -18,6 +18,41 @@
 ---
 
 ## 0. CURRENT BUILD STATE (2026-08-18)
+
+### Sprint 23 — Official Study A Run: Published Negative Result (2026-08-18)
+
+The central research question got its first honest answer. Full
+verification pass first (21/22 events confirmed; 5 authored values
+corrected, 1 metric switched — authored numbers are candidates, never
+data), then the official run (100 agents / 30 ticks / 5 branches /
+seed 42, all `sim_delta_isolated`):
+
+- **DA 6/22 (27%), signed Spearman −0.357, magnitude ρ −0.105.**
+  rally 0/9 · approval_drop 2/5 · policy_shift 2/6 ·
+  **confidence_index 2/2**.
+- **Three failure modes** (see `outputs/study_a_analysis.md`):
+  (1) referent blindness — the channel propagates event valence, but
+  reactions follow the event↔subject relation (rallies, NATO,
+  Fukushima all inverted); (2) parse instability — Sandy Hook +42pp vs
+  Parkland −0.2pp, Nixon pardon read positive; (3) magnitude
+  quantization — outputs cluster at 0/±20-29/±42-46pp (floor/cap
+  artifacts), no rank signal.
+- **Falsified:** the lexicon (LLM-off) scenario channel as a general
+  poll-shift predictor. **Unaffected:** population realism (8/8) and
+  the reaction-distribution surface. **Untested by design:** the
+  LLM-informed channel — retrodiction can never blind it; Study B
+  (forward diary) is now the primary evidence channel.
+- `REALM_ARTICLE_DRAFT.md` fully rewritten around the
+  reaction-distribution thesis with the real numbers (title:
+  "REALM: A Population-Reaction Simulation Engine"); all X.XXX
+  placeholders gone. Milestone report §27 added.
+- **Sprint 24 candidates:** referent-relation layer (event-type ×
+  question-type polarity matrix for blinded use; LLM relation forward),
+  free the perturbation magnitude regime, Study B entries begin;
+  dashboard About should stop presenting heuristic scenario deltas as
+  poll-shift predictions (product surface work remains gated on
+  evidence per design §6 — and the evidence now says negative for the
+  heuristic channel).
 
 ### Sprint 22 — Study A Instruments + Study B Diary (2026-08-18)
 

@@ -2637,3 +2637,40 @@ collision-prone nouns removed, regression test added. Remaining 10:
 doc/version/changelog staleness (README, CHANGELOG v0.20.0 entry,
 gpt-5.4 code defaults, v1-API/build_dashboard hardcoded versions,
 requirements.txt -e ., stale docstrings/comments) — all synced.
+
+## §27 Sprints 21-23 — Reaction-Distribution Layer, Study A Negative Result, Article Rewrite (2026-08-18)
+
+Sprint 21 (v0.21.0) made the reaction distribution the first-class
+output: `PopulationSpec` per-question population targeting (countries/
+regions/age/gender/education, deterministic constrained sampling),
+`realm/output/reaction.py` (stance shares pooled across ALL branches,
+one global threshold, segments by country/region/age-band/gender),
+`/api/predict` `population` + `reaction`/`population_label` fields, and
+the v2 dashboard surface (Region Focus select made live for the first
+time since Sprint 12).
+
+Sprint 22 (v0.22.0) built the Study A instruments: a 22-event
+retrodiction dataset (7 countries, mechanism-tagged: 9 rally / 5
+approval_drop / 6 policy_shift / 2 confidence_index), the validating
+loader with blinding-regime enforcement, pure-python metrics (exact
+binomial DA, Spearman with ties), the in-process harness
+(`scripts/run_study_a.py`), and the Study B forward diary. The first
+smoke exposed a CRITICAL blinding leak: `use_llm=False` gated only the
+question analyzer since Sprint 18 — the LLM scenario analyzer still ran
+and injected outcome knowledge (+62pp "prediction" for 9/11). Both the
+scenario analyzer and narrator are now hard-gated.
+
+Sprint 23 (v0.23.0) verified the full dataset (21/22 events confirmed
+against sources; 5 authored values corrected, 1 metric switched —
+authored numbers are candidates, never data), ran the official study,
+and rewrote the article around the results. **Official Study A result:
+directional accuracy 6/22 (27%), signed Spearman −0.357 — a published
+negative result** decomposing into three mechanisms: referent blindness
+(rally 0/9; NATO/Fukushima threat-cases inverted), sentiment-parse
+instability (Sandy Hook +42pp vs Parkland −0.2pp; Nixon pardon read
+positive), magnitude quantization (floor/cap artifacts). The channel
+hit exactly where valence and referent coincide (confidence_index 2/2).
+Falsified: the lexicon scenario channel as a general poll-shift
+predictor. Untested and now primary: the LLM-informed pipeline via
+Study B forward predictions (retrodiction can never blind it).
+Analysis: `outputs/study_a_analysis.md`; raw: `outputs/study_a_results.md`.

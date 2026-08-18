@@ -1,176 +1,132 @@
-# REALM: Collective Sentiment Simulation Through Time-Seeded Trait Diversification
+# REALM: A Population-Reaction Simulation Engine
 
-**A Swarm Intelligence Approach to Scenario Analysis and Opinion Dynamics**
+**Modeling How Defined Populations React to Events — Stance Distributions, Shifts, and Segments**
 
-**Suvar Ergun** · 2026 · v0.19.2 · MIT License · [`github.com/lotheral/realm`](https://github.com/lotheral/realm)
+**Suvar Ergun** · 2026 · v0.23.0 · MIT License · [`github.com/lotheral/realm`](https://github.com/lotheral/realm)
 
 ---
 
 ## Abstract
 
-We present REALM, an agent-based simulation platform that models collective sentiment dynamics across diverse populations. REALM addresses a fundamental challenge in swarm intelligence: generating synthetic agent populations whose personality distributions are both reproducible and psychometrically realistic. We introduce a novel *time-seeded trait diversification* mechanism that combines astronomical ephemeris calculations (60%), Big Five psychometric mapping (25%), and Hofstede cultural dimensions (15%) to produce 24-dimensional personality vectors for each agent. This blended approach generates non-random, deterministic, and culturally-grounded trait distributions that pass established psychometric validity criteria (Big Five 8/8 criteria PASS against Johnson IPIP-NEO-120, N=612,711).
+We present REALM, an agent-based platform whose research question is: *given an event and a defined target population, can a simulation of psychometrically realistic agents predict the population's reaction — which stances shift, in which direction, and in which segments?* REALM's primary output is a **reaction distribution** — support/oppose/neutral stance shares pooled across simulation branches, their shift against a no-event baseline, and breakdowns by country, region, age band, and gender for a per-question target population — with any single probability number treated as a derived view.
 
-REALM's primary contribution is not baseline prediction accuracy — which relies predominantly on LLM-powered contextual analysis — but *scenario analysis*: modeling how collective sentiment shifts when hypothetical events are injected into a simulated population. Backtesting against resolved Polymarket prediction markets confirms that simulation alone produces near-random baseline predictions (Brier ≈ 0.25), while the LLM-simulation blend achieves competitive calibration. The simulation's unique value emerges in counterfactual analysis, where 24-trait agent interactions, drift dynamics, and population segmentation reveal *how* and *why* collective opinion changes — capabilities beyond the reach of prediction markets or standalone language models.
+We report three validation results with full honesty. **(1) Population realism:** REALM's trait-diversification layer produces populations that pass 8/8 psychometric validity criteria against the Johnson IPIP-NEO-120 dataset (N=612,711), with 13/13 facet-level correlations significant. **(2) A structural diagnosis:** baseline (no-event) simulation output is *question-blind by construction* — different questions in the same category produce identical output — so the simulation cannot and should not compete with a question-aware prior on baseline probability; its entire information channel is the scenario delta. **(3) A negative retrodiction result:** in Study A, a 22-event blinded benchmark of documented before/after poll shifts across 7 countries, the LLM-free scenario channel achieved 27% directional accuracy (6/22, below the 50% coin-flip baseline; signed Spearman ρ = −0.357). The failures decompose into three identifiable mechanisms — referent blindness (rally events: 0/9), sentiment-parse instability, and magnitude quantization — while the channel succeeded exactly where event valence and question referent coincide (economic-confidence events: 2/2). We publish this negative result as a valid completion of the research question for that channel, and describe the ongoing forward-prediction diary (Study B) that tests the full LLM-informed pipeline without the leakage that makes blinded retrodiction impossible for it.
 
-REALM simulates populations of up to 10,000 agents across 66 countries, with 15 drift event types, 9 prediction categories, and a terminal-aesthetic dashboard for interactive scenario exploration. The platform is open-source under the MIT license.
+REALM simulates up to 10,000 agents across 66 countries with per-question population targeting, 15 drift event types, 9 prediction categories, and an interactive dashboard. The platform, the benchmark dataset, and all validation harnesses are open-source under the MIT license.
 
 ---
 
 ## 1. Introduction
 
-Prediction markets like Polymarket and Kalshi aggregate information through financial incentives, producing well-calibrated probability estimates for binary outcomes. However, they cannot answer counterfactual questions: *"If the Federal Reserve cuts rates, how does the probability of a recession change?"* or *"If a military conflict escalates, which population segments shift their stance?"* These scenario analysis questions require modeling the dynamics of collective opinion — not just its static equilibrium.
+Opinion polls measure population reactions after the fact. Prediction markets aggregate point probabilities but cannot answer *"who moves, and why?"* Language models can narrate plausible reactions but provide no population structure and no counterfactual mechanics. REALM asks whether an agent-based simulation with realistic personality diversity can fill this gap: **detect, in advance, the reactions, opinions, and tendencies of a defined population toward an event.**
 
-Agent-based models (ABMs) offer a natural framework for such analysis, but face a persistent challenge: how should agent personalities be initialized? Random trait assignment fails to capture the structured variation observed in real populations. Demographic data provides country-level cultural tendencies but cannot differentiate individuals within the same demographic group. Purely data-driven approaches require large-scale personality survey datasets that are expensive, culturally biased, and difficult to reproduce.
+This framing dictates the output format. A useful answer to "how will population P react to event X?" is not a scalar probability; it is a distribution — how the stance shares move relative to the no-event baseline, and which segments move most. REALM therefore returns, for every question:
 
-We propose an alternative: *time-seeded trait diversification*, a mechanism that uses astronomical ephemeris calculations as a deterministic hash function to generate diverse personality vectors. We explicitly do not claim astrological causation — we do not assert that birth time determines personality. Rather, we observe that ephemeris-derived trait mapping produces population distributions that are (a) deterministic and reproducible given the same seed, (b) sufficiently complex to span a 24-dimensional trait space, and (c) empirically validated against established psychometric benchmarks.
+- stance shares (support / oppose / neutral) pooled across all simulation branches,
+- the shift of those shares against the baseline run (direction + magnitude),
+- segment breakdowns (country, region, age band, gender) over a caller-defined target population,
+- a derived probability, only meaningful where the question genuinely reduces to a binary.
 
-This paper describes REALM's architecture, validates its trait diversification mechanism, presents backtesting results against Polymarket resolved markets, and demonstrates the platform's scenario analysis capabilities.
-
----
-
-## 2. The Trait Diversification Problem
-
-### 2.1 Why Random Assignment Fails
-
-In a typical ABM, agents are initialized with traits drawn from uniform or Gaussian distributions. This produces populations where every agent is statistically interchangeable — there are no personality clusters, no cultural variation, and no structured correlation between traits. Real human populations exhibit structured trait distributions: risk appetite correlates with impulsivity, authority compliance varies systematically across cultures, and personality clusters emerge from shared developmental contexts.
-
-### 2.2 Why Demographics Alone Are Insufficient
-
-Hofstede's cultural dimensions (power distance, individualism, masculinity, uncertainty avoidance, long-term orientation, indulgence) provide country-level personality tendencies. The V-Dem liberal democracy index adds political dimensionality. However, within any single country, individuals vary enormously — a Turkish entrepreneur and a Turkish civil servant share a nationality but may have diametrically opposed risk appetites and authority compliance profiles. Country-level data provides the mean but not the variance.
-
-### 2.3 Time-Seeded Trait Diversification
-
-REALM's approach uses three independent signals, blended through a weighted adapter architecture:
-
-**Astronomical Ephemeris Mapping (60% weight):** Swiss Ephemeris natal chart calculations produce planetary position vectors that vary continuously with birth time. These vectors are mapped to personality dimensions through a deterministic transformation. The key properties are:
-
-- *Determinism:* The same birth time always produces the same trait vector.
-- *Continuity:* Nearby birth times produce similar but distinct vectors.
-- *Complexity:* Planetary positions span enough dimensions to populate a 24-trait space without degeneracy.
-- *Non-uniformity:* The resulting distributions are structured, not random — certain trait combinations are more common than others, mirroring real-world personality clustering.
-
-We emphasize: this is not a claim about astrological validity. We use ephemeris calculations the way a procedural generation algorithm uses Perlin noise — as a source of structured, reproducible variation. The question is not "does astrology work?" but "does this diversification mechanism produce psychometrically realistic populations?" Our validation (Section 4) suggests it does.
-
-**Big Five Psychometric Mapping (25% weight):** OCEAN trait scores are derived from facet-level analysis using the Johnson IPIP-NEO-120 framework. Each of the five factors (Openness, Conscientiousness, Extraversion, Agreeableness, Neuroticism) is decomposed into six facets, and these 30 facets are mapped to REALM's 24-trait space. This component ensures that the trait distributions align with established psychometric structure.
-
-**Hofstede Cultural Dimensions (15% weight):** Country-level cultural modifiers from Hofstede's 6-dimension model, augmented with V-Dem liberal democracy indices, provide population-level trait variation across 66 countries. This ensures that agents from high-PDI countries (e.g., Malaysia) exhibit systematically different authority compliance distributions than agents from low-PDI countries (e.g., Denmark).
-
-The three signals are combined through a `BlendedAdapter` that produces a final 24-dimensional trait vector for each agent:
-
-```
-trait_vector = 0.60 × astro_component + 0.25 × bigfive_component + 0.15 × demographic_component
-```
+Honest measurement is the project's second commitment. This paper reports a validated strength (population realism), a structural limitation discovered by experiment (question-blindness of the baseline channel), and a negative benchmark result (the blinded scenario channel does not retrodict poll shifts), together with the failure-mode analysis that makes the negative result actionable.
 
 ---
 
-## 3. Architecture
+## 2. Population Construction
 
-### 3.1 Agent Model
+### 2.1 Per-Question Target Populations
 
-Each agent is characterized by a 24-dimensional trait vector spanning personality dimensions relevant to opinion dynamics:
+Each question defines its population. A `PopulationSpec` (countries and/or regions with union semantics, age band, gender, education filters) constrains demographic sampling: country candidates are restricted and re-weighted by national population; per-agent attributes are drawn by bounded rejection resampling, keeping generation deterministic for a given (seed, spec). "The world" is simply the unrestricted spec (66 countries, population-weighted). All validation runs in this paper use country-scoped populations matching each poll's population.
 
-| Trait | Description |
-|-------|-------------|
-| risk_appetite | Willingness to accept uncertainty |
-| financial_optimism | Expectation of positive economic outcomes |
-| herd_susceptibility | Tendency to follow majority opinion |
-| contrarian_tendency | Inclination to oppose consensus |
-| authority_compliance | Deference to institutional authority |
-| fomo_susceptibility | Fear of missing out on opportunities |
-| loss_aversion | Sensitivity to potential losses |
-| analytical_depth | Tendency toward evidence-based reasoning |
-| impulsivity | Speed of decision-making |
-| social_dominance | Drive to influence others' opinions |
-| political_spectrum | Position on authority-individualism axis |
-| ... | (13 additional traits) |
+### 2.2 Trait Diversification Is Pluggable
 
-All traits are continuous values in [0, 1].
+Every agent carries a 24-dimensional trait vector (risk_appetite, herd_susceptibility, authority_compliance, loss_aversion, political_spectrum, …, all in [0,1]). Four interchangeable adapters populate it:
 
-### 3.2 Simulation Engine
+- **Big Five (real-data):** facet-level mapping from the Johnson IPIP-NEO-120 framework; the psychometrically strongest mode.
+- **Demographic:** country-level Hofstede dimensions + V-Dem-blended political axis.
+- **Astrological (procedural):** Swiss-Ephemeris natal calculations used as a deterministic, continuous, structured hash of birth time — a *procedural diversity generator* in the sense that procedural graphics use Perlin noise. We make no causal claim, and we report its measured weakness: near-orthogonal OCEAN intercorrelations (|r| < 0.1 vs ~0.20 in the literature).
+- **Blended:** weighted combination (default 60/25/15 astro/big-five/demographic).
 
-Agents interact on a small-world + scale-free hybrid network topology. Each simulation tick involves:
+Mode choice is a configuration decision; validation studies must and do report which mode was used. The astrological mode is *one option*, not the project's identity.
 
-1. **Posting:** Agents generate opinion signals based on their traits.
-2. **Engagement:** Agents observe and react to others' posts.
-3. **Drift:** An `ExperienceDriftEngine` fires events (15 types) that permanently shift agent traits within a cumulative ±0.10 clamp.
-4. **Transit Modulation:** Time-varying collective mood modifiers based on astronomical transit calculations.
+### 2.3 Simulation Engine
 
-### 3.3 Prediction Pipeline
+Agents interact on a small-world + scale-free hybrid network. Per tick: agents post and engage according to traits; an `ExperienceDriftEngine` fires events (15 config-driven types) that shift traits within a cumulative ±10% clamp; category-conditioned event weights, volatility, and asymmetry parameters differentiate domains. Multi-branch runs (default 5 branches × perturbed seeds) provide distributional output; per-agent deviations are pooled across *all* branches into the reaction distribution.
 
-REALM answers questions through a multi-stage pipeline:
+### 2.4 Prediction Pipeline and Division of Labor
 
-1. **Question Analysis** (LLM): The question is parsed, categorized (9 categories), and analyzed for subject, direction, and relevant factors. The LLM produces a calibrated prior probability based on its training knowledge and optional web research.
+The full pipeline is: LLM question analysis (category, subject, prior; optional web research) → multi-branch simulation → calibrated blend → LLM narrative. The division of labor is explicit and empirically motivated (§4.2): **the LLM estimates the current level; the simulation estimates the dynamics.** For scenario questions the user supplies an event feed; it is analyzed either by an LLM scenario analyzer (per-trait impacts) or, in LLM-off mode, by a lexicon-based sentiment parse applied to the category's primary traits. All LLM stages are hard-gated by a single `use_llm` switch — a gate whose completeness we had to fix during this work, because a partially gated pipeline silently leaked LLM knowledge into "simulation-only" runs (§4.3).
 
-2. **Swarm Simulation**: A population of N agents (configurable, 50–10,000) runs for T ticks across B branches. Category-specific drift event weights determine which events fire more frequently. A sigmoid calibration layer converts trait deviations into probability estimates.
+---
 
-3. **Blending**: The final probability is a weighted blend of LLM prior and simulation result. For baseline predictions, LLM dominates (85–95%). For scenario analysis, simulation dominates (60%).
+## 3. The Reaction Distribution
 
-4. **Narrative Generation** (LLM): Results are interpreted in context, producing question-specific driver explanations, dissent analysis, and confidence assessments.
+For a request, REALM runs a 0-tick reference simulation to capture baseline trait means, then B baseline branches and (if a scenario is supplied) B scenario branches on the same target population. Each agent's weighted trait deviation from the reference means (category primary traits ×2.0, secondary ×1.0, suppressed ×0.25) is computed with drift applied; deviations from all branches are pooled (B × N samples) and bucketed by a single global threshold (max(0.005, 0.5σ)) into support/oppose/neutral. Segments below a minimum pooled size are dropped; each dimension reports its largest segments. The scenario response is the element-wise shift between scenario and baseline stance shares, decomposed in the API into blend-mechanical and simulation-movement components.
 
-### 3.4 Scenario Injection
-
-REALM's distinguishing capability: a user provides a hypothetical scenario (news event, policy change, market signal), which is semantically analyzed by the LLM and converted into targeted trait perturbations applied to 70% of the agent population. The simulation reruns, and the delta between baseline and scenario predictions reveals how collective sentiment shifts.
+This surface — not a probability — is the product claim under test.
 
 ---
 
 ## 4. Validation
 
-### 4.1 Psychometric Validity
+### 4.1 Population Realism (positive result)
 
-The time-seeded diversification mechanism was validated against two benchmarks:
+Trait distributions from REALM populations were benchmarked against the Johnson IPIP-NEO-120 public dataset (N=612,711): **8/8 validity criteria PASS** in facet mode, with **13/13** facet-level correlation checks passing and 15/15 structural intercorrelation pairs matching in the synthetic benchmark. Known honest caveats are retained in the repository's validation reports: the calibration layer is distribution-specific (a calibrator trained on synthetic marginals mis-corrects real data unless source-aware — implemented), and the astrological mode's trait intercorrelations are weaker than literature values. A small celebrity-cohort study (N=22, discriminant accuracy 0.718) is reported as directional only, given its size and selection bias.
 
-**Big Five Alignment:** Trait distributions from a REALM-generated 10,000-agent population were compared against the Johnson IPIP-NEO-120 dataset (N=612,711). All 8 validity criteria passed, and 13/13 facet-level correlations were statistically significant. This indicates that REALM's blended trait distributions are structurally consistent with established personality models.
+### 4.2 Question-Blindness of the Baseline Channel (structural diagnosis)
 
-**Astronomical Diversification Assessment:** A 22-figure celebrity cohort was used to assess whether ephemeris-derived traits produce meaningful personality differentiation. Results: Discriminant Accuracy = 0.718, Pearson r = 0.309. All 4 criteria passed. We acknowledge this cohort is small and selection-biased; results should be interpreted as "promising direction" rather than "proven methodology."
+A controlled experiment (three semantically different questions per category, fixed seeds) showed baseline simulation output is **bit-for-bit identical across questions within a category**: the baseline channel sees only the category, never the question text. Cross-category variation reduces to calibrated offsets. Consequently an earlier 5-market Polymarket backtest in which "the simulation added negative value" to a blended point forecast (ΔBrier +0.048) is reinterpreted: the simulation arm emitted a near-constant 0.5 (σ = 0.008) — diluting an LLM prior with noise is not evidence about reaction modeling, because the baseline channel contains no question information *by construction*. That test also suffered a memorization confound (all markets predated the LLM cutoff). Both design errors shaped Study A: test the **scenario delta**, and blind it properly.
 
-### 4.2 Prediction Backtesting
+### 4.3 Study A — Blinded Retrodiction Against Documented Poll Shifts (negative result)
 
-REALM was backtested against N resolved Polymarket prediction markets (minimum $10,000 trading volume):
+**Benchmark.** 22 historical events across 7 countries (US, GB, DE, FR, TR, FI, SE), each with a documented before/after opinion measurement from a named pollster or index, an event summary written as outcome-free news copy, a country-scoped target population, and a mechanism tag: 9 *rally* (negative event → leader approval rises), 5 *approval_drop*, 6 *policy_shift* (including threat-to-status-quo cases), 2 *confidence_index*. 21/22 events' numbers are verified against sources (the verification pass corrected 5 authored values and replaced one unverifiable series — a recorded lesson that authored numbers are candidates, never data). Rally events are included *because* they are hard: excluding them would be calibration theater.
 
-| Method | Mean Brier Score | Note |
-|--------|-----------------|------|
-| Polymarket (last price) | X.XXX | Real-money market consensus |
-| REALM (LLM + sim) | X.XXX | Blended prediction |
-| LLM only | X.XXX | No simulation |
-| Simulation only | 0.247 | ≈ random (confirming sim alone is insufficient) |
+**Blinding.** All events predate the LLM's knowledge cutoff, so all ran in `sim_delta_isolated` mode: LLM and web research disabled, testing the lexicon-driven scenario channel in isolation. This gate had to be *made* complete: the original `use_llm=False` toggle gated only the question analyzer, and the LLM scenario analyzer — which knows how 9/11 turned out — was still running (an early smoke predicted +62pp for 9/11 through this leak). The fixed pipeline predicts −27pp for the same event and honestly takes the miss.
 
-**Key finding:** Simulation alone produces near-random predictions. The simulation's value is not in baseline accuracy but in scenario analysis, where trait-level agent dynamics reveal *how* collective opinion changes in response to hypothetical events.
+**Result** (n_agents=100, n_ticks=30, n_branches=5, seed=42; predicted shift = support-share shift × 100):
 
-### 4.3 Scenario Analysis Validation
+| Metric | Value |
+|---|---|
+| Directional accuracy | **6/22 (27%)** — below coin flip; one-sided binomial p(≥6 hits) = 0.992 |
+| Signed Spearman ρ (predicted vs observed) | **−0.357** |
+| Magnitude Spearman ρ | −0.105 (no magnitude signal) |
+| rally | **0/9** |
+| approval_drop | 2/5 |
+| policy_shift | 2/6 |
+| confidence_index | **2/2** |
+| Zero-predictions (neutral parse → honest 0.0) | 2 |
 
-Scenario injection was tested for directional consistency across categories:
+**Failure-mode analysis.** The misses decompose into three mechanisms:
 
-- **Positive scenario** (e.g., "Fed cuts rates") → probability increases ✓
-- **Negative scenario** (e.g., "Inflation surges, Fed tightens") → probability decreases ✓
-- **Opposite scenarios** produce opposite deltas ✓
-- **Typical delta magnitude:** ±10–20 percentage points
+1. **Referent blindness** (dominant): the channel propagates *event valence* onto category traits, but a poll subject relates to the event semantically. Attacks lower simulated "support" yet raise real leader approval (all 9 rally events); war news lowers simulated support yet raised Finnish NATO support by +32pp; Fukushima lowered simulated support yet raised German phase-out support by +9pp.
+2. **Parse instability:** near-identical events received incoherent predictions from lexicon quirks — Sandy Hook +42pp but Parkland −0.2pp; the Nixon pardon read *positive* (+42pp, "grants … full … unconditional") against an observed −21pp.
+3. **Magnitude quantization:** outputs cluster near 0, ±20–29, and ±42–46pp — artifacts of the perturbation floor/cap and affected-population ratio — leaving no usable magnitude ranking.
+
+The channel succeeds precisely where valence and referent coincide (economic shock → economic confidence falls: 2/2). **Conclusion: the LLM-free scenario channel is an event-valence propagator, and event valence alone does not predict poll shifts.** Under the project's proof-first rule this negative result stands as published; it falsifies that channel as a general reaction predictor, not the reaction-distribution instrument built on top of it, and not the LLM-informed channel — which *cannot* be tested by retrodiction at all (leakage), only forward.
+
+### 4.4 Study B — Forward Prediction Diary (ongoing)
+
+The clean test of the full pipeline (LLM + web + simulation) is prospective: an append-only diary of predictions on upcoming events, written before resolution, never edited, scored as polls arrive (`outputs/prediction_diary/`). Forward prediction makes leakage impossible, so the LLM stages are legitimate there. The diary accumulates slowly by design; its running directional score is a first-class honesty metric of the project.
 
 ---
 
 ## 5. Discussion
 
-### 5.1 What REALM Is and Is Not
+### 5.1 What Holds, What Fell, What Is Untested
 
-REALM is not a prediction oracle. Its baseline predictions rely primarily on LLM analysis, which itself has known limitations (training data cutoff, lack of real-time information). REALM's unique contribution is *scenario analysis* — the ability to model how diverse populations react to hypothetical events, revealing population segmentation, trait-driven opinion dynamics, and dissent patterns that neither prediction markets nor standalone LLMs can provide.
+- **Holds:** psychometric realism of the generated populations (8/8); the reaction-distribution output surface (per-question populations, pooled stances, segments); the diagnosis methodology itself.
+- **Fell:** the blinded, lexicon-driven scenario channel as a poll-shift predictor (27% DA, anti-correlated); the earlier framing of the simulation as a baseline-probability contributor (question-blind by construction).
+- **Untested:** the LLM-informed scenario channel on real reactions — Study B exists to test it honestly.
 
-### 5.2 The Diversification Mechanism
+### 5.2 The Constructive Reading
 
-We anticipate skepticism toward the use of astronomical ephemeris calculations. We reiterate: this is a *diversification tool*, not a causal claim. The relevant question is not "does astrology predict personality?" but "does ephemeris-seeded diversification produce better populations than random assignment?" Our psychometric validation suggests yes, but with caveats:
-
-- The celebrity cohort (N=22) is too small for statistical power.
-- Astrological trait mapping may capture cultural biases in the training data rather than genuine personality structure.
-- Alternative diversification mechanisms (e.g., Gaussian process priors, variational autoencoders trained on personality survey data) could potentially achieve similar results.
-
-We present ephemeris-based diversification as one viable approach, not the only one. Future work should compare it against alternative mechanisms on equal psychometric benchmarks.
+The failure modes are specific enough to act on. Referent blindness calls for a *relation* layer — the polarity of (event → question subject) rather than the polarity of the event: an LLM provides this forward (it is the scenario analyzer's job), and a structured event-type × question-type polarity matrix is a candidate for blinded/offline use (e.g. `external threat × incumbent approval → positive`, the rally regularity known since Mueller 1970). Parse instability argues for replacing lexicon scoring with the relation layer entirely. Magnitude quantization requires freeing the perturbation from its floor/cap regime before magnitudes can mean anything.
 
 ### 5.3 Limitations
 
-- Agent traits are synthetic — they model population-level tendencies, not individual people.
-- The simulation models sentiment dynamics, not objective truth.
-- The political_spectrum trait uses a Hofstede + V-Dem proxy, not a direct polarization measure.
-- Backtest sample size is small; larger-scale validation is needed.
-- LLM prior quality depends on model capability and knowledge cutoff.
-- Web research (when available) improves prior calibration but adds latency and potential noise from irrelevant search results.
+- Study A: N=22, one seed, one parameter set; single-pollster series with cross-country wording differences; two events with imperfect windows (documented per-event); 1/22 baseline value unverified.
+- Agent traits are synthetic population-level tendencies, not individuals; the engine models sentiment dynamics, not truth.
+- political_spectrum is a country-level dispersion proxy (Hofstede + V-Dem), not measured polarization.
+- The derived probability inherits every limitation above; it is reported as a view of the distribution, not as a calibrated forecast.
 
 ---
 
@@ -179,22 +135,24 @@ We present ephemeris-based diversification as one viable approach, not the only 
 | Component | Detail |
 |-----------|--------|
 | Language | Python 3.11 |
-| Ephemeris | Kerykeion (Swiss Ephemeris) |
-| Adapters | Astrological (60%) + BigFive (25%) + Demographic (15%) |
-| Traits | 24 personality dimensions |
-| Countries | 66 (population-weighted distribution) |
-| Drift Events | 15 types (config-driven) |
-| Categories | 9 (politics, economics, crypto, sports, markets, culture, science, geopolitics, balanced) |
-| Network | Small-world + Scale-free hybrid topology |
-| Validation | BF 8/8 PASS · Astro 4/4 PASS · 869+ automated tests |
-| Dashboard | Terminal-aesthetic, typewriter-animated, FastAPI backend |
+| Output | ReactionDistribution: pooled stances, baseline shift, segments (country/region/age-band/gender) |
+| Population targeting | PopulationSpec: countries/regions (union), age, gender, education; deterministic constrained sampling |
+| Ephemeris | Kerykeion (Swiss Ephemeris) — one of four adapter modes |
+| Adapters | astrological · big_five (Johnson IPIP-NEO, N=612,711) · demographic · blended |
+| Traits | 24 dimensions |
+| Countries | 66 (population-weighted) |
+| Drift events | 15 types (config-driven, category-conditioned) |
+| Categories | 9 |
+| Benchmark | Study A: 22 events, 7 countries, 21/22 verified, blinded harness (`scripts/run_study_a.py`) |
+| Diary | Study B: append-only forward registry (`scripts/diary.py`) |
+| Validation | BF 8/8 PASS · Study A DA 6/22 (negative, published) · 998 automated tests · CI |
 | License | MIT |
 
 ---
 
 ## 7. Conclusion
 
-REALM demonstrates that time-seeded trait diversification can produce psychometrically valid agent populations for swarm intelligence simulations. While the simulation does not improve baseline prediction accuracy over LLM-only analysis, it enables a form of analysis that neither prediction markets nor language models provide independently: structured scenario analysis with population segmentation, trait-level dynamics, and dissent modeling. We release REALM as an open-source tool for researchers and practitioners interested in collective opinion dynamics and counterfactual scenario exploration.
+REALM set out to answer a falsifiable question: can a simulation of psychometrically realistic agents predict how a defined population reacts to events? The honest answer so far has three parts. The population layer is real — its trait distributions match large-scale psychometric data. The output layer is real — reaction distributions over targeted populations, with segments and shifts, are a genuinely different product surface from point probabilities. But the only reaction *mechanism* that could be tested under blinding — event-valence propagation — measurably fails against documented poll shifts (27% directional accuracy, 0/9 on rally events), for reasons the benchmark makes precise: reactions follow the relation between event and subject, not the valence of the event. We publish that negative result, ship the 22-event benchmark and harness for others to beat, and move the live hypothesis to the only channel that can carry it honestly: registered forward predictions.
 
 ---
 
@@ -210,10 +168,13 @@ REALM demonstrates that time-seeded trait diversification can produce psychometr
 
 [5] Barabási, A. L., & Albert, R. (1999). Emergence of Scaling in Random Networks. *Science*, 286, 509-512.
 
-[6] Brier, G. W. (1950). Verification of forecasts expressed in terms of probability. *Monthly Weather Review*, 78, 1-3.
+[6] Mueller, J. E. (1970). Presidential Popularity from Truman to Johnson. *American Political Science Review*, 64(1), 18-34.
+
+[7] Brier, G. W. (1950). Verification of forecasts expressed in terms of probability. *Monthly Weather Review*, 78, 1-3.
+
+Study A poll sources (Gallup, Ipsos-MORI, Ifop, Infratest dimap, Metropoll, YouGov, Novus, Yle/Taloustutkimus, University of Michigan) are cited per-event in `data/validation/study_a_events.json` and `docs/study_a_dataset_notes.md`.
 
 ---
 
 *REALM is open-source software released under the MIT License.*
-*Repository: [GitHub URL]*
-*Dashboard demo: [URL or instructions]*
+*Repository: [`github.com/lotheral/realm`](https://github.com/lotheral/realm)*
