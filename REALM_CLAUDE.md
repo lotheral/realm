@@ -4,7 +4,7 @@
 
 > **Version:** 0.20.0
 > **Created:** 2026-04-22
-> **Last Updated:** 2026-08-18 (v0.21.0 — Sprint 21: reaction-distribution output layer — PopulationSpec targeting, pooled stance distribution + segment breakdown, API + dashboard surface)
+> **Last Updated:** 2026-08-18 (v0.22.0 — Sprint 22: Study A dataset (22 events, 9 verified) + blinded retrodiction harness + use_llm blinding-gate fix + Study B diary bootstrap)
 > **Identity note (2026-08-18):** the founding intent is population-reaction
 > simulation — detecting opinions/tendencies toward events in advance.
 > Astrology is ONE of four pluggable temperament-diversification modes
@@ -18,6 +18,40 @@
 ---
 
 ## 0. CURRENT BUILD STATE (2026-08-18)
+
+### Sprint 22 — Study A Instruments + Study B Diary (2026-08-18)
+
+Implements design doc §4.1/§4.2/§5 row 22. The OFFICIAL study run +
+article rewrite is Sprint 23 scope. Plan:
+`docs/superpowers/plans/2026-08-18-sprint22-study-a-dataset-harness.md`.
+
+- **Dataset:** `data/validation/study_a_events.json` — 22 events,
+  7 countries, mechanism-tagged (9 rally / 5 approval_drop / 6
+  policy_shift / 2 confidence_index), all `sim_delta_isolated`. 9/9
+  high-confidence events web-verified (Finland NATO baseline corrected
+  28→30); 13 medium/low remain candidates. Sourcing + caveats:
+  `docs/study_a_dataset_notes.md`.
+- **Schema/loader:** `realm/validation/study_a.py` (regime enum +
+  LLM-cutoff guard; leakage rules tested — summaries may not mention
+  polls). **Metrics:** `realm/validation/retrodiction.py` (exact
+  binomial DA, Spearman with ties, breakdowns; no scipy).
+- **Harness:** `scripts/run_study_a.py` — in-process, per-event blinding
+  regime, predicted = `reaction.shift.support × 100`. Blinded smoke
+  (6 events, reduced params): Fukushima HIT (−27.5 vs −14), all rally
+  events structurally miss (sentiment-sign mechanism cannot produce a
+  rally), Ford pardon miss (parser reads "grants/unconditional" as
+  positive), Falklands neutral-parse 0.00. This is the honest baseline
+  the official run will quantify.
+- **CRITICAL FIX (blinding leak):** `use_llm=False` previously gated
+  ONLY the question analyzer (Sprint 18) — the scenario analyzer and
+  narrator still made LLM calls. First smoke predicted +62pp for 9/11
+  because the LLM knows the rally happened. Both components are now
+  hard-gated on `use_llm`; regression test in
+  `realm/api/tests/test_reaction_endpoint.py::TestBlindingGate`.
+- **Study B:** `realm/validation/diary.py` + `scripts/diary.py` +
+  `outputs/prediction_diary/` — append-only, immutable predictions,
+  scoring only adds a resolution block; full pipeline (LLM+web on) is
+  the honest configuration for forward predictions.
 
 ### Sprint 21 — Reaction-Distribution Output Layer (2026-08-18)
 
@@ -449,7 +483,7 @@ stack info: "12 event types" → "15 event types" in 3 places.
 - ✅ **Sprint 8 (2026-04-24)** — Mapping fix + calibration methodology + observatory dashboard. **WP1:** added semantic counter-planet contributors to `loss_aversion` in `data/astro/planet_trait_map.json` — Mars −0.45, Jupiter −0.25, Uranus −0.30 (Saturn kept at +0.55 as the principled anchor); **loss_aversion DA 0.05 → 1.00** without any calibration. **WP2+WP3:** added three-mode `--calibration=` flag (`none` default, `variance`, `full`) to the generate script with an adaptive-boundary variance expander; grid search revealed that *any* calibration mode degrades celebrity-validation metrics because celebrities are a selection-biased subsample — **calibration is a simulation tool, not a validation tool**, decided and documented. **WP4a:** Sprint 7→8 lift — DA +0.040, Pearson +0.054, Extreme +0.036, CW-DA +0.035, non-fallback +0.051. **WP4b:** `outputs/realm_dashboard.html` — 47 KB single-file Neural Observatory dashboard. D3.js v7 force-directed Agent Synapse Network (8 hand-authored archetypes, bioluminescent signal particles along gradient edges), sticky scoreboard with glow badges, per-trait DA grid, per-person ranked bars, sprint-comparison strip, BF validity checklist — dark space theme + cyan/magenta/amber/violet accents, JetBrains Mono display + DM Sans body. 598 tests green.
 - ⏳ Phase 7 — POLYLIQ/ARGUS stubs (deferred)
 
-**Current test total: 963 passing (+40 in Sprint 21, +36 in Sprint 20, +12 in Sprint 19, +43 in Sprint 18, +49 in Sprint 17, +35 in Sprint 16, +17 in Sprint 15, +37 in Sprint 14). Sprint 20: entire repo ruff clean (the ~8 pre-existing errors in `tests/test_core_smoke.py` were fixed for CI) and `ruff check .` + `pytest -q` now run on every push via `.github/workflows/ci.yml`.**
+**Current test total: 998 passing (+35 in Sprint 22, +40 in Sprint 21, +36 in Sprint 20, +12 in Sprint 19, +43 in Sprint 18, +49 in Sprint 17, +35 in Sprint 16, +17 in Sprint 15, +37 in Sprint 14). Sprint 20: entire repo ruff clean (the ~8 pre-existing errors in `tests/test_core_smoke.py` were fixed for CI) and `ruff check .` + `pytest -q` now run on every push via `.github/workflows/ci.yml`.**
 
 ### v0.15.1 hotfix — Geopolitics asymmetry retune (2026-04-26)
 
@@ -660,7 +694,7 @@ The baseline-spread gate is the only one not met at 200×30×5. The honest reaso
 cd C:\Users\loth\desktop\realm
 .venv\Scripts\activate
 python scripts/smoke_external.py                            # Sprint 20: ALWAYS run first after a dormant period
-python -m pytest -q                                         # expect 963 passing (Sprint 21)
+python -m pytest -q                                         # expect 998 passing (Sprint 22)
 realm_start.bat                                             # v2 dashboard + FastAPI :8420 (production path)
 python scripts/serve_dashboard.py 500                       # LEGACY v1 dashboard — pre-Sprint-13 algorithm, retire/merge pending
 python scripts/demo_butterfly.py                            # offline butterfly proof

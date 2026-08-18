@@ -1,6 +1,6 @@
 # REALM — Collective Sentiment Simulation Platform
 
-> **Status:** v0.21.0 (Sprint 21 — reaction-distribution output layer: per-question population targeting, pooled stance distribution + segment breakdown) · **Tests:** 963 passing · **CI:** active
+> **Status:** v0.22.0 (Sprint 22 — Study A retrodiction instruments: 22-event verified dataset + blinded harness; Study B prediction diary) · **Tests:** 998 passing · **CI:** active
 > · **Article:** [`REALM_ARTICLE_DRAFT.md`](./REALM_ARTICLE_DRAFT.md) — *REALM: Collective Sentiment Simulation Through Time-Seeded Trait Diversification*
 >
 > **License:** MIT — Copyright © 2026 Suvar Ergun. See [`LICENSE`](./LICENSE).

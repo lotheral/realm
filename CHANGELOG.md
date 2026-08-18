@@ -4,6 +4,40 @@ All notable changes since the initial release. Per-sprint detail lives
 in `REALM_CLAUDE.md` § 0 (CURRENT BUILD STATE) and
 `outputs/realm_milestone_report.md` (full historical narrative).
 
+## v0.22.0 — Sprint 22: Study A dataset + retrodiction harness, Study B diary (2026-08-18)
+
+Implements design doc §4.1/§4.2/§5 row 22. The OFFICIAL Study A run +
+article rewrite is Sprint 23; this release ships the instruments.
+
+- **Added:** `realm/validation/study_a.py` — `StudyAEvent` schema +
+  validating loader (blinding-regime enum with LLM-cutoff guard,
+  authorship-confidence enum, shift-consistency check, population
+  validation, outcome-leakage rules enforced by tests).
+- **Added:** `data/validation/study_a_events.json` — 22 historical
+  events with documented before/after polls across 7 countries, tagged
+  by mechanism (9 rally / 5 approval_drop / 6 policy_shift / 2
+  confidence_index). All 9 high-confidence events verified against web
+  sources (one correction: Finland NATO baseline 28→30, Taloustutkimus);
+  13 medium/low events remain candidates
+  (`docs/study_a_dataset_notes.md` has the full log).
+- **Added:** `realm/validation/retrodiction.py` — pure-python metrics:
+  directional accuracy with zero-prediction accounting, exact one-sided
+  binomial test vs 50%, Spearman ρ with tie ranks, group breakdowns.
+- **Added:** `scripts/run_study_a.py` — in-process retrodiction harness;
+  compares `reaction.shift.support × 100` against observed poll shifts
+  under each event's logged blinding regime; reports break down by
+  confidence tier / verified flag / mechanism tag.
+- **Fixed (blinding leak):** `use_llm=False` now gates the scenario
+  analyzer and the narrator — previously only the question analyzer was
+  gated (Sprint 18), so blinded runs with a `scenario_feed` still made
+  LLM calls and the LLM's knowledge of historical outcomes leaked into
+  the "sim-isolated" delta (first smoke predicted +62pp for 9/11; the
+  honestly blinded run predicts −21pp and takes the rally miss).
+- **Added:** Study B forward-prediction diary
+  (`realm/validation/diary.py`, `scripts/diary.py`,
+  `outputs/prediction_diary/`) — append-only JSONL, immutable
+  predictions, score-only-adds-resolution contract.
+
 ## v0.21.0 — Sprint 21: reaction-distribution output layer (2026-08-18)
 
 Implements design doc §5 row 21 (the first-class output surface for the
