@@ -4,6 +4,31 @@ All notable changes since the initial release. Per-sprint detail lives
 in `REALM_CLAUDE.md` § 0 (CURRENT BUILD STATE) and
 `outputs/realm_milestone_report.md` (full historical narrative).
 
+## v0.24.1 — Sprint 25: category-routing blinding leak fixed, Study A corrected (2026-08-20)
+
+- **Fixed (CRITICAL, third blinding leak):** `CategoryRouter` has been
+  LLM-FIRST since Sprint 17 when `REALM_LLM_CATEGORY_BACKEND` wires a
+  backend, and `predict.py` resolved it through an env-only singleton —
+  the per-request `use_llm=False` flag never gated category routing.
+  Category choice drives drift weights / sigmoid sensitivity /
+  asymmetry, so the LLM re-parameterized the simulation inside blinded
+  Study A runs. Fix: keyword-only router for all `use_llm=False`
+  requests (`_get_offline_router()`), TDD regression test added.
+- **Corrected (erratum, both runs re-executed clean, same seed/params):**
+  Study A design set **6/22 → 4/22 (18%)**, signed ρ −0.357 → **−0.497**,
+  confidence_index 2/2 → **0/2** (both former hits were LLM-routing
+  artifacts: Lehman/COVID consumer-sentiment questions fall to
+  `balanced` under keyword routing); held-out **3/8 → 2/8**. The
+  negative result stands and strengthens. Fourth failure mode recorded:
+  category dependence. Errata in `outputs/study_a_results.md`,
+  `outputs/study_a_holdout_valence.md`, `outputs/study_a_analysis.md`;
+  clean artifacts in `outputs/study_a_results_postfix.{md,json}` and
+  `outputs/study_a_holdout_valence_postfix.{md,json}`. Relation channel
+  unaffected (analytic, no router).
+- **Hygiene:** stale identity/version strings synced (REALM_CLAUDE.md
+  header, api.py description, dashboard boot/About, README citation).
+- 1023 tests green, ruff clean.
+
 ## v0.24.0 — Sprint 24: relation-channel evaluation, repositioning surface, Study B live (2026-08-19)
 
 Closes the design doc §5 roadmap.
@@ -16,7 +41,8 @@ Closes the design doc §5 roadmap.
   `--channel valence|relation`.
 - **Added:** held-out dataset (`data/validation/study_a_holdout_events.json`)
   — 8 new events, all verified, disjoint from the design set.
-- **Evaluated (2×2):** valence 6/22 design / 3/8 held-out; relation
+- **Evaluated (2×2):** valence 6/22 design / 3/8 held-out *(corrected
+  in v0.24.1: 4/22 / 2/8 — category-routing blinding leak)*; relation
   20/22 design (in-sample at class level, not evidence) / **4/8
   held-out — fails the pre-stated promotion bar (>50%, p<0.1)** →
   relation stays research-only, NOT in the API. Secondary: 4/5 correct
@@ -38,6 +64,8 @@ Closes the design doc §5 roadmap.
   n_ticks=30, n_branches=5, seed=42, all `sim_delta_isolated`).
   **Result: directional accuracy 6/22 (27%), signed Spearman −0.357 —
   a published negative result for the LLM-free scenario channel.**
+  *(Corrected in v0.24.1: this run was contaminated by the
+  category-routing blinding leak — clean numbers are 4/22, ρ −0.497.)*
   Breakdown: rally 0/9, approval_drop 2/5, policy_shift 2/6,
   confidence_index 2/2. Failure modes: referent blindness, parse
   instability, magnitude quantization

@@ -6,15 +6,41 @@
 > n_branches=5, seed=42, all events `sim_delta_isolated` (LLM off,
 > web off — the blinded regime).
 
+## Erratum (2026-08-20, Sprint 25) — corrected numbers
+
+The 2026-08-18 official run was contaminated by a **third LLM blinding
+leak**: category routing has been LLM-first since Sprint 17 and was
+gated only by the `REALM_LLM_CATEGORY_BACKEND` environment variable —
+the per-request `use_llm=False` flag never reached it. With the var set
+(as it was), the LLM classified every event's question and its category
+choice re-parameterized the simulation (drift weights, sigmoid
+sensitivity, asymmetry). Four of 22 events were routed differently from
+the keyword-only path; after the fix the clean run
+(`outputs/study_a_results_postfix.md`, same seed/params) gives:
+
+- **DA 4/22 (18%)** (was 6/22), p = 1.000; zero-preds 3 (was 2)
+- **signed Spearman ρ = −0.497** (was −0.357); magnitude ρ = −0.124
+- **confidence_index 0/2** (was 2/2) — both former hits (Lehman, COVID
+  consumer sentiment) existed only because the LLM routed those
+  questions to `economics`; the keyword router cannot classify them
+  (they fall to `balanced`, predicting a near-zero +0.6pp)
+- rally 0/9, approval_drop 2/5, policy_shift 2/6 — unchanged
+- held-out set: **2/8** (was 3/8), signed ρ = −0.128; both surviving
+  hits are noise-magnitude sign coincidences (|predicted| ≤ 0.6pp)
+
+The verdict below **stands and strengthens**. Numbers in the original
+text are kept for the record and marked; a fourth failure mode is added.
+
 ## Verdict
 
 **The heuristic (LLM-off) scenario channel does not retrodict real
-poll shifts. Directional accuracy 6/22 (27%), below the 50% coin-flip
-baseline; signed Spearman ρ = −0.357 (systematically anti-correlated);
-magnitude ρ = −0.105 (no magnitude signal).** Per design decision #3
-this negative result is a valid completion of the research question for
-this channel, and it is diagnostic: the failures decompose into three
-identifiable mechanisms rather than noise.
+poll shifts. Directional accuracy 4/22 (18%) under complete blinding
+(originally reported 6/22 before the erratum above), below the 50%
+coin-flip baseline; signed Spearman ρ = −0.497 (systematically
+anti-correlated); magnitude ρ = −0.124 (no magnitude signal).** Per
+design decision #3 this negative result is a valid completion of the
+research question for this channel, and it is diagnostic: the failures
+decompose into identifiable mechanisms rather than noise.
 
 ## The three failure modes
 
@@ -48,14 +74,25 @@ events received opposite predictions from word-inventory quirks:
 the 70% affected-population ratio — so predicted magnitudes carry no
 rank information (ρ = −0.105).
 
-## Where the channel works
+## Where the channel works — revised by the erratum
 
-`confidence_index` 2/2 (Lehman −20.8 vs −12.7; COVID −20.2 vs −29.2),
-plus Katrina and Jan-6. These are exactly the cases where **valence and
-referent coincide**: bad economic news → economic confidence falls; the
-event is *about* the questioned subject and pushes it the same way. The
-channel is an event-valence propagator, and it retrodicts correctly
-precisely when the poll metric is a valence thermometer.
+The original text claimed `confidence_index` 2/2 (Lehman, COVID
+consumer sentiment) as the showcase of **valence-referent coincidence**.
+The erratum killed both: those hits required the LLM to route the
+questions to `economics`; under clean keyword-only routing they fall to
+`balanced` and the channel predicts ≈+0.6pp (wrong sign, miss). This
+exposes a **fourth failure mode — category dependence**: the channel's
+event-valence propagation only lands on the right traits when the
+question is classified into the right category, and the offline keyword
+router cannot do that for exactly the "valence thermometer" questions
+where the mechanism should shine.
+
+What survives clean blinding: Katrina and Jan-6 (approval_drop — the
+event is *about* the leader and pushes approval the same way as its
+valence) and Sandy Hook + Dobbs (policy_shift, at quantized +42pp
+magnitudes). The coincidence reading still holds for these four, but at
+4/22 the channel has no claim to a working regime — only to
+interpretable failures.
 
 ## What this does and does not falsify
 

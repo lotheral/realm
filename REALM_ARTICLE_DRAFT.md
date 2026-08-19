@@ -2,7 +2,7 @@
 
 **Modeling How Defined Populations React to Events — Stance Distributions, Shifts, and Segments**
 
-**Suvar Ergun** · 2026 · v0.23.0 · MIT License · [`github.com/lotheral/realm`](https://github.com/lotheral/realm)
+**Suvar Ergun** · 2026 · v0.24.1 · MIT License · [`github.com/lotheral/realm`](https://github.com/lotheral/realm)
 
 ---
 
@@ -10,7 +10,7 @@
 
 We present REALM, an agent-based platform whose research question is: *given an event and a defined target population, can a simulation of psychometrically realistic agents predict the population's reaction — which stances shift, in which direction, and in which segments?* REALM's primary output is a **reaction distribution** — support/oppose/neutral stance shares pooled across simulation branches, their shift against a no-event baseline, and breakdowns by country, region, age band, and gender for a per-question target population — with any single probability number treated as a derived view.
 
-We report three validation results with full honesty. **(1) Population realism:** REALM's trait-diversification layer produces populations that pass 8/8 psychometric validity criteria against the Johnson IPIP-NEO-120 dataset (N=612,711), with 13/13 facet-level correlations significant. **(2) A structural diagnosis:** baseline (no-event) simulation output is *question-blind by construction* — different questions in the same category produce identical output — so the simulation cannot and should not compete with a question-aware prior on baseline probability; its entire information channel is the scenario delta. **(3) A negative retrodiction result:** in Study A, a 22-event blinded benchmark of documented before/after poll shifts across 7 countries, the LLM-free scenario channel achieved 27% directional accuracy (6/22, below the 50% coin-flip baseline; signed Spearman ρ = −0.357). The failures decompose into three identifiable mechanisms — referent blindness (rally events: 0/9), sentiment-parse instability, and magnitude quantization — while the channel succeeded exactly where event valence and question referent coincide (economic-confidence events: 2/2). We publish this negative result as a valid completion of the research question for that channel, and describe the ongoing forward-prediction diary (Study B) that tests the full LLM-informed pipeline without the leakage that makes blinded retrodiction impossible for it.
+We report three validation results with full honesty. **(1) Population realism:** REALM's trait-diversification layer produces populations that pass 8/8 psychometric validity criteria against the Johnson IPIP-NEO-120 dataset (N=612,711), with 13/13 facet-level correlations significant. **(2) A structural diagnosis:** baseline (no-event) simulation output is *question-blind by construction* — different questions in the same category produce identical output — so the simulation cannot and should not compete with a question-aware prior on baseline probability; its entire information channel is the scenario delta. **(3) A negative retrodiction result:** in Study A, a 22-event blinded benchmark of documented before/after poll shifts across 7 countries, the LLM-free scenario channel achieved 18% directional accuracy (4/22, below the 50% coin-flip baseline; signed Spearman ρ = −0.497). The failures decompose into four identifiable mechanisms — referent blindness (rally events: 0/9), sentiment-parse instability, magnitude quantization, and category dependence: the originally reported economic-confidence hits (2/2) turned out to require LLM category routing, itself a blinding leak found in a post-publication audit, and vanish under the completed blinding gate (0/2). We publish this negative result as a valid completion of the research question for that channel, and describe the ongoing forward-prediction diary (Study B) that tests the full LLM-informed pipeline without the leakage that makes blinded retrodiction impossible for it.
 
 REALM simulates up to 10,000 agents across 66 countries with per-question population targeting, 15 drift event types, 9 prediction categories, and an interactive dashboard. The platform, the benchmark dataset, and all validation harnesses are open-source under the MIT license.
 
@@ -80,28 +80,29 @@ A controlled experiment (three semantically different questions per category, fi
 
 **Benchmark.** 22 historical events across 7 countries (US, GB, DE, FR, TR, FI, SE), each with a documented before/after opinion measurement from a named pollster or index, an event summary written as outcome-free news copy, a country-scoped target population, and a mechanism tag: 9 *rally* (negative event → leader approval rises), 5 *approval_drop*, 6 *policy_shift* (including threat-to-status-quo cases), 2 *confidence_index*. 21/22 events' numbers are verified against sources (the verification pass corrected 5 authored values and replaced one unverifiable series — a recorded lesson that authored numbers are candidates, never data). Rally events are included *because* they are hard: excluding them would be calibration theater.
 
-**Blinding.** All events predate the LLM's knowledge cutoff, so all ran in `sim_delta_isolated` mode: LLM and web research disabled, testing the lexicon-driven scenario channel in isolation. This gate had to be *made* complete: the original `use_llm=False` toggle gated only the question analyzer, and the LLM scenario analyzer — which knows how 9/11 turned out — was still running (an early smoke predicted +62pp for 9/11 through this leak). The fixed pipeline predicts −27pp for the same event and honestly takes the miss.
+**Blinding.** All events predate the LLM's knowledge cutoff, so all ran in `sim_delta_isolated` mode: LLM and web research disabled, testing the lexicon-driven scenario channel in isolation. This gate had to be *made* complete — twice. First, the original `use_llm=False` toggle gated only the question analyzer, and the LLM scenario analyzer — which knows how 9/11 turned out — was still running (an early smoke predicted +62pp for 9/11 through this leak). The fixed pipeline predicts −27pp for the same event and honestly takes the miss. Second, a post-publication audit found that *category routing* had been LLM-first since Sprint 17 and was gated only by an environment variable: with it set, the LLM classified every event's question, and its category choice re-parameterized the simulation itself (drift weights, sigmoid sensitivity, asymmetry). Four of 22 events were LLM-routed differently from the offline keyword path; the numbers below are from the clean re-run after closing that gate (the contaminated run scored 6/22 with ρ = −0.357 — both of its economic-confidence hits were LLM-routing artifacts).
 
 **Result** (n_agents=100, n_ticks=30, n_branches=5, seed=42; predicted shift = support-share shift × 100):
 
 | Metric | Value |
 |---|---|
-| Directional accuracy | **6/22 (27%)** — below coin flip; one-sided binomial p(≥6 hits) = 0.992 |
-| Signed Spearman ρ (predicted vs observed) | **−0.357** |
-| Magnitude Spearman ρ | −0.105 (no magnitude signal) |
+| Directional accuracy | **4/22 (18%)** — below coin flip; one-sided binomial p(≥4 hits) = 1.000 |
+| Signed Spearman ρ (predicted vs observed) | **−0.497** |
+| Magnitude Spearman ρ | −0.124 (no magnitude signal) |
 | rally | **0/9** |
 | approval_drop | 2/5 |
 | policy_shift | 2/6 |
-| confidence_index | **2/2** |
-| Zero-predictions (neutral parse → honest 0.0) | 2 |
+| confidence_index | **0/2** (2/2 in the contaminated run — LLM-routing artifacts) |
+| Zero-predictions (neutral parse → honest 0.0) | 3 |
 
 **Failure-mode analysis.** The misses decompose into three mechanisms:
 
 1. **Referent blindness** (dominant): the channel propagates *event valence* onto category traits, but a poll subject relates to the event semantically. Attacks lower simulated "support" yet raise real leader approval (all 9 rally events); war news lowers simulated support yet raised Finnish NATO support by +32pp; Fukushima lowered simulated support yet raised German phase-out support by +9pp.
 2. **Parse instability:** near-identical events received incoherent predictions from lexicon quirks — Sandy Hook +42pp but Parkland −0.2pp; the Nixon pardon read *positive* (+42pp, "grants … full … unconditional") against an observed −21pp.
 3. **Magnitude quantization:** outputs cluster near 0, ±20–29, and ±42–46pp — artifacts of the perturbation floor/cap and affected-population ratio — leaving no usable magnitude ranking.
+4. **Category dependence** (found by the blinding audit): valence propagation only lands on the right traits when the question is classified into the right category, and the offline keyword router cannot classify exactly the consumer-sentiment questions where valence-referent coincidence should work — they fall to the `balanced` category and produce near-zero deltas. The channel's apparent "working regime" (economic confidence 2/2) was an artifact of LLM-assisted classification.
 
-The channel succeeds precisely where valence and referent coincide (economic shock → economic confidence falls: 2/2). **Conclusion: the LLM-free scenario channel is an event-valence propagator, and event valence alone does not predict poll shifts.** Under the project's proof-first rule this negative result stands as published; it falsifies that channel as a general reaction predictor, not the reaction-distribution instrument built on top of it, and not the LLM-informed channel — which *cannot* be tested by retrodiction at all (leakage), only forward.
+The four hits that survive complete blinding (Katrina, Jan-6, Sandy Hook, Dobbs) are cases where valence and referent coincide, but at 4/22 the channel has no working regime to claim — only interpretable failures. **Conclusion: the LLM-free scenario channel is an event-valence propagator, and event valence alone does not predict poll shifts.** Under the project's proof-first rule this negative result stands as published; it falsifies that channel as a general reaction predictor, not the reaction-distribution instrument built on top of it, and not the LLM-informed channel — which *cannot* be tested by retrodiction at all (leakage), only forward.
 
 ### 4.4 Study B — Forward Prediction Diary (ongoing)
 
@@ -114,7 +115,7 @@ The clean test of the full pipeline (LLM + web + simulation) is prospective: an 
 ### 5.1 What Holds, What Fell, What Is Untested
 
 - **Holds:** psychometric realism of the generated populations (8/8); the reaction-distribution output surface (per-question populations, pooled stances, segments); the diagnosis methodology itself.
-- **Fell:** the blinded, lexicon-driven scenario channel as a poll-shift predictor (27% DA, anti-correlated); the earlier framing of the simulation as a baseline-probability contributor (question-blind by construction).
+- **Fell:** the blinded, lexicon-driven scenario channel as a poll-shift predictor (18% DA, anti-correlated); the earlier framing of the simulation as a baseline-probability contributor (question-blind by construction).
 - **Untested:** the LLM-informed scenario channel on real reactions — Study B exists to test it honestly.
 
 ### 5.2 The Constructive Reading
@@ -145,7 +146,7 @@ The failure modes are specific enough to act on. Referent blindness calls for a 
 | Categories | 9 |
 | Benchmark | Study A: 22 events, 7 countries, 21/22 verified, blinded harness (`scripts/run_study_a.py`) |
 | Diary | Study B: append-only forward registry (`scripts/diary.py`) |
-| Validation | BF 8/8 PASS · Study A DA 6/22 (negative, published) · 998 automated tests · CI |
+| Validation | BF 8/8 PASS · Study A DA 4/22 (negative, published; corrected post-audit) · 1023 automated tests · CI |
 | License | MIT |
 
 ---

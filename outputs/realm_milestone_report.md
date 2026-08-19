@@ -2674,3 +2674,16 @@ Falsified: the lexicon scenario channel as a general poll-shift
 predictor. Untested and now primary: the LLM-informed pipeline via
 Study B forward predictions (retrodiction can never blind it).
 Analysis: `outputs/study_a_analysis.md`; raw: `outputs/study_a_results.md`.
+
+**Sprint 25 erratum (2026-08-20, v0.24.1):** the official run above was
+contaminated by a THIRD blinding leak — category routing (LLM-first
+since Sprint 17) was gated only by `REALM_LLM_CATEGORY_BACKEND`, never
+by `use_llm=False`, and category choice re-parameterizes the simulation.
+Clean re-runs (same seed/params) after the fix: **design 4/22 (18%),
+signed ρ −0.497, confidence_index 0/2** (both former hits were
+LLM-routing artifacts — keyword routing sends consumer-sentiment
+questions to `balanced`); **held-out 3/8 → 2/8**. A fourth failure mode
+is recorded: category dependence. The negative result stands and
+strengthens. Fix commit 5413d7f; clean artifacts:
+`outputs/study_a_results_postfix.{md,json}`,
+`outputs/study_a_holdout_valence_postfix.{md,json}`.

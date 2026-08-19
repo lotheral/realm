@@ -744,7 +744,7 @@ function updateModeIndicator() {
 
 // Sprint 16 metric — keep this in sync with the live test count after
 // running pytest. Boot screen reads it via #boot-tests.
-const TEST_COUNT = 1022;
+const TEST_COUNT = 1023;
 
 // ======================================================================
 // PREDICTION CATEGORIES (mirrors config/prediction_categories.json)
@@ -1256,14 +1256,15 @@ Full methodology: outputs/realm_milestone_report.md.
     results should be read as "promising direction", not "proven
     methodology".
 
-  · Study A (Sprint 23) measured the LLM-off scenario channel against
-    22 documented historical poll shifts under blinding: directional
-    accuracy 6/22 — a published NEGATIVE result. Heuristic-mode scenario
-    deltas are event-valence propagation, NOT poll-shift predictions;
-    they were only directionally right where the event was about the
-    questioned subject itself (economic confidence 2/2). The LLM
-    scenario analyzer is the semantic channel, and its honest test is
-    the forward-prediction diary (Study B), not retrodiction.
+  · Study A (Sprint 23, corrected Sprint 25) measured the LLM-off
+    scenario channel against 22 documented historical poll shifts under
+    blinding: directional accuracy 4/22 — a published NEGATIVE result.
+    (The original 6/22 was contaminated by a category-routing blinding
+    leak; the two economic-confidence hits were LLM-routing artifacts.)
+    Heuristic-mode scenario deltas are event-valence propagation, NOT
+    poll-shift predictions. The LLM scenario analyzer is the semantic
+    channel, and its honest test is the forward-prediction diary
+    (Study B), not retrodiction.
 
   · Sprint 21 made the reaction distribution the first-class output:
     each prediction defines its own target population (countries /

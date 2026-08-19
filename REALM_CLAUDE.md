@@ -2,9 +2,9 @@
 
 ## CLAUDE.md — Project Blueprint & Development Guide
 
-> **Version:** 0.24.0
+> **Version:** 0.24.1
 > **Created:** 2026-04-22
-> **Last Updated:** 2026-08-19 (v0.24.0 — Sprint 24: relation channel fails pre-stated held-out bar (4/8) → research-only; repositioning surface shipped (REALM name stays); Study B live with 3 open forward predictions. §5 roadmap COMPLETE.)
+> **Last Updated:** 2026-08-20 (v0.24.1 — Sprint 25: THIRD LLM blinding leak fixed (category routing was env-gated only, never saw use_llm=False); Study A corrected by clean re-runs: design 6/22→4/22, held-out 3/8→2/8 — the confidence_index hits were LLM-routing artifacts. Negative result stands, strengthened.)
 > **Identity note (2026-08-18):** the founding intent is population-reaction
 > simulation — detecting opinions/tendencies toward events in advance.
 > Astrology is ONE of four pluggable temperament-diversification modes
@@ -13,11 +13,36 @@
 > `docs/superpowers/specs/2026-08-18-reaction-distribution-repositioning-design.md`.
 > **Author:** Loth + Claude (Anthropic)
 > **License:** MIT — Copyright © 2026 Suvar Ergun. See `LICENSE`.
-> **Status:** Phase 1-6 + LLM + scenario panel + Sprints 1-24 complete (§5 roadmap DONE). **1022 tests passing**, entire repo ruff clean, CI active. Sprint 16 added 3 geopolitics-pool drift event types (regime_consolidation, diplomatic_stalemate, sanctions_pressure) and a per-category `baseline_probability_offset` fine-tuning knob, but the headline finding was a **latent engine bug since Sprint 10**: `ExperienceDriftEngine._EVENT_TRAIT_MAP` only ever held the 6 Sprint 9 events, and `build_branch_sim` never passed `bridge.event_map` into the engine — so all Sprint 10 events (leadership_act, group_conformity, group_dissent, financial_loss, financial_gain, cultural_experience) had been silently no-op'd by `engine.event_map.get(event_type)` returning None for 6 sprints. Two-line fix in `realm/output/predictor.py`: load bridge first, then pass `event_map=drift_bridge.event_map`. Sprint 14/15 baseline differentiation calibrations had been running on only 6 events; Sprint 16 is the first calibration where all 15 events actually contribute to drift accumulation.
+> **Status:** Phase 1-6 + LLM + scenario panel + Sprints 1-25 complete (§5 roadmap DONE). **1023 tests passing**, entire repo ruff clean, CI active. Sprint 16 added 3 geopolitics-pool drift event types (regime_consolidation, diplomatic_stalemate, sanctions_pressure) and a per-category `baseline_probability_offset` fine-tuning knob, but the headline finding was a **latent engine bug since Sprint 10**: `ExperienceDriftEngine._EVENT_TRAIT_MAP` only ever held the 6 Sprint 9 events, and `build_branch_sim` never passed `bridge.event_map` into the engine — so all Sprint 10 events (leadership_act, group_conformity, group_dissent, financial_loss, financial_gain, cultural_experience) had been silently no-op'd by `engine.event_map.get(event_type)` returning None for 6 sprints. Two-line fix in `realm/output/predictor.py`: load bridge first, then pass `event_map=drift_bridge.event_map`. Sprint 14/15 baseline differentiation calibrations had been running on only 6 events; Sprint 16 is the first calibration where all 15 events actually contribute to drift accumulation.
 
 ---
 
 ## 0. CURRENT BUILD STATE (2026-08-19)
+
+### Sprint 25 — Third Blinding Leak Fixed + Study A Erratum (2026-08-20)
+
+- **Fix (CRITICAL):** `CategoryRouter` is LLM-FIRST (Sprint 17) and
+  `predict.py` resolved it via an env-only `@lru_cache` singleton —
+  `use_llm=False` never gated category routing, and category choice
+  drives drift weights / sigmoid sensitivity / asymmetry. With
+  `REALM_LLM_CATEGORY_BACKEND=1` in `.env` (auto-loaded at import), the
+  LLM classified every blinded Study A question and re-parameterized
+  the simulation. Sprint 22 gated analyzers + narrator but missed this
+  third gate. Fix: `_get_offline_router()` (keyword-only) for all
+  `use_llm=False` requests; multi-cat blend reads the same router; TDD
+  regression test (red confirmed first). Commit 5413d7f.
+- **Erratum (clean re-runs, same seed/params):** design set
+  **6/22 → 4/22 (18%)**, signed ρ −0.357 → **−0.497**, confidence_index
+  2/2 → **0/2** (Lehman/COVID hits were LLM-routing artifacts — keyword
+  routing sends consumer-sentiment questions to `balanced`, ≈+0.6pp);
+  held-out **3/8 → 2/8** (Kuwait hit was the same artifact). Rally 0/9,
+  approval_drop 2/5, policy_shift 2/6 unchanged. Relation channel
+  unaffected (analytic). **Fourth failure mode: category dependence.**
+  Errata written into all published claims (analysis, article, README,
+  dashboard About, 2×2). The negative result stands and strengthens.
+- **Hygiene:** stale v0.20.0/0.16.0/963-test/"Astrological Swarm"
+  strings synced across REALM_CLAUDE.md, api.py, dashboard v2, README
+  citation, requirements.txt (commit 56f82ce).
 
 ### Sprint 24 — Relation Channel + Repositioning + Study B Live (2026-08-19)
 
@@ -29,7 +54,8 @@ Closes the design doc §5 roadmap. Plan:
   commit f2df2de BEFORE the held-out set existed (auditable in git
   history). Harness `--channel valence|relation`.
 - **2×2 evaluation:** valence 6/22 design, 3/8 held-out (mostly
-  ±0.2pp neutral-parse noise); relation 20/22 design (IN-SAMPLE at
+  ±0.2pp neutral-parse noise) — *corrected by Sprint 25 erratum to
+  4/22 / 2/8 after the category-routing blinding fix*; relation 20/22 design (IN-SAMPLE at
   class level — not evidence), **held-out 4/8 (p=0.637) → pre-stated
   bar (>50%, p<0.1) NOT met → not wired into the API.** Secondary:
   4/5 when committed, 3 abstentions from missing archetypes (military
@@ -58,7 +84,9 @@ seed 42, all `sim_delta_isolated`):
 
 - **DA 6/22 (27%), signed Spearman −0.357, magnitude ρ −0.105.**
   rally 0/9 · approval_drop 2/5 · policy_shift 2/6 ·
-  **confidence_index 2/2**.
+  **confidence_index 2/2**. *(Sprint 25 erratum: run was contaminated
+  by the category-routing leak — clean numbers are DA 4/22, ρ −0.497,
+  confidence_index 0/2.)*
 - **Three failure modes** (see `outputs/study_a_analysis.md`):
   (1) referent blindness — the channel propagates event valence, but
   reactions follow the event↔subject relation (rallies, NATO,

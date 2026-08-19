@@ -7,13 +7,14 @@
 > the ephemeris mode is a diversification tool, not the project's
 > identity.
 >
-> **Status:** v0.24.0 (Sprint 24 — roadmap complete: relation channel evaluated on a frozen-matrix held-out protocol (research-only), repositioning surface shipped, Study B forward diary live) · **Tests:** 1022 passing · **CI:** active
+> **Status:** v0.24.1 (Sprint 25 — category-routing blinding leak fixed; Study A numbers corrected: design 4/22, held-out 2/8) · **Tests:** 1023 passing · **CI:** active
 > · **Article:** [`REALM_ARTICLE_DRAFT.md`](./REALM_ARTICLE_DRAFT.md) — *REALM: A Population-Reaction Simulation Engine*
 >
 > **Validation status (honest):** population realism 8/8 PASS (Johnson
 > IPIP-NEO, N=612,711) · baseline sim channel is question-blind by
 > construction (diagnosed) · Study A blinded retrodiction: **negative**
-> for the valence scenario channel (DA 6/22; rally 0/9) —
+> for the valence scenario channel (DA 4/22, corrected 2026-08-20
+> after a category-routing blinding fix; rally 0/9) —
 > [`outputs/study_a_analysis.md`](./outputs/study_a_analysis.md) ·
 > Study B forward diary: accumulating
 > ([`outputs/prediction_diary/`](./outputs/prediction_diary/README.md)).

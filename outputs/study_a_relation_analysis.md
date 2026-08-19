@@ -18,7 +18,7 @@ research-only and is NOT wired into the API.**
 
 | | design set (22 events) | held-out set (8 events) |
 |---|---|---|
-| **valence** (simulated, blinded) | 6/22 (27%), p=0.992 | 3/8 (37.5%), p=0.855 |
+| **valence** (simulated, blinded) | 4/22 (18%), p=1.000 | 2/8 (25%), p=0.965 |
 | **relation** (analytic, frozen matrix) | 20/22 (91%), p≈6e-5 — **IN-SAMPLE at class level** | **4/8 (50%), p=0.637** |
 
 Secondary relation@held-out statistics (reported, not the decision
@@ -41,10 +41,14 @@ precision-when-committed 80% — suggestive, far from significant at N=5.
   the attack keyword won, the blame dynamic ruled reality), and one
   abstention from vocabulary (COVID emergency text hit no
   economic-shock keyword).
-- **valence@held-out replicates the design-set failure** (3/8, and 6 of
-  8 predictions were |≤0.6pp| neutral-parse residue — the three "hits"
-  are sign coincidences at noise magnitude, which we flag rather than
-  claim).
+- **valence@held-out replicates the design-set failure** (2/8, and 7 of
+  8 predictions are |≤0.6pp| neutral-parse residue — both "hits" are
+  sign coincidences at noise magnitude, which we flag rather than
+  claim). Valence cells were corrected 2026-08-20 after the Sprint 25
+  category-routing blinding fix (see `outputs/study_a_analysis.md`
+  erratum); the original contaminated runs reported 6/22 and 3/8. The
+  relation channel is analytic (no router, no simulation) and is
+  unaffected by the leak.
 
 ## Conclusions
 
