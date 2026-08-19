@@ -394,28 +394,36 @@ class PredictResponse(BaseModel):
 
 # ---- Sentiment parsing for scenario perturbation ------------------------
 
-_MIN_PERTURBATION = 0.08  # magnitude floor once a DIRECTION is resolved (neutral parses apply zero — Sprint 20)
+_PERTURBATION_GAIN = 2.0  # slope of the sentiment→magnitude map near zero (matches the pre-Sprint-26 linear gain)
 
 
 def _perturbation_for_feed(feed: str) -> float:
     """Convert a scenario_feed string into a per-trait perturbation in
-    [-_PERTURBATION_MAX, +_PERTURBATION_MAX]. Magnitude is floored at
-    ``_MIN_PERTURBATION`` when a direction is resolved.
+    (-_PERTURBATION_MAX, +_PERTURBATION_MAX).
 
-    Sprint 20: a neutral parse now returns 0.0. The old behavior — a
+    Sprint 20: a neutral parse returns 0.0. The old behavior — a
     +0.08 positive nudge whenever the feed parsed neutral — fabricated
     a direction the feed never expressed, which the Sprint 20 diagnosis
     caught treating clearly-bearish feeds as bullish. With the scenario
     delta as REALM's primary product, no movement is more honest than
     invented movement; operators wanting semantic direction on ambiguous
-    feeds should enable the LLM scenario analyzer."""
+    feeds should enable the LLM scenario analyzer.
+
+    Sprint 26 (magnitude de-quantization): the resolved-direction path
+    used ``clamp(|sentiment| * 2, 0.08, 0.15)``, which collapsed the 15
+    distinct sentiment scores of the Study A design set into 6 distinct
+    magnitudes (7 events pinned at the floor, 5 at the cap) — predicted
+    magnitudes carried no rank information (magnitude ρ ≈ −0.12).
+    Replaced with a smooth saturating map, strictly monotone in
+    sentiment strength: same slope near zero, asymptotic to the cap,
+    no floor (a weakly-resolved direction gets a proportionally weak
+    perturbation instead of a promoted one)."""
     sentiment = _parse_sentiment(feed)
-    if sentiment > 0:
-        magnitude = max(_MIN_PERTURBATION, min(_PERTURBATION_MAX, sentiment * 2.0))
-        return magnitude
-    if sentiment < 0:
-        magnitude = max(_MIN_PERTURBATION, min(_PERTURBATION_MAX, -sentiment * 2.0))
-        return -magnitude
+    if sentiment != 0:
+        magnitude = _PERTURBATION_MAX * math.tanh(
+            abs(sentiment) * _PERTURBATION_GAIN / _PERTURBATION_MAX
+        )
+        return math.copysign(magnitude, sentiment)
     logger.warning(
         "scenario_feed parsed as sentiment-neutral — applying NO population "
         "perturbation (direction would be fabricated). Enable the LLM "
