@@ -368,17 +368,18 @@
       "event_summary": "Russia launches a full-scale invasion of Ukraine, striking cities with missiles and pushing armored columns toward Kyiv. The war shatters assumptions about European security and forces the historically non-aligned Nordic states to reconsider their defense posture.",
       "question": "Will joining the NATO military alliance be supported?",
       "population": {"countries": ["SE"]},
-      "poll_source": "Novus / Demoskop (Sweden)",
+      "poll_source": "Demoskop (Sweden)",
       "metric": "% of Swedes supporting NATO membership",
-      "before_value": 37.0,
+      "before_value": 42.0,
       "after_value": 51.0,
       "before_date": "2022-01",
-      "after_date": "2022-04-21/22",
-      "observed_shift_pp": 14.0,
+      "after_date": "2022-03",
+      "observed_shift_pp": 9.0,
       "blinding_regime": "sim_delta_isolated",
       "confidence": "medium",
+      "verified": true,
       "tags": ["policy_shift"],
-      "notes": "AFTER endpoint confirmed (Novus 51% Apr 2022, first recorded majority, via The Local/Al Jazeera; mid-April Novus was 45%). January baseline 37 is authored and unconfirmed — hence verified stays false."
+      "notes": "CORRECTED 2026-08-20 (Sprint 26 queue item): the authored baseline 37 was Demoskop's January AGAINST share, not the FOR share. Single-pollster Demoskop series via The Local 2022-03-04: January 42% for / 37% against -> early March 51% for / 27% against (highest ever recorded at the time). Previous pairing mixed pollsters (authored Jan 37 -> Novus Apr 51, +14pp). Novus April 51% (The Local 2022-04-22) retained in provenance notes only."
     },
     {
       "event_id": "lehman_consumer_sentiment",

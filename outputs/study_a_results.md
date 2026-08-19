@@ -7,7 +7,7 @@
 > COVID-Johnson, Lehman, COVID-sentiment), changing simulation
 > parameters. The clean re-run under complete blinding is
 > `outputs/study_a_results_postfix.md`: **DA 4/22 (18%), signed
-> Spearman −0.497, confidence_index 0/2** (both former hits were
+> Spearman −0.506, confidence_index 0/2** (both former hits were
 > LLM-routing artifacts). Cite the postfix numbers, not the ones below.
 
 > 2026-08-18 23:56 · n_agents=100 n_ticks=30 n_branches=5 seed=42 · events=22

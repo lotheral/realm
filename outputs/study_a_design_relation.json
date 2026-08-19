@@ -318,13 +318,13 @@
       "event_id": "ukraine_sweden_nato",
       "regime": "sim_delta_isolated",
       "confidence": "medium",
-      "verified": false,
+      "verified": true,
       "tags": [
         "policy_shift"
       ],
       "population": "SE",
       "predicted_shift_pp": 10.0,
-      "observed_shift_pp": 14.0,
+      "observed_shift_pp": 9.0,
       "hit": true,
       "event_type": "external_attack",
       "question_type": "protective_policy",

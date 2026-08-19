@@ -1,13 +1,13 @@
 # Study A Retrodiction — official-postfix run
 
-> 2026-08-20 01:40 · n_agents=100 n_ticks=30 n_branches=5 seed=42 · events=22
+> 2026-08-20 02:05 · n_agents=100 n_ticks=30 n_branches=5 seed=42 · events=22
 >
 > Predicted shift = `reaction.shift.support × 100` (Sprint 21 pooled stance output). All events ran under their logged blinding regime. A negative overall result is a valid study outcome.
 
 ## Headline metrics
 
 - **Directional accuracy:** 4/22 (18%), p=1.000, zero-preds=3 (one-sided binomial vs 50%)
-- **Spearman ρ (signed shifts):** -0.497
+- **Spearman ρ (signed shifts):** -0.506
 - **Spearman ρ (magnitudes):** -0.124
 - **Authorship-confidence ratio (first-class honesty metric):** high 9 / medium 10 / low 3
 
@@ -19,8 +19,7 @@
 
 ## Breakdown — by verification status
 
-- unverified: 0/1 (0%), p=1.000, zero-preds=0
-- verified: 4/21 (19%), p=0.999, zero-preds=3
+- verified: 4/22 (18%), p=1.000, zero-preds=3
 
 ## Breakdown — by mechanism tag
 
@@ -51,7 +50,7 @@
 | parkland_gun_laws | sim_delta_isolated | high | Y | policy_shift | -0.20 | +7.0 | miss |
 | dobbs_leak_prochoice | sim_delta_isolated | medium | Y | policy_shift | +42.60 | +6.0 | HIT |
 | ukraine_finland_nato | sim_delta_isolated | high | Y | policy_shift | -20.80 | +32.0 | miss |
-| ukraine_sweden_nato | sim_delta_isolated | medium | n | policy_shift | -23.00 | +14.0 | miss |
+| ukraine_sweden_nato | sim_delta_isolated | medium | Y | policy_shift | -23.00 | +9.0 | miss |
 | lehman_consumer_sentiment | sim_delta_isolated | high | Y | confidence_index | +0.60 | -12.7 | miss |
 | covid_consumer_sentiment | sim_delta_isolated | high | Y | confidence_index | +0.60 | -29.2 | miss |
 | refugee2015_merkel | sim_delta_isolated | medium | Y | approval_drop | +0.40 | -9.0 | miss |

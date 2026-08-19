@@ -90,10 +90,12 @@ Sweden stays unverified (baseline unconfirmed).**
 | jan6_trump_approval | **CORRECTED** 46→34 became 39→34 (−5; [Gallup 328637](https://news.gallup.com/poll/328637/last-trump-job-approval-average-record-low.aspx): "down five points from December"). Poll window starts Jan 4 (straddle noted). |
 | truss_minibudget_con_support | **REVISED** to confirmed YouGov endpoints 28 (Sept 23-25) → 21 (Sept 28-29, [YouGov](https://yougov.co.uk/politics/articles/43901-voting-intention-con-21-lab-54-28-29-sep-2022)); both post-announcement (noted). |
 | dobbs_leak_prochoice | confirmed 49→55 exactly ([Gallup 393104](https://news.gallup.com/poll/393104/pro-choice-identification-rises-near-record-high.aspx)) |
-| ukraine_sweden_nato | after=51 confirmed ([Novus via The Local](https://www.thelocal.se/20220422/majority-of-swedes-now-in-favour-of-joining-nato-poll/)); January baseline 37 UNCONFIRMED → stays `verified: false`. |
+| ukraine_sweden_nato | **CORRECTED 2026-08-20** before 37→42, after→51 (Demoskop, 2022-03), shift 14→9. The authored 37 was Demoskop's January AGAINST share; the FOR share was 42. Single-pollster series Jan 42 → Mar 51 both documented in [The Local 2022-03-04](https://www.thelocal.se/20220304/new-poll-finds-majority-of-swedes-in-favour-of-joining-nato/); the old pairing mixed an authored baseline with [Novus 51% Apr 2022](https://www.thelocal.se/20220422/majority-of-swedes-now-in-favour-of-joining-nato-poll/). Now `verified: true` → 22/22 verified. |
 | refugee2015_merkel | **CORRECTED** 67→54 became 63→54 (−9; [Infratest dimap via Bloomberg](https://www.bloomberg.com/news/articles/2015-10-02/merkel-approval-rating-drops-to-four-year-low-on-refugee-crisis)) |
 
 Post-pass dataset status: **21/22 verified**, 1 unverified (Sweden).
+**Superseded 2026-08-20:** the Sweden baseline was corrected and
+verified (see the ukraine_sweden_nato row above) → **22/22 verified**.
 Authorship-confidence lesson (recorded honestly): of 13 authored
 medium/low value-pairs, 5 needed correction and 1 was unverifiable —
 authored numbers are candidates, never data.

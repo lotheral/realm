@@ -23,7 +23,7 @@
       "oppose_shift_pp": 37.0,
       "probability_delta": -0.0413,
       "category_id": "geopolitics",
-      "seconds": 10.3
+      "seconds": 15.1
     },
     {
       "event_id": "sept11_bush_approval",
@@ -40,7 +40,7 @@
       "oppose_shift_pp": 43.6,
       "probability_delta": -0.0626,
       "category_id": "politics",
-      "seconds": 8.1
+      "seconds": 16.2
     },
     {
       "event_id": "gulf_war_bush_sr_approval",
@@ -57,7 +57,7 @@
       "oppose_shift_pp": 43.4,
       "probability_delta": -0.0711,
       "category_id": "politics",
-      "seconds": 8.0
+      "seconds": 15.9
     },
     {
       "event_id": "iraq2003_bush_approval",
@@ -74,7 +74,7 @@
       "oppose_shift_pp": 43.6,
       "probability_delta": -0.0626,
       "category_id": "politics",
-      "seconds": 7.9
+      "seconds": 15.3
     },
     {
       "event_id": "ford_nixon_pardon",
@@ -91,7 +91,7 @@
       "oppose_shift_pp": -25.4,
       "probability_delta": 0.0581,
       "category_id": "politics",
-      "seconds": 7.8
+      "seconds": 15.0
     },
     {
       "event_id": "falklands_thatcher",
@@ -108,7 +108,7 @@
       "oppose_shift_pp": -0.2,
       "probability_delta": 0.0,
       "category_id": "balanced",
-      "seconds": 8.1
+      "seconds": 15.5
     },
     {
       "event_id": "cuban_missile_kennedy",
@@ -125,7 +125,7 @@
       "oppose_shift_pp": 43.8,
       "probability_delta": -0.0772,
       "category_id": "politics",
-      "seconds": 7.9
+      "seconds": 16.0
     },
     {
       "event_id": "charlie_hebdo_hollande",
@@ -142,7 +142,7 @@
       "oppose_shift_pp": 0.0,
       "probability_delta": -0.0,
       "category_id": "politics",
-      "seconds": 7.9
+      "seconds": 14.9
     },
     {
       "event_id": "nov2015_paris_hollande",
@@ -159,7 +159,7 @@
       "oppose_shift_pp": 38.0,
       "probability_delta": -0.0772,
       "category_id": "politics",
-      "seconds": 7.8
+      "seconds": 15.7
     },
     {
       "event_id": "coup2016_erdogan",
@@ -176,7 +176,7 @@
       "oppose_shift_pp": 37.6,
       "probability_delta": -0.0413,
       "category_id": "politics",
-      "seconds": 7.9
+      "seconds": 15.6
     },
     {
       "event_id": "covid_johnson_approval",
@@ -193,7 +193,7 @@
       "oppose_shift_pp": -0.2,
       "probability_delta": 0.0001,
       "category_id": "balanced",
-      "seconds": 8.0
+      "seconds": 15.7
     },
     {
       "event_id": "katrina_bush_approval",
@@ -210,7 +210,7 @@
       "oppose_shift_pp": 41.0,
       "probability_delta": -0.0414,
       "category_id": "politics",
-      "seconds": 8.6
+      "seconds": 9.6
     },
     {
       "event_id": "jan6_trump_approval",
@@ -227,7 +227,7 @@
       "oppose_shift_pp": 0.0,
       "probability_delta": 0.0,
       "category_id": "politics",
-      "seconds": 10.5
+      "seconds": 7.4
     },
     {
       "event_id": "truss_minibudget_con_support",
@@ -244,7 +244,7 @@
       "oppose_shift_pp": -27.0,
       "probability_delta": 0.0402,
       "category_id": "politics",
-      "seconds": 7.5
+      "seconds": 7.6
     },
     {
       "event_id": "sandy_hook_gun_laws",
@@ -261,7 +261,7 @@
       "oppose_shift_pp": -22.8,
       "probability_delta": 0.0401,
       "category_id": "politics",
-      "seconds": 7.5
+      "seconds": 7.9
     },
     {
       "event_id": "parkland_gun_laws",
@@ -312,24 +312,24 @@
       "oppose_shift_pp": 37.6,
       "probability_delta": -0.0771,
       "category_id": "geopolitics",
-      "seconds": 8.0
+      "seconds": 7.6
     },
     {
       "event_id": "ukraine_sweden_nato",
       "regime": "sim_delta_isolated",
       "confidence": "medium",
-      "verified": false,
+      "verified": true,
       "tags": [
         "policy_shift"
       ],
       "population": "SE",
       "predicted_shift_pp": -23.0,
-      "observed_shift_pp": 14.0,
+      "observed_shift_pp": 9.0,
       "hit": false,
       "oppose_shift_pp": 41.0,
       "probability_delta": -0.077,
       "category_id": "geopolitics",
-      "seconds": 7.7
+      "seconds": 7.4
     },
     {
       "event_id": "lehman_consumer_sentiment",
@@ -380,7 +380,7 @@
       "oppose_shift_pp": 0.4,
       "probability_delta": 0.0001,
       "category_id": "balanced",
-      "seconds": 8.8
+      "seconds": 7.9
     }
   ]
 }

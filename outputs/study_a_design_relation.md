@@ -1,6 +1,6 @@
 # Study A Retrodiction — design-relation run
 
-> 2026-08-19 00:16 · channel=relation (analytic, no simulation) · events=22
+> 2026-08-20 02:00 · channel=relation (analytic, no simulation) · events=22
 >
 > Relation channel: DIRECTION-ONLY claim from the frozen literature-prior polarity matrix (commit f2df2de); magnitudes are fixed ±10pp placeholders and carry no information. Polarity-0 abstentions count as zero-prediction misses.
 > EPISTEMICS: results on the 22-event design set are IN-SAMPLE AT THE CLASS LEVEL (the failure classes were known when the matrix was written); only the held-out set is a clean test.
@@ -20,8 +20,7 @@
 
 ## Breakdown — by verification status
 
-- unverified: 1/1 (100%), p=0.500, zero-preds=0
-- verified: 19/21 (90%), p=0.000, zero-preds=1
+- verified: 20/22 (91%), p=0.000, zero-preds=1
 
 ## Breakdown — by mechanism tag
 
@@ -52,7 +51,7 @@
 | parkland_gun_laws | policy_shift | external_attack | hazard_policy | +10.0 | +7.0 | HIT |
 | dobbs_leak_prochoice | policy_shift | rights_threat | rights_policy | +10.0 | +6.0 | HIT |
 | ukraine_finland_nato | policy_shift | external_attack | protective_policy | +10.0 | +32.0 | HIT |
-| ukraine_sweden_nato | policy_shift | external_attack | protective_policy | +10.0 | +14.0 | HIT |
+| ukraine_sweden_nato | policy_shift | external_attack | protective_policy | +10.0 | +9.0 | HIT |
 | lehman_consumer_sentiment | confidence_index | economic_shock | confidence_index | -10.0 | -12.7 | HIT |
 | covid_consumer_sentiment | confidence_index | economic_shock | confidence_index | -10.0 | -29.2 | HIT |
 | refugee2015_merkel | approval_drop | self_inflicted | incumbent_standing | -10.0 | -9.0 | HIT |
