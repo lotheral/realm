@@ -19,7 +19,8 @@ the keyword-only path; after the fix the clean run
 (`outputs/study_a_results_postfix.md`, same seed/params) gives:
 
 - **DA 4/22 (18%)** (was 6/22), p = 1.000; zero-preds 3 (was 2)
-- **signed Spearman ρ = −0.497** (was −0.357); magnitude ρ = −0.124
+- **signed Spearman ρ = −0.506** (was −0.357; −0.497 before the
+  Sprint 26 Sweden data correction below); magnitude ρ = −0.124
 - **confidence_index 0/2** (was 2/2) — both former hits (Lehman, COVID
   consumer sentiment) existed only because the LLM routed those
   questions to `economics`; the keyword router cannot classify them
@@ -31,12 +32,30 @@ the keyword-only path; after the fix the clean run
 The verdict below **stands and strengthens**. Numbers in the original
 text are kept for the record and marked; a fourth failure mode is added.
 
+**Sprint 26 addenda (2026-08-20):**
+
+- **Sweden data correction.** The `ukraine_sweden_nato` baseline (37)
+  was Demoskop's January 2022 AGAINST share, not the FOR share (42).
+  Corrected to the single-pollster Demoskop series Jan 42 → Mar 51
+  (+9pp, was +14pp with mixed pollsters); the event is now verified —
+  **dataset 22/22 verified**. Sweden's sign is unchanged, so DA stays
+  4/22; signed ρ moves −0.497 → −0.506. Artifacts regenerated.
+- **Magnitude de-quantization (queue item closed).** The
+  `clamp(|sentiment|·2, 0.08, 0.15)` map collapsed 15 distinct parser
+  scores into 6 magnitudes (7 at floor, 5 at cap). Replaced with
+  `0.15·tanh(|sentiment|·2/0.15)` — strictly monotone, 14 distinct
+  magnitudes, no floor. Measured result (comparison run
+  `outputs/study_a_results_dequant.md`): DA 4/22 unchanged, magnitude ρ
+  −0.124 → **−0.066**. Honest conclusion: the artifact is gone and the
+  channel STILL carries no magnitude signal — the lexicon scores
+  themselves do not rank real shift sizes. Magnitude claims stay off.
+
 ## Verdict
 
 **The heuristic (LLM-off) scenario channel does not retrodict real
 poll shifts. Directional accuracy 4/22 (18%) under complete blinding
 (originally reported 6/22 before the erratum above), below the 50%
-coin-flip baseline; signed Spearman ρ = −0.497 (systematically
+coin-flip baseline; signed Spearman ρ = −0.506 (systematically
 anti-correlated); magnitude ρ = −0.124 (no magnitude signal).** Per
 design decision #3 this negative result is a valid completion of the
 research question for this channel, and it is diagnostic: the failures
@@ -112,7 +131,7 @@ interpretable failures.
 
 ## Honesty envelope
 
-- Dataset: 22 events, 7 countries; 21/22 verified against named sources
+- Dataset: 22 events, 7 countries; 22/22 verified against named sources
   (5 authored values corrected, 1 metric switched during verification —
   see the dataset notes' lesson: authored numbers are candidates, never
   data). Authorship-confidence ratio: 9 high / 10 medium / 3 low.

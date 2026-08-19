@@ -2687,3 +2687,16 @@ is recorded: category dependence. The negative result stands and
 strengthens. Fix commit 5413d7f; clean artifacts:
 `outputs/study_a_results_postfix.{md,json}`,
 `outputs/study_a_holdout_valence_postfix.{md,json}`.
+
+**Sprint 26 (2026-08-20, v0.25.0) — post-roadmap queue.** (1) Sweden
+NATO baseline corrected: the authored 37 was Demoskop's January 2022
+AGAINST share (FOR was 42); event moved to the single-pollster Demoskop
+series Jan 42 → Mar 51 (+9pp) and verified — **dataset 22/22 verified**;
+signed ρ −0.497 → −0.506, DA unchanged. (2) Magnitude de-quantization:
+the clamp(|s|·2, 0.08, 0.15) map collapsed 15 distinct parser scores to
+6 magnitudes; replaced with 0.15·tanh(|s|·2/0.15) (monotone, no floor).
+Measured: DA 4/22 unchanged, magnitude ρ −0.124 → −0.066 — artifact
+removed, still no magnitude signal; magnitude claims stay off.
+(3) Study B grown 3 → 6 open forward entries (TR TÜİK P=0.527, US
+Gallup P=0.446, UK YouGov P=0.410; resolve Sep–Oct 2026). Matrix v2
+deliberately deferred (needs a third event set under freeze-then-author).

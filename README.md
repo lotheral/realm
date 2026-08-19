@@ -7,7 +7,7 @@
 > the ephemeris mode is a diversification tool, not the project's
 > identity.
 >
-> **Status:** v0.24.1 (Sprint 25 — category-routing blinding leak fixed; Study A numbers corrected: design 4/22, held-out 2/8) · **Tests:** 1023 passing · **CI:** active
+> **Status:** v0.25.0 (Sprint 26 — Study A dataset 22/22 verified after Sweden baseline fix; perturbation magnitudes de-quantized, measured: still no magnitude signal; Study B grown to 6 open forward entries) · **Tests:** 1026 passing · **CI:** active
 > · **Article:** [`REALM_ARTICLE_DRAFT.md`](./REALM_ARTICLE_DRAFT.md) — *REALM: A Population-Reaction Simulation Engine*
 >
 > **Validation status (honest):** population realism 8/8 PASS (Johnson

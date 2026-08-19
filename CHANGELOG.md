@@ -4,6 +4,28 @@ All notable changes since the initial release. Per-sprint detail lives
 in `REALM_CLAUDE.md` § 0 (CURRENT BUILD STATE) and
 `outputs/realm_milestone_report.md` (full historical narrative).
 
+## v0.25.0 — Sprint 26: post-roadmap queue — Sweden fix, de-quantization, Study B growth (2026-08-20)
+
+- **Corrected (data):** `ukraine_sweden_nato` baseline 37 → 42 — the
+  authored value was Demoskop's January 2022 AGAINST share, not the FOR
+  share. Event moved to the single-pollster Demoskop series Jan 42 →
+  Mar 51 (+9pp, was mixed-pollster +14pp), now verified → **dataset
+  22/22 verified**. DA unchanged (4/22); signed ρ −0.497 → **−0.506**.
+  Valence-postfix and relation-design artifacts regenerated.
+- **Changed (engine):** scenario-perturbation magnitude de-quantized —
+  `clamp(|sentiment|·2, 0.08, 0.15)` (which collapsed 15 distinct
+  parser scores into 6 magnitudes) replaced with
+  `0.15·tanh(|sentiment|·2/0.15)`: strictly monotone, no floor,
+  asymptotic cap. 3 new TDD tests. **Measured: DA 4/22 unchanged,
+  magnitude ρ −0.124 → −0.066** (`outputs/study_a_*_dequant.*`) — the
+  quantization artifact is gone and the lexicon channel still carries
+  no magnitude signal; magnitude claims stay off.
+- **Added (Study B):** diary grown 3 → 6 open forward entries — TR TÜİK
+  consumer confidence (P=0.527, 2026-09-25), US Gallup presidential
+  approval (P=0.446, 2026-10-10), UK YouGov government approval
+  (P=0.410, 2026-10-05).
+- 1026 tests green, ruff clean.
+
 ## v0.24.1 — Sprint 25: category-routing blinding leak fixed, Study A corrected (2026-08-20)
 
 - **Fixed (CRITICAL, third blinding leak):** `CategoryRouter` has been

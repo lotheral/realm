@@ -2,9 +2,9 @@
 
 ## CLAUDE.md — Project Blueprint & Development Guide
 
-> **Version:** 0.24.1
+> **Version:** 0.25.0
 > **Created:** 2026-04-22
-> **Last Updated:** 2026-08-20 (v0.24.1 — Sprint 25: THIRD LLM blinding leak fixed (category routing was env-gated only, never saw use_llm=False); Study A corrected by clean re-runs: design 6/22→4/22, held-out 3/8→2/8 — the confidence_index hits were LLM-routing artifacts. Negative result stands, strengthened.)
+> **Last Updated:** 2026-08-20 (v0.25.0 — Sprint 26: post-roadmap queue — Sweden NATO baseline corrected (42, Demoskop; dataset 22/22 verified; signed ρ −0.506); magnitude de-quantization shipped (tanh map, measured: artifact gone, still no magnitude signal −0.066); Study B grown to 6 open entries (TR/US/GB). Follows Sprint 25's blinding fix + erratum (v0.24.1).)
 > **Identity note (2026-08-18):** the founding intent is population-reaction
 > simulation — detecting opinions/tendencies toward events in advance.
 > Astrology is ONE of four pluggable temperament-diversification modes
@@ -13,11 +13,40 @@
 > `docs/superpowers/specs/2026-08-18-reaction-distribution-repositioning-design.md`.
 > **Author:** Loth + Claude (Anthropic)
 > **License:** MIT — Copyright © 2026 Suvar Ergun. See `LICENSE`.
-> **Status:** Phase 1-6 + LLM + scenario panel + Sprints 1-25 complete (§5 roadmap DONE). **1023 tests passing**, entire repo ruff clean, CI active. Sprint 16 added 3 geopolitics-pool drift event types (regime_consolidation, diplomatic_stalemate, sanctions_pressure) and a per-category `baseline_probability_offset` fine-tuning knob, but the headline finding was a **latent engine bug since Sprint 10**: `ExperienceDriftEngine._EVENT_TRAIT_MAP` only ever held the 6 Sprint 9 events, and `build_branch_sim` never passed `bridge.event_map` into the engine — so all Sprint 10 events (leadership_act, group_conformity, group_dissent, financial_loss, financial_gain, cultural_experience) had been silently no-op'd by `engine.event_map.get(event_type)` returning None for 6 sprints. Two-line fix in `realm/output/predictor.py`: load bridge first, then pass `event_map=drift_bridge.event_map`. Sprint 14/15 baseline differentiation calibrations had been running on only 6 events; Sprint 16 is the first calibration where all 15 events actually contribute to drift accumulation.
+> **Status:** Phase 1-6 + LLM + scenario panel + Sprints 1-26 complete (§5 roadmap DONE). **1026 tests passing**, entire repo ruff clean, CI active. Sprint 16 added 3 geopolitics-pool drift event types (regime_consolidation, diplomatic_stalemate, sanctions_pressure) and a per-category `baseline_probability_offset` fine-tuning knob, but the headline finding was a **latent engine bug since Sprint 10**: `ExperienceDriftEngine._EVENT_TRAIT_MAP` only ever held the 6 Sprint 9 events, and `build_branch_sim` never passed `bridge.event_map` into the engine — so all Sprint 10 events (leadership_act, group_conformity, group_dissent, financial_loss, financial_gain, cultural_experience) had been silently no-op'd by `engine.event_map.get(event_type)` returning None for 6 sprints. Two-line fix in `realm/output/predictor.py`: load bridge first, then pass `event_map=drift_bridge.event_map`. Sprint 14/15 baseline differentiation calibrations had been running on only 6 events; Sprint 16 is the first calibration where all 15 events actually contribute to drift accumulation.
 
 ---
 
 ## 0. CURRENT BUILD STATE (2026-08-19)
+
+### Sprint 26 — Post-Roadmap Queue: Sweden Fix + De-Quantization + Study B Growth (2026-08-20)
+
+- **Sweden NATO baseline corrected (queue item 4):** the authored 37
+  was Demoskop's January 2022 AGAINST share; FOR was 42 (The Local
+  2022-03-04). Event moved to the single-pollster Demoskop series
+  Jan 42 → Mar 51 (+9pp, was mixed-pollster +14pp), now verified —
+  **dataset 22/22 verified**. Sign unchanged → DA stays 4/22; signed
+  ρ −0.497 → **−0.506**. Valence-postfix + relation-design artifacts
+  regenerated.
+- **Magnitude de-quantization (queue item 3):** measured first — the
+  22 design summaries produce 15 distinct sentiment scores, but
+  `clamp(|s|·2, 0.08, 0.15)` collapsed them to 6 magnitudes (7 at
+  floor, 5 at cap). Replaced with `0.15·tanh(|s|·2/0.15)` (same slope
+  at origin, asymptotic cap, no floor; strictly monotone — 14 distinct
+  magnitudes). TDD: 3 new tests (monotonicity / no-plateau / asymptote).
+  **Measured outcome (comparison runs `outputs/study_a_*_dequant.*`):
+  DA 4/22 unchanged, magnitude ρ −0.124 → −0.066 — artifact removed,
+  and the lexicon channel STILL has no magnitude signal.** Magnitude
+  claims stay off; honest completion of the queue item.
+- **Study B grown 3 → 6 open entries (queue item 1):** TR TÜİK consumer
+  confidence Sept-vs-Aug (P=0.527, resolve 2026-09-25); US Gallup
+  presidential approval Sept-vs-Aug, Aug=34% (P=0.446, resolve
+  2026-10-10); UK YouGov government approval end-Sept vs last-Aug
+  (P=0.410, resolve 2026-10-05). Full pipeline (LLM+web), no scenario
+  feed, consistent with the first three entries.
+- **Not attempted:** matrix v2 (queue item 2) — requires authoring a
+  THIRD event set under the freeze-then-author protocol; deliberately
+  left for a dedicated session.
 
 ### Sprint 25 — Third Blinding Leak Fixed + Study A Erratum (2026-08-20)
 
@@ -32,7 +61,8 @@
   `use_llm=False` requests; multi-cat blend reads the same router; TDD
   regression test (red confirmed first). Commit 5413d7f.
 - **Erratum (clean re-runs, same seed/params):** design set
-  **6/22 → 4/22 (18%)**, signed ρ −0.357 → **−0.497**, confidence_index
+  **6/22 → 4/22 (18%)**, signed ρ −0.357 → **−0.497** *(−0.506 after
+  the Sprint 26 Sweden data fix)*, confidence_index
   2/2 → **0/2** (Lehman/COVID hits were LLM-routing artifacts — keyword
   routing sends consumer-sentiment questions to `balanced`, ≈+0.6pp);
   held-out **3/8 → 2/8** (Kuwait hit was the same artifact). Rally 0/9,
