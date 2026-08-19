@@ -2,7 +2,7 @@
 
 ## CLAUDE.md — Project Blueprint & Development Guide
 
-> **Version:** 0.20.0
+> **Version:** 0.24.0
 > **Created:** 2026-04-22
 > **Last Updated:** 2026-08-19 (v0.24.0 — Sprint 24: relation channel fails pre-stated held-out bar (4/8) → research-only; repositioning surface shipped (REALM name stays); Study B live with 3 open forward predictions. §5 roadmap COMPLETE.)
 > **Identity note (2026-08-18):** the founding intent is population-reaction
@@ -13,7 +13,7 @@
 > `docs/superpowers/specs/2026-08-18-reaction-distribution-repositioning-design.md`.
 > **Author:** Loth + Claude (Anthropic)
 > **License:** MIT — Copyright © 2026 Suvar Ergun. See `LICENSE`.
-> **Status:** Phase 1-6 + LLM + scenario panel + Sprints 1-20 complete. **918 tests passing**, entire repo ruff clean, CI active. Sprint 16 added 3 geopolitics-pool drift event types (regime_consolidation, diplomatic_stalemate, sanctions_pressure) and a per-category `baseline_probability_offset` fine-tuning knob, but the headline finding was a **latent engine bug since Sprint 10**: `ExperienceDriftEngine._EVENT_TRAIT_MAP` only ever held the 6 Sprint 9 events, and `build_branch_sim` never passed `bridge.event_map` into the engine — so all Sprint 10 events (leadership_act, group_conformity, group_dissent, financial_loss, financial_gain, cultural_experience) had been silently no-op'd by `engine.event_map.get(event_type)` returning None for 6 sprints. Two-line fix in `realm/output/predictor.py`: load bridge first, then pass `event_map=drift_bridge.event_map`. Sprint 14/15 baseline differentiation calibrations had been running on only 6 events; Sprint 16 is the first calibration where all 15 events actually contribute to drift accumulation.
+> **Status:** Phase 1-6 + LLM + scenario panel + Sprints 1-24 complete (§5 roadmap DONE). **1022 tests passing**, entire repo ruff clean, CI active. Sprint 16 added 3 geopolitics-pool drift event types (regime_consolidation, diplomatic_stalemate, sanctions_pressure) and a per-category `baseline_probability_offset` fine-tuning knob, but the headline finding was a **latent engine bug since Sprint 10**: `ExperienceDriftEngine._EVENT_TRAIT_MAP` only ever held the 6 Sprint 9 events, and `build_branch_sim` never passed `bridge.event_map` into the engine — so all Sprint 10 events (leadership_act, group_conformity, group_dissent, financial_loss, financial_gain, cultural_experience) had been silently no-op'd by `engine.event_map.get(event_type)` returning None for 6 sprints. Two-line fix in `realm/output/predictor.py`: load bridge first, then pass `event_map=drift_bridge.event_map`. Sprint 14/15 baseline differentiation calibrations had been running on only 6 events; Sprint 16 is the first calibration where all 15 events actually contribute to drift accumulation.
 
 ---
 
@@ -2387,7 +2387,7 @@ python -c "from kerykeion import AstrologicalSubject; print('OK')"
 [project]
 name = "realm"
 version = "0.1.0"
-description = "Astrological Swarm Intelligence Prediction Engine"
+description = "Population-reaction simulation engine — pluggable trait diversification + scenario-delta reaction analysis"
 requires-python = ">=3.11"
 dependencies = [
     "kerykeion>=5.12",

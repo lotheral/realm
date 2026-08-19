@@ -1,4 +1,4 @@
-# REALM v0.20.0 dependency surface (Sprint 20 hygiene pass, 2026-08-18).
+# REALM dependency surface (last audited: Sprint 20 hygiene pass, 2026-08-18).
 #
 # This file pins the production-relevant Python packages REALM imports.
 # `pyproject.toml` is the source of truth for declared dependencies + extras;

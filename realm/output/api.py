@@ -86,7 +86,7 @@ def create_app(service: DashboardService) -> FastAPI:
     """
     app = FastAPI(
         title="REALM Dashboard",
-        description="Astrological Swarm Intelligence Prediction Engine — API + live UI",
+        description="Population-reaction simulation engine — API + live UI",
         version=_realm_version,
     )
 

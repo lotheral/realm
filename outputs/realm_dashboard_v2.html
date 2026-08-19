@@ -411,8 +411,8 @@ select.config-input { cursor: pointer; -webkit-appearance: none; appearance: non
 <div id="boot-screen">
   <div class="boot-logo boot-line" style="animation-delay:0.2s">
  ┌─────────────────────────────────────┐
- │  R E A L M    v 0.16.0             │
- │  Swarm Intelligence Prediction      │
+ │  R E A L M    v 0.24.0             │
+ │  Population-Reaction Observatory    │
  │                                     │
  │  <span id="boot-tests">000</span> tests  ·  66 countries         │
  │  24 traits  ·  15 event types       │
@@ -744,7 +744,7 @@ function updateModeIndicator() {
 
 // Sprint 16 metric — keep this in sync with the live test count after
 // running pytest. Boot screen reads it via #boot-tests.
-const TEST_COUNT = 963;
+const TEST_COUNT = 1022;
 
 // ======================================================================
 // PREDICTION CATEGORIES (mirrors config/prediction_categories.json)
@@ -1086,7 +1086,7 @@ const SAMPLE_PREDICTIONS = {
 const ABOUT_TEXT = `
 ┌──────────────────────────────────────────────────────────────────────┐
 │  ABOUT REALM                                                         │
-│  Astrological Swarm Intelligence Prediction Engine                   │
+│  Population-Reaction Observatory                                     │
 └──────────────────────────────────────────────────────────────────────┘
 
 ─── 1. WHAT IS REALM? ──────────────────────────────────────────────────
@@ -1217,7 +1217,7 @@ claimed.
   · Astrological:    4/4 criteria PASS  (DA=0.718, Pearson r=0.309,
                                          22-figure celebrity cohort)
   · Facet-level:     13/13 PASS
-  · Tests:           ${TEST_COUNT} automated tests across 20 sprints
+  · Tests:           ${TEST_COUNT} automated tests across 24 sprints
 
 Full methodology: outputs/realm_milestone_report.md.
 

@@ -354,8 +354,8 @@ pass. 200 agents × 30 ticks × 5 branches × 10 runs/category. See
 If you reference REALM in academic work:
 
 ```
-Ergun, S. (2026). REALM v0.20.0: Collective Sentiment Simulation
-Through Time-Seeded Trait Diversification.
+Ergun, S. (2026). REALM v0.24.0: Population-Reaction Simulation
+Through Pluggable Trait Diversification.
 https://github.com/lotheral/realm
 ```
 
