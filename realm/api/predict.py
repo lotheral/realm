@@ -73,7 +73,7 @@ from realm.ingestion.interfaces import SeedEvent
 # scenario channel now outranks bit-compatibility with the Sprint 13
 # acceptance numbers (see outputs/sprint20_question_blindness.md).
 from realm.ingestion.sentiment import parse_sentiment as _parse_sentiment
-from realm.output.category_router import CategoryMatch, default_router
+from realm.output.category_router import CategoryMatch, CategoryRouter, default_router
 from realm.output.predictor import (
     BranchSpec,
     build_branch_sim,
@@ -135,6 +135,17 @@ app.add_middleware(
 @lru_cache(maxsize=1)
 def _get_router():
     return default_router()
+
+
+@lru_cache(maxsize=1)
+def _get_offline_router():
+    # Sprint 25 blinding fix: `_get_router()` wires its LLM classifier from
+    # REALM_LLM_CATEGORY_BACKEND alone, and routing is LLM-FIRST (Sprint 17) —
+    # so the per-request use_llm=False flag never reached category routing.
+    # Category choice drives drift weights / sigmoid sensitivity / asymmetry,
+    # i.e. actual simulation mechanics, so blinded runs (Study A
+    # sim_delta_isolated) must route keyword-only regardless of environment.
+    return CategoryRouter()
 
 
 # Sprint 17 WP6 (reworked Sprint 20): one-line LLM availability log at app
@@ -890,7 +901,8 @@ def parse_feed(req: FeedParseRequest) -> FeedParseListResponse:
 @app.post("/api/predict", response_model=PredictResponse)
 def predict_endpoint(req: PredictRequest) -> PredictResponse:
     try:
-        category = _get_router().route(req.question)
+        router = _get_router() if req.use_llm else _get_offline_router()
+        category = router.route(req.question)
         master_seed = _resolve_seed(req)
 
         # Sprint 21 — per-question target population (design decision #2).
@@ -1003,7 +1015,7 @@ def predict_endpoint(req: PredictRequest) -> PredictResponse:
         # _calibrated_outcome) reads the blended scalars transparently.
         if category.secondary_categories:
             from realm.output.category_router import blend_category_parameters
-            secondary_data = {c["id"]: c for c in _get_router().categories}
+            secondary_data = {c["id"]: c for c in router.categories}
             blended = blend_category_parameters(category, secondary_data)
             category = _dc_replace(
                 category,

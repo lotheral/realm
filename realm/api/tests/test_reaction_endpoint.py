@@ -86,6 +86,26 @@ class TestBlindingGate:
         assert body["reaction"]["shift"] is not None
         assert body["headline"] is None
 
+    def test_use_llm_false_never_touches_env_wired_category_router(self, monkeypatch):
+        """Sprint 25 regression: the category router is LLM-FIRST when
+        REALM_LLM_CATEGORY_BACKEND wires a backend (Sprint 17), and
+        `_get_router()` reads only the environment — the per-request
+        use_llm=False flag never reached it. Category choice drives
+        drift weights / sigmoid sensitivity / asymmetry, so an LLM that
+        recognizes a famous historical question could steer simulation
+        mechanics inside a blinded Study A run. use_llm=False requests
+        must route through a keyword-only router instead."""
+        import realm.api.predict as predict_mod
+
+        def _explode():
+            raise AssertionError("env-wired category router used under use_llm=False")
+
+        monkeypatch.setattr(predict_mod, "_get_router", _explode)
+        r = client.post("/api/predict", json=BASE)
+        assert r.status_code == 200
+        # Keyword routing still classifies the economics question.
+        assert r.json()["category_id"] == "economics"
+
 
 class TestPopulationTargeting:
     def test_population_restricts_segments_to_spec(self):
