@@ -29,6 +29,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from realm.validation.relation import relation_direction  # noqa: E402
+from realm.validation.relation_v2 import relation_direction_v2  # noqa: E402
 from realm.validation.retrodiction import (  # noqa: E402
     DirectionalResult,
     breakdown,
@@ -86,13 +87,16 @@ def event_to_request_kwargs(
 _RELATION_MAGNITUDE_PP = 10.0  # placeholder magnitude — the relation channel's claim is DIRECTION-ONLY
 
 
-def relation_prediction(event: StudyAEvent) -> dict:
-    """Analytic (no-simulation) prediction from the frozen relation matrix.
+def relation_prediction(event: StudyAEvent, matrix_version: int = 1) -> dict:
+    """Analytic (no-simulation) prediction from a frozen relation matrix.
 
     Polarity 0 = honest abstention (counted as a zero-prediction miss by
     the metrics layer, same rule as a neutral valence parse).
     """
-    polarity, event_type, question_type, rationale = relation_direction(
+    direction_fn = (
+        relation_direction_v2 if matrix_version == 2 else relation_direction
+    )
+    polarity, event_type, question_type, rationale = direction_fn(
         event.event_summary, event.question,
     )
     predicted_pp = polarity * _RELATION_MAGNITUDE_PP
@@ -185,20 +189,31 @@ def render_report(rows: list[dict], events: list[StudyAEvent], args) -> str:
     if args.channel == "relation":
         lines.append(
             f"> {time.strftime('%Y-%m-%d %H:%M')} · channel=relation "
-            f"(analytic, no simulation) · events={len(rows)}"
+            f"(matrix v{args.matrix_version}, analytic, no simulation) "
+            f"· events={len(rows)}"
         )
         lines.append(">")
         lines.append(
-            "> Relation channel: DIRECTION-ONLY claim from the frozen "
-            "literature-prior polarity matrix (commit f2df2de); magnitudes "
+            "> Relation channel: DIRECTION-ONLY claim from a frozen "
+            "literature-prior polarity matrix (v1: commit f2df2de; v2: "
+            "realm/validation/relation_v2.py, Sprint 27); magnitudes "
             "are fixed ±10pp placeholders and carry no information. "
             "Polarity-0 abstentions count as zero-prediction misses."
         )
-        lines.append(
-            "> EPISTEMICS: results on the 22-event design set are IN-SAMPLE "
-            "AT THE CLASS LEVEL (the failure classes were known when the "
-            "matrix was written); only the held-out set is a clean test."
-        )
+        if args.matrix_version == 2:
+            lines.append(
+                "> EPISTEMICS: matrix v2 was authored AFTER the design and "
+                "held-out results were known — BOTH of those sets are "
+                "in-sample for v2. Only the third event set (authored after "
+                "the v2 freeze commit) is a clean test; see "
+                "docs/study_a_third_set_protocol.md."
+            )
+        else:
+            lines.append(
+                "> EPISTEMICS: results on the 22-event design set are IN-SAMPLE "
+                "AT THE CLASS LEVEL (the failure classes were known when the "
+                "matrix was written); only the held-out set is a clean test."
+            )
     else:
         lines.append(
             f"> {time.strftime('%Y-%m-%d %H:%M')} · n_agents={args.n_agents} "
@@ -298,6 +313,11 @@ def main() -> int:
         help="valence = simulated sentiment channel; relation = analytic "
              "frozen-matrix direction channel (no simulation)",
     )
+    parser.add_argument(
+        "--matrix-version", type=int, choices=(1, 2), default=1,
+        help="relation channel only: 1 = Sprint 24 frozen matrix "
+             "(f2df2de), 2 = Sprint 27 matrix (relation_v2.py)",
+    )
     args = parser.parse_args()
 
     events = load_events(args.events)
@@ -309,7 +329,8 @@ def main() -> int:
     for i, event in enumerate(events, 1):
         print(f"[{i}/{len(events)}] {event.event_id} ({event.blinding_regime}) ...", flush=True)
         row = (
-            relation_prediction(event) if args.channel == "relation"
+            relation_prediction(event, matrix_version=args.matrix_version)
+            if args.channel == "relation"
             else run_event(event, args)
         )
         print(
@@ -329,6 +350,9 @@ def main() -> int:
             {
                 "label": args.label,
                 "channel": args.channel,
+                "matrix_version": (
+                    args.matrix_version if args.channel == "relation" else None
+                ),
                 "params": {
                     "n_agents": args.n_agents, "n_ticks": args.n_ticks,
                     "n_branches": args.n_branches, "seed": args.seed,
