@@ -94,6 +94,14 @@ class TestClassifyEventV2:
             "certification of the vote."
         ) == "self_inflicted"
 
+    def test_election_subversion_is_self_inflicted(self):
+        # Same class, mob-phrasing variant (generalizes to e.g. the
+        # Brazilian Jan 8 2023 riots).
+        assert classify_event_v2(
+            "Rioters ransack government buildings in the capital seeking to "
+            "overturn the certification of the presidential vote."
+        ) == "self_inflicted"
+
     # -- v1 classes still work through v2 ------------------------------
     def test_v1_classes_preserved(self):
         assert classify_event_v2(

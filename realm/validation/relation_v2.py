@@ -63,9 +63,11 @@ _EVENT_RULES_V2: tuple[tuple[str, tuple[str, ...]], ...] = (
         "pardon", "tax cuts", "mini-budget", "unveils", "opens the borders",
         "opens germany's borders", "orders people to stay",
         "grants", "appoints", "resigns",
-        # v2 additions (attribution for self-authored operations):
+        # v2 additions (attribution for self-authored operations, incl.
+        # election-subversion violence by incumbent-aligned crowds):
         "withdrawal", "withdraws troops", "pulls out", "pull out",
         "drawdown", "mobilization", "supporters storm",
+        "overturn the certification", "overturn the election",
     )),
     ("personal_scandal", (
         "extramarital", "affair with", "sexual relationship", "mistress",
