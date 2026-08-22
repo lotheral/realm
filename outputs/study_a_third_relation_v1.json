@@ -1,0 +1,149 @@
+{
+  "label": "third-relation-v1",
+  "channel": "relation",
+  "matrix_version": 1,
+  "params": {
+    "n_agents": 100,
+    "n_ticks": 30,
+    "n_branches": 5,
+    "seed": 42
+  },
+  "rows": [
+    {
+      "event_id": "saddam_capture_bush_approval",
+      "regime": "sim_delta_isolated",
+      "confidence": "high",
+      "verified": true,
+      "tags": [
+        "rally"
+      ],
+      "population": "US",
+      "predicted_shift_pp": 0.0,
+      "observed_shift_pp": 7.0,
+      "hit": false,
+      "event_type": "unknown",
+      "question_type": "incumbent_standing",
+      "rationale": "no literature prior for this pair",
+      "seconds": 0.0
+    },
+    {
+      "event_id": "partygate_johnson_favorability",
+      "regime": "sim_delta_isolated",
+      "confidence": "high",
+      "verified": true,
+      "tags": [
+        "approval_drop"
+      ],
+      "population": "GB",
+      "predicted_shift_pp": 0.0,
+      "observed_shift_pp": -11.0,
+      "hit": false,
+      "event_type": "unknown",
+      "question_type": "incumbent_standing",
+      "rationale": "no literature prior for this pair",
+      "seconds": 0.0
+    },
+    {
+      "event_id": "saturday_night_massacre_nixon",
+      "regime": "sim_delta_isolated",
+      "confidence": "high",
+      "verified": true,
+      "tags": [
+        "approval_drop"
+      ],
+      "population": "US",
+      "predicted_shift_pp": 0.0,
+      "observed_shift_pp": -3.0,
+      "hit": false,
+      "event_type": "unknown",
+      "question_type": "incumbent_standing",
+      "rationale": "no literature prior for this pair",
+      "seconds": 0.0
+    },
+    {
+      "event_id": "mobilization_putin_approval",
+      "regime": "sim_delta_isolated",
+      "confidence": "high",
+      "verified": true,
+      "tags": [
+        "approval_drop"
+      ],
+      "population": "RU",
+      "predicted_shift_pp": 0.0,
+      "observed_shift_pp": -6.0,
+      "hit": false,
+      "event_type": "unknown",
+      "question_type": "incumbent_standing",
+      "rationale": "no literature prior for this pair",
+      "seconds": 0.0
+    },
+    {
+      "event_id": "uvalde_gun_laws",
+      "regime": "sim_delta_isolated",
+      "confidence": "high",
+      "verified": true,
+      "tags": [
+        "policy_shift"
+      ],
+      "population": "US",
+      "predicted_shift_pp": 10.0,
+      "observed_shift_pp": 14.0,
+      "hit": true,
+      "event_type": "external_attack",
+      "question_type": "hazard_policy",
+      "rationale": "Salient harm raises support for policy limiting the instrument of harm (e.g. mass shooting -> stricter firearm laws).",
+      "seconds": 0.0
+    },
+    {
+      "event_id": "oct7_likud_support",
+      "regime": "sim_delta_isolated",
+      "confidence": "medium",
+      "verified": true,
+      "tags": [
+        "approval_drop"
+      ],
+      "population": "IL",
+      "predicted_shift_pp": 10.0,
+      "observed_shift_pp": -9.0,
+      "hit": false,
+      "event_type": "external_attack",
+      "question_type": "incumbent_standing",
+      "rationale": "Rally-round-the-flag: external attacks raise incumbent approval (Mueller 1970).",
+      "seconds": 0.0
+    },
+    {
+      "event_id": "three_mile_island_nuclear",
+      "regime": "sim_delta_isolated",
+      "confidence": "medium",
+      "verified": true,
+      "tags": [
+        "policy_shift"
+      ],
+      "population": "US",
+      "predicted_shift_pp": 0.0,
+      "observed_shift_pp": -13.0,
+      "hit": false,
+      "event_type": "disaster",
+      "question_type": "unknown",
+      "rationale": "no literature prior for this pair",
+      "seconds": 0.0
+    },
+    {
+      "event_id": "sandy_obama_approval",
+      "regime": "sim_delta_isolated",
+      "confidence": "medium",
+      "verified": true,
+      "tags": [
+        "rally"
+      ],
+      "population": "US",
+      "predicted_shift_pp": -10.0,
+      "observed_shift_pp": 2.0,
+      "hit": false,
+      "event_type": "disaster",
+      "question_type": "incumbent_standing",
+      "rationale": "Disasters trigger blame attribution for preparedness/response.",
+      "seconds": 0.0
+    }
+  ]
+}

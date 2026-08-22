@@ -4,6 +4,39 @@ All notable changes since the initial release. Per-sprint detail lives
 in `REALM_CLAUDE.md` § 0 (CURRENT BUILD STATE) and
 `outputs/realm_milestone_report.md` (full historical narrative).
 
+## v0.26.0 — Sprint 27: relation matrix v2 — built, frozen, honestly falsified (2026-08-22)
+
+- **Added (research):** `realm/validation/relation_v2.py` — matrix v2
+  from the Sprint 24 failure analysis: new event classes
+  (military_success, public_health_emergency, personal_scandal,
+  incumbent_conquest), attribution keywords for self-authored
+  operations (withdrawal, mobilization, election-subversion violence),
+  economic vocabulary. Immutable (`MappingProxyType`), all rationales
+  mandatory. In-sample after authoring: design 22/22, held-out 7/8.
+- **Added (protocol):** `docs/study_a_third_set_protocol.md` —
+  pre-stated third-set selection criteria + decision rule, committed
+  WITH the matrix freeze (`dcc5019`/`cfa8adc`) BEFORE any third-set
+  event was authored; freeze-then-author auditable in git history.
+- **Added (data):** `data/validation/study_a_third_events.json` — 8
+  new events, 8/8 web-verified at authoring (Saddam capture 56→63,
+  Partygate −31→−42, Saturday Night Massacre 30→27, RU mobilization
+  83→77, Uvalde 52→66, Oct 7 Likud 28→19, Three Mile Island 57→44,
+  Sandy 50→52). 12-candidate pool; 4 dropped with logged reasons
+  (2 disjointness, 1 event-isolation, 1 window). Benchmark now
+  **38 verified events** (22 design + 8 held-out + 8 third).
+- **Result (negative, pre-stated bar NOT met):** relation v2 on the
+  third set **3/8 (38%, p=0.855)**; v1 1/8; valence 5/8 (p=0.363,
+  composition-explained, magnitudes still uninformative ρ −0.488).
+  Reproducible generalization gap across two matrix iterations
+  (in-sample ≈ perfect → next clean set ≈ chance) → the
+  keyword-classifier + fixed-prior approach is **retired**; the third
+  set isolates perceived culpability / response quality as the missing
+  variable (Oct 7: attack → blame, not rally). Full verdict:
+  `outputs/study_a_third_set_analysis.md`.
+- **Changed (harness):** `run_study_a.py --matrix-version {1,2}` for
+  the relation channel; JSON output records `matrix_version`.
+- 1049 tests green (23 new), ruff clean.
+
 ## v0.25.0 — Sprint 26: post-roadmap queue — Sweden fix, de-quantization, Study B growth (2026-08-20)
 
 - **Corrected (data):** `ukraine_sweden_nato` baseline 37 → 42 — the

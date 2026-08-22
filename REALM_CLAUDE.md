@@ -2,9 +2,9 @@
 
 ## CLAUDE.md — Project Blueprint & Development Guide
 
-> **Version:** 0.25.0
+> **Version:** 0.26.0
 > **Created:** 2026-04-22
-> **Last Updated:** 2026-08-20 (v0.25.0 — Sprint 26: post-roadmap queue — Sweden NATO baseline corrected (42, Demoskop; dataset 22/22 verified; signed ρ −0.506); magnitude de-quantization shipped (tanh map, measured: artifact gone, still no magnitude signal −0.066); Study B grown to 6 open entries (TR/US/GB). Follows Sprint 25's blinding fix + erratum (v0.24.1).)
+> **Last Updated:** 2026-08-22 (v0.26.0 — Sprint 27: relation matrix v2 built from the Sprint 24 failure analysis, frozen with a pre-stated protocol, and honestly falsified on a third post-freeze event set (3/8, bar not met; v1 1/8; valence 5/8 composition-explained). Keyword-classifier approach retired; benchmark now 38 verified events. Closes the last post-roadmap queue item.)
 > **Identity note (2026-08-18):** the founding intent is population-reaction
 > simulation — detecting opinions/tendencies toward events in advance.
 > Astrology is ONE of four pluggable temperament-diversification modes
@@ -13,11 +13,52 @@
 > `docs/superpowers/specs/2026-08-18-reaction-distribution-repositioning-design.md`.
 > **Author:** Loth + Claude (Anthropic)
 > **License:** MIT — Copyright © 2026 Suvar Ergun. See `LICENSE`.
-> **Status:** Phase 1-6 + LLM + scenario panel + Sprints 1-26 complete (§5 roadmap DONE). **1026 tests passing**, entire repo ruff clean, CI active. Sprint 16 added 3 geopolitics-pool drift event types (regime_consolidation, diplomatic_stalemate, sanctions_pressure) and a per-category `baseline_probability_offset` fine-tuning knob, but the headline finding was a **latent engine bug since Sprint 10**: `ExperienceDriftEngine._EVENT_TRAIT_MAP` only ever held the 6 Sprint 9 events, and `build_branch_sim` never passed `bridge.event_map` into the engine — so all Sprint 10 events (leadership_act, group_conformity, group_dissent, financial_loss, financial_gain, cultural_experience) had been silently no-op'd by `engine.event_map.get(event_type)` returning None for 6 sprints. Two-line fix in `realm/output/predictor.py`: load bridge first, then pass `event_map=drift_bridge.event_map`. Sprint 14/15 baseline differentiation calibrations had been running on only 6 events; Sprint 16 is the first calibration where all 15 events actually contribute to drift accumulation.
+> **Status:** Phase 1-6 + LLM + scenario panel + Sprints 1-27 complete (§5 roadmap DONE; post-roadmap queue CLOSED). **1049 tests passing**, entire repo ruff clean, CI active. Sprint 16 added 3 geopolitics-pool drift event types (regime_consolidation, diplomatic_stalemate, sanctions_pressure) and a per-category `baseline_probability_offset` fine-tuning knob, but the headline finding was a **latent engine bug since Sprint 10**: `ExperienceDriftEngine._EVENT_TRAIT_MAP` only ever held the 6 Sprint 9 events, and `build_branch_sim` never passed `bridge.event_map` into the engine — so all Sprint 10 events (leadership_act, group_conformity, group_dissent, financial_loss, financial_gain, cultural_experience) had been silently no-op'd by `engine.event_map.get(event_type)` returning None for 6 sprints. Two-line fix in `realm/output/predictor.py`: load bridge first, then pass `event_map=drift_bridge.event_map`. Sprint 14/15 baseline differentiation calibrations had been running on only 6 events; Sprint 16 is the first calibration where all 15 events actually contribute to drift accumulation.
 
 ---
 
-## 0. CURRENT BUILD STATE (2026-08-19)
+## 0. CURRENT BUILD STATE (2026-08-22)
+
+### Sprint 27 — Relation Matrix v2: Built, Frozen, Honestly Falsified (2026-08-22)
+
+- **Matrix v2 (queue item 2 — the last open item — CLOSED):**
+  `realm/validation/relation_v2.py` authored from the Sprint 24
+  failure analysis: new classes military_success,
+  public_health_emergency, personal_scandal, incumbent_conquest;
+  self_inflicted attribution keywords (withdrawal, mobilization,
+  election-subversion violence); economic vocabulary. Immutable
+  matrix (`MappingProxyType`), rationales mandatory, v1 untouched.
+  In-sample after authoring: design 22/22, held-out 7/8 (Lewinsky
+  stays missed — the scandal prior follows the average).
+- **Freeze-then-author, second iteration:** matrix + pre-stated
+  third-set criteria + decision rule committed (`dcc5019`, amendment
+  `cfa8adc`) BEFORE the third event set was authored (`649e750`) —
+  auditable in git history. 12-candidate pool named in the protocol;
+  4 dropped with logged reasons (RU invasion + UK lockdown:
+  disjointness; Baghdadi: event isolation, drop conservative against
+  v2; Poland abortion: 20-month window).
+- **Third set (8 events, 8/8 verified via 3 parallel web-research
+  agents):** Saddam capture (Gallup 56→63), Partygate (YouGov net
+  −31→−42), Saturday Night Massacre (Gallup 30→27), RU mobilization
+  (Levada 83→77), Uvalde (Gallup 52→66), Oct 7 (Maariv Likud seats
+  28→19), Three Mile Island (Harris 57→44), Sandy (Gallup 50→52).
+- **RESULT — pre-stated bar NOT met:** v2 **3/8 (38%, p=0.855)**,
+  v1 1/8, valence 5/8 (p=0.363 — composition: this set has more
+  valence/referent-coinciding events; magnitudes still uninformative,
+  ρ −0.488). **Reproducible generalization gap across two matrix
+  iterations** (in-sample ≈ perfect → next clean set ≈ chance) →
+  keyword-classifier + fixed-prior approach RETIRED; no v3 with the
+  same technology. Third set isolates the missing variable: perceived
+  culpability / response quality (Oct 7 → blame, not rally; Sandy →
+  praised response, no blame). Failure modes: culpability inversion,
+  morphological brittleness ("resign in protest" vs "resigns"),
+  class breadth (conduct scandal ≠ intimate scandal), question
+  orientation (favor-building-more vs phase-out). Full verdict:
+  `outputs/study_a_third_set_analysis.md`; harness:
+  `run_study_a.py --channel relation --matrix-version {1,2}`.
+- Direction-signal search now rests on Study B full-pipeline scoring
+  (first resolve ~2026-09-20); calibration stays blocked until a
+  channel shows direction (Sprint 26 roadmap unchanged).
 
 ### Sprint 26 — Post-Roadmap Queue: Sweden Fix + De-Quantization + Study B Growth (2026-08-20)
 

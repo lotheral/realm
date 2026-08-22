@@ -2700,3 +2700,40 @@ removed, still no magnitude signal; magnitude claims stay off.
 (3) Study B grown 3 → 6 open forward entries (TR TÜİK P=0.527, US
 Gallup P=0.446, UK YouGov P=0.410; resolve Sep–Oct 2026). Matrix v2
 deliberately deferred (needs a third event set under freeze-then-author).
+
+## §28 Sprint 27 — Relation Matrix v2: Built, Frozen, Honestly Falsified (2026-08-22)
+
+The last open queue item. Matrix v2 was authored from the Sprint 24
+failure analysis (new classes: military_success,
+public_health_emergency, personal_scandal, incumbent_conquest;
+attribution keywords for self-authored operations; economic
+vocabulary), frozen together with a pre-stated third-set protocol and
+decision rule (commits dcc5019/cfa8adc), and only then was the third
+event set authored (649e750) — the freeze-then-author ordering is
+auditable in git history. Twelve candidates were named in the protocol
+before verification; three parallel web-research agents verified all
+twelve; four were dropped for logged, outcome-blind reasons
+(disjointness ×2, event-isolation ×1, window ×1), leaving 8 events,
+8/8 verified (Saddam capture, Partygate, Saturday Night Massacre, RU
+mobilization, Uvalde, October 7, Three Mile Island, Sandy). The
+benchmark now holds 38 verified events.
+
+**Result: the pre-stated bar (>50% DA, p<0.1) was NOT met — v2 scored
+3/8 (p=0.855); v1 scored 1/8; valence scored 5/8 (p=0.363,
+composition-explained: this set happens to be rich in
+valence/referent-coinciding events, and magnitudes remain
+uninformative, ρ −0.488).** The headline finding is a REPRODUCIBLE
+GENERALIZATION GAP: each matrix iteration scores near-perfectly on
+every set known at authoring time (v1: 20/22; v2: 22/22 and 7/8) and
+collapses to chance on the next unseen set (v1: 4/8; v2: 3/8). The
+keyword-classifier + fixed-prior approach is retired — no v3 with the
+same technology. The third set also isolated the missing variable:
+whether a public rallies or blames depends on perceived incumbent
+culpability and response quality (October 7: deadliest attack in
+Israel's history → Likud collapsed 28→19 seats; Sandy: praised
+response → no blame), plus three surface failure modes (morphological
+brittleness, scandal class breadth, question orientation). Full
+verdict: `outputs/study_a_third_set_analysis.md`. Direction-signal
+search now rests on Study B full-pipeline scoring (first resolve
+~2026-09-20); calibration stays blocked until a channel shows
+direction. 1049 tests, ruff clean.

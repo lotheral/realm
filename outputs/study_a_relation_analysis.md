@@ -1,5 +1,12 @@
 # Study A — Relation Channel vs Valence Channel (Sprint 24)
 
+> **UPDATE (2026-08-22, Sprint 27):** the matrix v2 anticipated in the
+> conclusions below was built, frozen (commits `dcc5019`/`cfa8adc`),
+> and tested on a third post-freeze event set: **3/8 — the pre-stated
+> bar was not met a second time.** The keyword-classifier + fixed-prior
+> approach is retired. Verdict and failure modes:
+> `outputs/study_a_third_set_analysis.md`.
+
 > 2026-08-19. Companion to `outputs/study_a_analysis.md`. Raw reports:
 > `study_a_results.md` (valence@design), `study_a_holdout_valence.md`,
 > `study_a_design_relation.md`, `study_a_holdout_relation.md`.

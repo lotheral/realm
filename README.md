@@ -7,7 +7,7 @@
 > the ephemeris mode is a diversification tool, not the project's
 > identity.
 >
-> **Status:** v0.25.0 (Sprint 26 — Study A dataset 22/22 verified after Sweden baseline fix; perturbation magnitudes de-quantized, measured: still no magnitude signal; Study B grown to 6 open forward entries) · **Tests:** 1026 passing · **CI:** active
+> **Status:** v0.26.0 (Sprint 27 — relation matrix v2 built, frozen, and honestly falsified on a third post-freeze event set: 3/8, pre-stated bar not met; benchmark now 38 verified events; keyword-classifier approach retired) · **Tests:** 1049 passing · **CI:** active
 > · **Article:** [`REALM_ARTICLE_DRAFT.md`](./REALM_ARTICLE_DRAFT.md) — *REALM: A Population-Reaction Simulation Engine*
 >
 > **Validation status (honest):** population realism 8/8 PASS (Johnson
@@ -16,6 +16,9 @@
 > for the valence scenario channel (DA 4/22, corrected 2026-08-20
 > after a category-routing blinding fix; rally 0/9) —
 > [`outputs/study_a_analysis.md`](./outputs/study_a_analysis.md) ·
+> relation polarity matrix: **falsified twice** under freeze-then-author
+> (v1 held-out 4/8; v2 third-set 3/8) —
+> [`outputs/study_a_third_set_analysis.md`](./outputs/study_a_third_set_analysis.md) ·
 > Study B forward diary: accumulating
 > ([`outputs/prediction_diary/`](./outputs/prediction_diary/README.md)).
 >
