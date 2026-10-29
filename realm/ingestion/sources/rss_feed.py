@@ -15,6 +15,7 @@ from __future__ import annotations
 import hashlib
 import ipaddress
 import socket
+import time
 from collections.abc import Iterable
 from datetime import UTC, datetime
 from urllib.parse import urljoin, urlsplit
@@ -46,12 +47,35 @@ def _validate_public_http_url(url: str) -> None:
         raise ValueError(f"RSS host could not be resolved: {parsed.hostname}") from exc
     if not addresses:
         raise ValueError(f"RSS host could not be resolved: {parsed.hostname}")
-    if any(not ipaddress.ip_address(address).is_global for address in addresses):
+    if any(not _is_global_address(address) for address in addresses):
         raise ValueError("RSS URL resolves to a non-public address")
+
+
+def _is_global_address(address: str) -> bool:
+    return ipaddress.ip_address(address.split("%", 1)[0]).is_global
+
+
+def _check_peer_is_global(response: httpx.Response) -> None:
+    """Re-check the address httpx actually connected to (closes the DNS-rebinding
+    gap between the pre-flight resolve and httpx's own resolve)."""
+    stream = response.extensions.get("network_stream")
+    if stream is None:  # non-network transport (e.g. MockTransport in tests)
+        return
+    server_addr = stream.get_extra_info("server_addr")
+    if server_addr and not _is_global_address(str(server_addr[0])):
+        raise ValueError("RSS connection reached a non-public address")
+
+
+def _check_deadline(deadline: float) -> None:
+    # httpx timeouts are per-operation; a slow-drip server could otherwise
+    # hold the fetch open indefinitely.
+    if time.monotonic() > deadline:
+        raise ValueError("RSS feed fetch exceeded the total timeout")
 
 
 def _fetch_feed(url: str, *, timeout: float) -> bytes:
     current_url = url
+    deadline = time.monotonic() + timeout
     with httpx.Client(
         follow_redirects=False,
         timeout=timeout,
@@ -59,8 +83,10 @@ def _fetch_feed(url: str, *, timeout: float) -> bytes:
         headers={"User-Agent": _USER_AGENT},
     ) as client:
         for redirect_count in range(_MAX_REDIRECTS + 1):
+            _check_deadline(deadline)
             _validate_public_http_url(current_url)
             with client.stream("GET", current_url) as response:
+                _check_peer_is_global(response)
                 if response.is_redirect:
                     location = response.headers.get("location")
                     if not location:
@@ -74,6 +100,7 @@ def _fetch_feed(url: str, *, timeout: float) -> bytes:
                 chunks: list[bytes] = []
                 total = 0
                 for chunk in response.iter_bytes():
+                    _check_deadline(deadline)
                     total += len(chunk)
                     if total > _MAX_RESPONSE_BYTES:
                         raise ValueError("RSS feed response is too large")

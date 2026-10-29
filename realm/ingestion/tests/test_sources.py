@@ -118,6 +118,57 @@ class TestRssFeedOfflineRobustness:
         with pytest.raises(ValueError, match="non-public"):
             _fetch_feed("http://feeds.example/news", timeout=1.0)
 
+    def test_rebound_peer_address_is_rejected(self, monkeypatch):
+        """DNS rebinding: pre-flight resolve says public, actual connection is private."""
+        import httpx
+
+        class FakeStream:
+            def get_extra_info(self, key):
+                return ("127.0.0.1", 80) if key == "server_addr" else None
+
+        real_client = httpx.Client
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            return httpx.Response(
+                200, content=b"<rss />", extensions={"network_stream": FakeStream()}
+            )
+
+        monkeypatch.setattr(
+            "realm.ingestion.sources.rss_feed.httpx.Client",
+            lambda **kwargs: real_client(transport=httpx.MockTransport(handler), **kwargs),
+        )
+        monkeypatch.setattr(
+            "realm.ingestion.sources.rss_feed.socket.getaddrinfo",
+            lambda host, *args: [(2, 1, 6, "", ("93.184.216.34", 80))],
+        )
+
+        with pytest.raises(ValueError, match="non-public"):
+            _fetch_feed("http://feeds.example/news", timeout=1.0)
+
+    def test_total_deadline_stops_slow_drip_body(self, monkeypatch):
+        import httpx
+
+        real_client = httpx.Client
+        clock = iter([0.0, 0.0, 0.5, 2.0, 3.0, 4.0])
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            return httpx.Response(200, content=iter([b"a", b"b", b"c", b"d"]))
+
+        monkeypatch.setattr(
+            "realm.ingestion.sources.rss_feed.httpx.Client",
+            lambda **kwargs: real_client(transport=httpx.MockTransport(handler), **kwargs),
+        )
+        monkeypatch.setattr(
+            "realm.ingestion.sources.rss_feed.socket.getaddrinfo",
+            lambda host, *args: [(2, 1, 6, "", ("93.184.216.34", 80))],
+        )
+        monkeypatch.setattr(
+            "realm.ingestion.sources.rss_feed.time.monotonic", lambda: next(clock)
+        )
+
+        with pytest.raises(ValueError, match="total timeout"):
+            _fetch_feed("http://feeds.example/news", timeout=1.0)
+
     def test_configured_timeout_is_passed_to_http_client(self, monkeypatch):
         captured = {}
 
