@@ -11,7 +11,7 @@ import pytest
 from realm.core.exceptions import DataError
 from realm.ingestion.interfaces import SeedEvent
 from realm.ingestion.sources.manual_upload import ManualUploadSource
-from realm.ingestion.sources.rss_feed import RssFeedSource
+from realm.ingestion.sources.rss_feed import RssFeedSource, _fetch_feed
 
 
 class TestManualUpload:
@@ -79,15 +79,70 @@ class TestManualUpload:
 class TestRssFeedOfflineRobustness:
     """RSS tests without real network — verify offline failure modes are graceful."""
 
-    def test_unreachable_url_returns_empty(self):
-        src = RssFeedSource("http://localhost:1/does_not_exist", source_id="fake")
-        # feedparser should return a bozo feed; we should catch and return []
-        events = src.fetch()
-        assert isinstance(events, list)
+    def test_private_url_is_rejected_before_http_request(self, monkeypatch):
+        requested = False
+
+        def fail_if_requested(*args, **kwargs):
+            nonlocal requested
+            requested = True
+            raise AssertionError("private URL reached the HTTP client")
+
+        monkeypatch.setattr("httpx.Client.stream", fail_if_requested)
+        src = RssFeedSource("http://127.0.0.1/admin", source_id="fake")
+
+        assert src.fetch() == []
+        assert requested is False
+
+    def test_redirect_target_is_revalidated(self, monkeypatch):
+        import httpx
+
+        real_client = httpx.Client
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            return httpx.Response(302, headers={"location": "http://127.0.0.1/private"})
+
+        monkeypatch.setattr(
+            "realm.ingestion.sources.rss_feed.httpx.Client",
+            lambda **kwargs: real_client(transport=httpx.MockTransport(handler), **kwargs),
+        )
+
+        def resolve(host, *args):
+            address = "127.0.0.1" if host == "127.0.0.1" else "93.184.216.34"
+            return [(2, 1, 6, "", (address, 80))]
+
+        monkeypatch.setattr(
+            "realm.ingestion.sources.rss_feed.socket.getaddrinfo",
+            resolve,
+        )
+
+        with pytest.raises(ValueError, match="non-public"):
+            _fetch_feed("http://feeds.example/news", timeout=1.0)
+
+    def test_configured_timeout_is_passed_to_http_client(self, monkeypatch):
+        captured = {}
+
+        class FakeClient:
+            def __init__(self, **kwargs):
+                captured.update(kwargs)
+
+            def __enter__(self):
+                raise RuntimeError("stop after client construction")
+
+            def __exit__(self, *args):
+                return False
+
+        monkeypatch.setattr("realm.ingestion.sources.rss_feed.httpx.Client", FakeClient)
+
+        with pytest.raises(RuntimeError, match="client construction"):
+            _fetch_feed("https://feeds.example/news", timeout=2.75)
+
+        assert captured["timeout"] == 2.75
+        assert captured["follow_redirects"] is False
+        assert captured["trust_env"] is False
 
     def test_deduplication(self, monkeypatch):
         """Manually feed the source two identical entries; second fetch() should skip them."""
-        src = RssFeedSource("http://example.invalid", source_id="unit")
+        src = RssFeedSource("http://example.com", source_id="unit")
         import feedparser
         fake_parsed = feedparser.FeedParserDict()
         entry = feedparser.FeedParserDict()
@@ -102,6 +157,10 @@ class TestRssFeedOfflineRobustness:
             return fake_parsed
 
         monkeypatch.setattr("feedparser.parse", fake_parse)
+        monkeypatch.setattr(
+            "realm.ingestion.sources.rss_feed._fetch_feed",
+            lambda *args, **kwargs: b"<rss />",
+        )
 
         first = src.fetch()
         assert len(first) == 1

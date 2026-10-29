@@ -13,15 +13,73 @@ NewsChannel.
 from __future__ import annotations
 
 import hashlib
+import ipaddress
+import socket
 from collections.abc import Iterable
 from datetime import UTC, datetime
+from urllib.parse import urljoin, urlsplit
 
 import feedparser
+import httpx
 
 from realm.core.logging import get_logger
 from realm.ingestion.interfaces import IDataSource, SeedEvent
 
 logger = get_logger(__name__)
+
+_MAX_RESPONSE_BYTES = 2 * 1024 * 1024
+_MAX_REDIRECTS = 5
+_USER_AGENT = "REALM/0.1"
+
+
+def _validate_public_http_url(url: str) -> None:
+    """Reject URLs that can target local, private, or otherwise non-public hosts."""
+    parsed = urlsplit(url)
+    if parsed.scheme not in {"http", "https"} or not parsed.hostname:
+        raise ValueError("RSS URL must use http or https and include a host")
+    if parsed.username is not None or parsed.password is not None:
+        raise ValueError("RSS URL must not include credentials")
+
+    try:
+        addresses = {info[4][0] for info in socket.getaddrinfo(parsed.hostname, parsed.port)}
+    except OSError as exc:
+        raise ValueError(f"RSS host could not be resolved: {parsed.hostname}") from exc
+    if not addresses:
+        raise ValueError(f"RSS host could not be resolved: {parsed.hostname}")
+    if any(not ipaddress.ip_address(address).is_global for address in addresses):
+        raise ValueError("RSS URL resolves to a non-public address")
+
+
+def _fetch_feed(url: str, *, timeout: float) -> bytes:
+    current_url = url
+    with httpx.Client(
+        follow_redirects=False,
+        timeout=timeout,
+        trust_env=False,
+        headers={"User-Agent": _USER_AGENT},
+    ) as client:
+        for redirect_count in range(_MAX_REDIRECTS + 1):
+            _validate_public_http_url(current_url)
+            with client.stream("GET", current_url) as response:
+                if response.is_redirect:
+                    location = response.headers.get("location")
+                    if not location:
+                        raise ValueError("RSS redirect is missing a Location header")
+                    if redirect_count == _MAX_REDIRECTS:
+                        raise ValueError("RSS feed exceeded the redirect limit")
+                    current_url = urljoin(current_url, location)
+                    continue
+
+                response.raise_for_status()
+                chunks: list[bytes] = []
+                total = 0
+                for chunk in response.iter_bytes():
+                    total += len(chunk)
+                    if total > _MAX_RESPONSE_BYTES:
+                        raise ValueError("RSS feed response is too large")
+                    chunks.append(chunk)
+                return b"".join(chunks)
+    raise ValueError("RSS feed redirect handling failed")
 
 
 class RssFeedSource(IDataSource):
@@ -43,7 +101,8 @@ class RssFeedSource(IDataSource):
 
     def fetch(self) -> list[SeedEvent]:
         try:
-            parsed = feedparser.parse(self._url, request_headers={"User-Agent": "REALM/0.1"})
+            content = _fetch_feed(self._url, timeout=self._timeout)
+            parsed = feedparser.parse(content)
         except Exception as e:
             logger.warning("RSS fetch failed for %s: %s", self._url, e)
             return []
