@@ -20,6 +20,12 @@ that have not happened yet — so entries run with the FULL pipeline
    matches the sign of the observed poll shift.
 4. Misses are as much a result as hits. The diary accumulates slowly;
    that is by design.
+5. An entry whose named source turns out not to exist / be discontinued
+   is **voided** with a written reason (`diary.py void`), never silently
+   dropped or re-targeted to a different poll. Void entries are excluded
+   from the hit rate and counted separately.
+6. Before writing an entry, confirm the named poll is still published on
+   the stated cadence (the Gallup entry failed this — see its void reason).
 
 ## Usage
 
@@ -33,5 +39,9 @@ python scripts/diary.py list
 
 # score an entry once the poll is out
 python scripts/diary.py score diary_20260818_ab12cd34 \
-  --observed-shift-pp 4.5 --source "Pollster, 2026-12-15"
+  --observed-shift-pp 4.5 --source "Pollster, 2026-12-15" \
+  [--note "index points, not pp"]
+
+# close an unresolvable entry without scoring it
+python scripts/diary.py void diary_20260818_ab12cd34 --reason "..."
 ```

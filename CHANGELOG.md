@@ -4,6 +4,24 @@ All notable changes since the initial release. Per-sprint detail lives
 in `REALM_CLAUDE.md` § 0 (CURRENT BUILD STATE) and
 `outputs/realm_milestone_report.md` (full historical narrative).
 
+## Unreleased (2026-10-29)
+
+- **Security (ingestion):** RSS fetch hardened against SSRF — httpx
+  instead of feedparser's own opener; http(s)-only, no credentials,
+  every redirect hop re-validated (max 5), 2 MB cap, total deadline
+  across redirects and body; connections pinned to the validated IP
+  via a custom httpcore backend (closes DNS rebinding before any byte
+  is sent).
+- **Added (Study B):** `diary.py void --reason` (unresolvable entries
+  closed without scoring, excluded from the hit rate) and
+  `score --note` (unit / noise disclosures).
+- **Result (Study B, first resolutions):** **1/4 directional hits**,
+  1 void, 1 open. HIT TÜİK (+1.1 idx); MISS UMich (−3.6 idx), ARD
+  (+2pp), YouGov (+1pp, noise-level). Gallup entry VOID — series
+  discontinued Feb 2026, before the entry was written (authoring
+  error). n=4 is uninformative; all six entries are no-scenario
+  baseline questions, so they test the LLM prior, not the simulation.
+
 ## v0.26.0 — Sprint 27: relation matrix v2 — built, frozen, honestly falsified (2026-08-22)
 
 - **Added (research):** `realm/validation/relation_v2.py` — matrix v2

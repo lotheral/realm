@@ -5,8 +5,10 @@ import pytest
 from realm.validation.diary import (
     DiaryEntry,
     append_entry,
+    is_void,
     load_entries,
     score_entry,
+    void_entry,
 )
 
 
@@ -74,3 +76,35 @@ class TestDiary:
 
     def test_load_missing_file_returns_empty(self, tmp_path):
         assert load_entries(path=tmp_path / "absent.jsonl") == []
+
+    def test_score_note_is_recorded_only_when_given(self, tmp_path):
+        path = tmp_path / "entries.jsonl"
+        append_entry(make_entry("e1"), path=path)
+        append_entry(make_entry("e2"), path=path)
+        with_note = score_entry("e1", observed_shift_pp=1.0, source="s",
+                                note="index points", path=path)
+        without = score_entry("e2", observed_shift_pp=1.0, source="s", path=path)
+        assert with_note.resolution["note"] == "index points"
+        assert "note" not in without.resolution
+
+    def test_void_closes_entry_without_a_hit(self, tmp_path):
+        path = tmp_path / "entries.jsonl"
+        append_entry(make_entry("e1"), path=path)
+        append_entry(make_entry("e2"), path=path)
+        voided = void_entry("e1", reason="poll discontinued", path=path)
+        assert is_void(voided)
+        assert "directional_hit" not in voided.resolution
+        assert voided.resolution["reason"] == "poll discontinued"
+        # prediction fields untouched, other entries untouched
+        assert voided.predicted_probability == 0.6
+        reloaded = load_entries(path=path)
+        assert is_void(reloaded[0]) and reloaded[1].resolution is None
+
+    def test_void_requires_reason_and_open_entry(self, tmp_path):
+        path = tmp_path / "entries.jsonl"
+        append_entry(make_entry("e1"), path=path)
+        with pytest.raises(ValueError, match="reason"):
+            void_entry("e1", reason="  ", path=path)
+        score_entry("e1", observed_shift_pp=1.0, source="s", path=path)
+        with pytest.raises(ValueError, match="already scored"):
+            void_entry("e1", reason="late", path=path)

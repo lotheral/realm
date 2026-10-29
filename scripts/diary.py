@@ -7,6 +7,7 @@ Commands::
         [--age-min 18 --age-max 29] [--resolve-by 2026-12-31] \\
         [--n-agents 100] [--n-ticks 30] [--n-branches 5]
     python scripts/diary.py list
+    python scripts/diary.py void ENTRY_ID --reason "poll discontinued"
     python scripts/diary.py score ENTRY_ID --observed-shift-pp 4.5 \\
         --source "Poll name / URL"
 
@@ -31,8 +32,10 @@ from realm.validation.diary import (  # noqa: E402
     DIARY_PATH,
     DiaryEntry,
     append_entry,
+    is_void,
     load_entries,
     score_entry,
+    void_entry,
 )
 
 
@@ -100,13 +103,20 @@ def cmd_list(_args) -> int:
         return 0
     for e in entries:
         status = "OPEN"
-        if e.resolution is not None:
+        if is_void(e):
+            status = "VOID"
+        elif e.resolution is not None:
             status = "HIT" if e.resolution.get("directional_hit") else "MISS"
         print(f"{e.entry_id}  [{status}]  resolve_by={e.resolve_by}  {e.question}")
-    scored = [e for e in entries if e.resolution is not None]
-    if scored:
+    scored = [e for e in entries if e.resolution is not None and not is_void(e)]
+    voided = sum(1 for e in entries if is_void(e))
+    open_ = sum(1 for e in entries if e.resolution is None)
+    if scored or voided:
         hits = sum(1 for e in scored if e.resolution.get("directional_hit"))
-        print(f"\n[diary] scored: {hits}/{len(scored)} directional hits; open: {len(entries) - len(scored)}")
+        print(
+            f"\n[diary] scored: {hits}/{len(scored)} directional hits; "
+            f"void: {voided}; open: {open_}"
+        )
     return 0
 
 
@@ -115,12 +125,19 @@ def cmd_score(args) -> int:
         args.entry_id,
         observed_shift_pp=args.observed_shift_pp,
         source=args.source,
+        note=args.note,
     )
     print(
         f"[diary] scored {entry.entry_id}: "
         f"{'HIT' if entry.resolution['directional_hit'] else 'MISS'} "
         f"(observed {args.observed_shift_pp:+.2f}pp, source: {args.source})"
     )
+    return 0
+
+
+def cmd_void(args) -> int:
+    entry = void_entry(args.entry_id, reason=args.reason)
+    print(f"[diary] voided {entry.entry_id}: {args.reason}")
     return 0
 
 
@@ -147,7 +164,13 @@ def main() -> int:
     s.add_argument("entry_id")
     s.add_argument("--observed-shift-pp", type=float, required=True)
     s.add_argument("--source", required=True)
+    s.add_argument("--note", default=None, help="disclosure: units, noise-level shift, ...")
     s.set_defaults(func=cmd_score)
+
+    v = sub.add_parser("void", help="close an unresolvable entry without scoring it")
+    v.add_argument("entry_id")
+    v.add_argument("--reason", required=True)
+    v.set_defaults(func=cmd_void)
 
     args = parser.parse_args()
     return args.func(args)

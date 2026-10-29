@@ -108,6 +108,8 @@ The four hits that survive complete blinding (Katrina, Jan-6, Sandy Hook, Dobbs)
 
 The clean test of the full pipeline (LLM + web + simulation) is prospective: an append-only diary of predictions on upcoming events, written before resolution, never edited, scored as polls arrive (`outputs/prediction_diary/`). Forward prediction makes leakage impossible, so the LLM stages are legitimate there. The diary accumulates slowly by design; its running directional score is a first-class honesty metric of the project.
 
+**Interim score (2026-10-29): 1/4 directional hits, 1 void, 1 open.** TÜİK consumer confidence (predicted up, P=0.53; observed +1.1 index points) hit; UMich sentiment (P=0.56 up; observed −3.6), ARD-DeutschlandTrend government satisfaction (P=0.39 down; observed +2pp) and YouGov UK government approval (P=0.41 down; observed +1pp, noise-level) missed. The Gallup presidential-approval entry is void: Gallup had discontinued the series in February 2026, six months before the entry was written — an authoring error that neither the author nor the web-research stage caught, now covered by a written pre-entry rule to confirm the named source is still published. Two caveats bound what this shows. First, n=4 is uninformative (≤1 hit under a coin flip has p≈0.31), and every predicted probability sat within 0.39–0.56. Second, and more important for the design: **none of the six entries carries a scenario**, so they exercise the LLM-dominant *baseline* path (simulation weight 0.05–0.15, question-blind by construction, §4.2) — they test the LLM's prior, not the simulation. The scenario channel remains untested forward.
+
 ---
 
 ## 5. Discussion
@@ -116,7 +118,7 @@ The clean test of the full pipeline (LLM + web + simulation) is prospective: an 
 
 - **Holds:** psychometric realism of the generated populations (8/8); the reaction-distribution output surface (per-question populations, pooled stances, segments); the diagnosis methodology itself.
 - **Fell:** the blinded, lexicon-driven scenario channel as a poll-shift predictor (18% DA, anti-correlated); the earlier framing of the simulation as a baseline-probability contributor (question-blind by construction).
-- **Untested:** the LLM-informed scenario channel on real reactions — Study B exists to test it honestly.
+- **Untested:** the LLM-informed scenario channel on real reactions — Study B exists to test it honestly, but its first six entries were all baseline (no-scenario) questions, so this remains untested (§4.4).
 
 ### 5.2 The Constructive Reading
 
