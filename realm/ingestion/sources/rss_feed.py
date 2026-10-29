@@ -21,6 +21,7 @@ from datetime import UTC, datetime
 from urllib.parse import urljoin, urlsplit
 
 import feedparser
+import httpcore
 import httpx
 
 from realm.core.logging import get_logger
@@ -55,15 +56,34 @@ def _is_global_address(address: str) -> bool:
     return ipaddress.ip_address(address.split("%", 1)[0]).is_global
 
 
-def _check_peer_is_global(response: httpx.Response) -> None:
-    """Re-check the address httpx actually connected to (closes the DNS-rebinding
-    gap between the pre-flight resolve and httpx's own resolve)."""
-    stream = response.extensions.get("network_stream")
-    if stream is None:  # non-network transport (e.g. MockTransport in tests)
-        return
-    server_addr = stream.get_extra_info("server_addr")
-    if server_addr and not _is_global_address(str(server_addr[0])):
-        raise ValueError("RSS connection reached a non-public address")
+class _PublicOnlyBackend(httpcore.SyncBackend):
+    """Resolve, check, then connect to the checked IP — no second DNS lookup.
+
+    Closes the DNS-rebinding gap: the address that passed the check is the one
+    the socket is opened to, before any request bytes are sent. TLS SNI and
+    certificate checks still use the origin hostname (httpcore takes it from
+    the request origin, not from the connected address).
+    """
+
+    def connect_tcp(self, host, port, timeout=None, local_address=None, socket_options=None):
+        try:
+            infos = socket.getaddrinfo(host, port, type=socket.SOCK_STREAM)
+        except OSError as exc:
+            raise ValueError(f"RSS host could not be resolved: {host}") from exc
+        addresses = [info[4][0] for info in infos]
+        if not addresses or any(not _is_global_address(a) for a in addresses):
+            raise ValueError("RSS URL resolves to a non-public address")
+        return super().connect_tcp(
+            addresses[0], port, timeout=timeout,
+            local_address=local_address, socket_options=socket_options,
+        )
+
+
+def _public_only_transport() -> httpx.HTTPTransport:
+    transport = httpx.HTTPTransport(trust_env=False)
+    # httpx has no public hook for the network backend; the pool is httpcore's.
+    transport._pool._network_backend = _PublicOnlyBackend()
+    return transport
 
 
 def _check_deadline(deadline: float) -> None:
@@ -77,6 +97,7 @@ def _fetch_feed(url: str, *, timeout: float) -> bytes:
     current_url = url
     deadline = time.monotonic() + timeout
     with httpx.Client(
+        transport=_public_only_transport(),
         follow_redirects=False,
         timeout=timeout,
         trust_env=False,
@@ -86,7 +107,6 @@ def _fetch_feed(url: str, *, timeout: float) -> bytes:
             _check_deadline(deadline)
             _validate_public_http_url(current_url)
             with client.stream("GET", current_url) as response:
-                _check_peer_is_global(response)
                 if response.is_redirect:
                     location = response.headers.get("location")
                     if not location:

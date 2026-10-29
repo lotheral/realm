@@ -103,7 +103,7 @@ class TestRssFeedOfflineRobustness:
 
         monkeypatch.setattr(
             "realm.ingestion.sources.rss_feed.httpx.Client",
-            lambda **kwargs: real_client(transport=httpx.MockTransport(handler), **kwargs),
+            lambda **kwargs: real_client(**{**kwargs, "transport": httpx.MockTransport(handler)}),
         )
 
         def resolve(host, *args):
@@ -118,32 +118,44 @@ class TestRssFeedOfflineRobustness:
         with pytest.raises(ValueError, match="non-public"):
             _fetch_feed("http://feeds.example/news", timeout=1.0)
 
-    def test_rebound_peer_address_is_rejected(self, monkeypatch):
-        """DNS rebinding: pre-flight resolve says public, actual connection is private."""
-        import httpx
+    def test_rebinding_is_rejected_before_connect(self, monkeypatch):
+        """DNS rebinding: pre-flight resolve says public, the connect-time resolve
+        says private — the socket must never be opened."""
+        import httpcore
 
-        class FakeStream:
-            def get_extra_info(self, key):
-                return ("127.0.0.1", 80) if key == "server_addr" else None
-
-        real_client = httpx.Client
-
-        def handler(request: httpx.Request) -> httpx.Response:
-            return httpx.Response(
-                200, content=b"<rss />", extensions={"network_stream": FakeStream()}
-            )
-
-        monkeypatch.setattr(
-            "realm.ingestion.sources.rss_feed.httpx.Client",
-            lambda **kwargs: real_client(transport=httpx.MockTransport(handler), **kwargs),
-        )
+        answers = iter(["93.184.216.34", "127.0.0.1"])
         monkeypatch.setattr(
             "realm.ingestion.sources.rss_feed.socket.getaddrinfo",
-            lambda host, *args: [(2, 1, 6, "", ("93.184.216.34", 80))],
+            lambda host, *args, **kwargs: [(2, 1, 6, "", (next(answers), 80))],
+        )
+        connected = []
+        monkeypatch.setattr(
+            httpcore.SyncBackend, "connect_tcp",
+            lambda self, host, *args, **kwargs: connected.append(host),
         )
 
         with pytest.raises(ValueError, match="non-public"):
             _fetch_feed("http://feeds.example/news", timeout=1.0)
+        assert connected == []
+
+    def test_backend_connects_to_the_checked_address(self, monkeypatch):
+        import httpcore
+
+        from realm.ingestion.sources.rss_feed import _public_only_transport
+
+        monkeypatch.setattr(
+            "realm.ingestion.sources.rss_feed.socket.getaddrinfo",
+            lambda host, *args, **kwargs: [(2, 1, 6, "", ("93.184.216.34", 443))],
+        )
+        connected = []
+        monkeypatch.setattr(
+            httpcore.SyncBackend, "connect_tcp",
+            lambda self, host, *args, **kwargs: connected.append(host),
+        )
+
+        backend = _public_only_transport()._pool._network_backend
+        backend.connect_tcp("feeds.example", 443)
+        assert connected == ["93.184.216.34"]
 
     def test_total_deadline_stops_slow_drip_body(self, monkeypatch):
         import httpx
@@ -156,7 +168,7 @@ class TestRssFeedOfflineRobustness:
 
         monkeypatch.setattr(
             "realm.ingestion.sources.rss_feed.httpx.Client",
-            lambda **kwargs: real_client(transport=httpx.MockTransport(handler), **kwargs),
+            lambda **kwargs: real_client(**{**kwargs, "transport": httpx.MockTransport(handler)}),
         )
         monkeypatch.setattr(
             "realm.ingestion.sources.rss_feed.socket.getaddrinfo",
